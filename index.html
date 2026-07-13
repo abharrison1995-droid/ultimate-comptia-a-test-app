@@ -781,6 +781,25 @@ notes:`
 <tr><td>3389</td><td>RDP</td><td>Remote Desktop Protocol</td></tr>
 </table>
 <div class="callout"><b>Exam angle:</b> secure/insecure pairs — Telnet 23 → SSH 22; HTTP 80 → HTTPS 443. And from 1.4: POP3 110→995, IMAP 143→993, SMTP 25→587/465.</div>
+
+<h2>Extra ports worth knowing</h2>
+<table>
+<tr><th>Port</th><th>Service</th><th>Note</th></tr>
+<tr><td>88</td><td>Kerberos</td><td>Domain auth — time sync matters</td></tr>
+<tr><td>123</td><td>NTP</td><td>Clock sync</td></tr>
+<tr><td>636</td><td>LDAPS</td><td>LDAP over TLS</td></tr>
+<tr><td>990</td><td>FTPS</td><td>FTP over implicit TLS</td></tr>
+<tr><td>1812</td><td>RADIUS</td><td>WiFi/VPN authentication</td></tr>
+</table>
+
+<h2>Scenario pick-list — which port?</h2>
+<ul>
+<li><b>Block all cleartext remote admin externally</b> — allow 22, deny 23.</li>
+<li><b>User can ping IP but not open websites by name</b> — check DNS (53), not 80/443 alone.</li>
+<li><b>Windows share over LAN</b> — SMB 445.</li>
+<li><b>VoIP quality issues</b> — UDP prioritised; don't confuse with TCP mail ports.</li>
+<li><b>Mail client sends but can't receive</b> — SMTP vs IMAP/POP3 ports (587 vs 993/995).</li>
+</ul>
 `,
 quiz:[
 {q:"Which port must be open on a firewall to allow technicians to use Remote Desktop to a Windows server?", o:["22","443","3389","445"], a:2, e:"RDP uses TCP 3389. Port 22 is SSH, 443 HTTPS, 445 SMB file sharing."},
@@ -826,6 +845,32 @@ notes:`
 
 <h2>Software-defined networking (SDN)</h2>
 <p>Separates the <b>control plane</b> (decisions about where traffic goes) from the <b>data plane</b> (the forwarding itself), centralising network intelligence in software controllers. Underpins cloud and virtualised networking.</p>
+
+<h2>Router vs switch vs AP — layer at a glance</h2>
+<table>
+<tr><th>Device</th><th>Layer</th><th>Decides using</th><th>Connects</th></tr>
+<tr><td><b>Switch</b></td><td>2</td><td>MAC address</td><td>Devices within one network</td></tr>
+<tr><td><b>Router</b></td><td>3</td><td>IP address</td><td>Different networks/subnets</td></tr>
+<tr><td><b>AP</b></td><td>2 (bridge)</td><td>MAC (wireless ↔ wired)</td><td>WiFi clients to LAN</td></tr>
+<tr><td><b>Firewall</b></td><td>3–7</td><td>Rules (IP, port, app)</td><td>Segments / perimeter</td></tr>
+</table>
+
+<h2>Media converter and modem roles</h2>
+<ul>
+<li><b>Media converter</b> — translates between cable types (e.g. fibre ↔ copper Ethernet) at layer 1/2; extends a link, not a router.</li>
+<li><b>Modem</b> — modulates/demodulates the ISP signal (cable DOCSIS, DSL, fibre ONT) to Ethernet for your router.</li>
+<li><b>SOHO combo unit</b> — often modem + router + switch + AP in one box; exam questions still test each function separately.</li>
+</ul>
+<div class="keyfact"><b>Hub trap:</b> if the answer is "sends every frame to all ports" or "causes collisions" — that's a hub, never the right modern choice.</div>
+
+<h2>Scenario pick-list</h2>
+<ul>
+<li><b>Segment LAN into Staff/Guest/IoT</b> → managed switch + VLANs.</li>
+<li><b>IP camera, no power socket</b> → PoE switch or PoE injector.</li>
+<li><b>Connect office LAN to internet</b> → router (default gateway).</li>
+<li><b>Organise wall ports to switch ports</b> → patch panel (passive).</li>
+<li><b>Wireless clients join wired network</b> → access point.</li>
+</ul>
 `,
 quiz:[
 {q:"Which device makes forwarding decisions based on MAC addresses learned per port?", o:["Router","Hub","Switch","ONT"], a:2, e:"Switches build a MAC address table mapping addresses to ports, forwarding frames only where needed. Routers work on IP addresses; hubs forward blindly to all ports."},
@@ -871,6 +916,30 @@ notes:`
 <li><b>RFID</b> — radio tags read at short-to-medium range; passive tags are powered by the reader's field. Inventory, access badges, asset tracking.</li>
 <li><b>Long-range fixed wireless</b> — point-to-point directional links between buildings/sites, licensed (regulated frequencies, guaranteed) or unlicensed (2.4/5 GHz, cheap, contention risk). Power limits are regulated.</li>
 </ul>
+
+<h2>WiFi features — MIMO, MU-MIMO, OFDMA</h2>
+<ul>
+<li><b>MIMO</b> — multiple antennas send/receive streams for higher throughput (802.11n onward).</li>
+<li><b>MU-MIMO</b> — AP talks to several clients at once (802.11ac/ax).</li>
+<li><b>OFDMA</b> (WiFi 6) — splits channels for many small devices efficiently — better in crowded offices.</li>
+</ul>
+
+<h2>Channel planning quick guide</h2>
+<ul>
+<li><b>2.4 GHz</b> — use only channels <b>1, 6, 11</b>; avoid 40 MHz bonding in dense areas.</li>
+<li><b>5 GHz</b> — many non-overlapping channels; preferred for speed when range allows.</li>
+<li><b>6 GHz (WiFi 6E)</b> — wide clean spectrum; shorter range, needs compatible clients.</li>
+</ul>
+
+<h2>Wireless security — know the order (weak → strong)</h2>
+<table>
+<tr><th>Standard</th><th>Status</th></tr>
+<tr><td>WEP</td><td>Broken — never use</td></tr>
+<tr><td>WPA</td><td>Legacy — replaced</td></tr>
+<tr><td>WPA2 (PSK or Enterprise)</td><td>Current baseline — PSK = pre-shared key at home; Enterprise = RADIUS/802.1X at office</td></tr>
+<tr><td>WPA3</td><td>Latest — stronger handshake, preferred on new kit</td></tr>
+</table>
+<div class="keyfact"><b>Range vs speed:</b> user far from router through walls → 2.4 GHz. Close line-of-sight speed test → 5 GHz. ac-only client won't see a 2.4-only SSID.</div>
 `,
 quiz:[
 {q:"Which are the only non-overlapping 2.4 GHz WiFi channels?", o:["1, 5, 9","1, 6, 11","2, 7, 12","36, 40, 44"], a:1, e:"2.4 GHz channels overlap heavily; only 1, 6, and 11 stay clear of each other. 36/40/44 are 5 GHz channels."},
@@ -918,6 +987,30 @@ notes:`
 <li><b>IoT devices</b> — smart speakers, thermostats, cameras, doorbells. Notoriously weakly secured — best practice is a separate VLAN/guest network.</li>
 </ul>
 <div class="callout"><b>Exam angle:</b> match the scenario to the box: "one appliance doing firewall, IPS and antivirus" → UTM. "Distribute web traffic across servers" → load balancer. "Cache and filter employee browsing" → proxy. "Central log collection" → syslog.</div>
+
+<h2>NAS vs SAN vs file share</h2>
+<table>
+<tr><th>Type</th><th>Access</th><th>Typical use</th></tr>
+<tr><td><b>File share (SMB/NFS)</b></td><td>File level over the LAN</td><td>Department folders, mapped drives</td></tr>
+<tr><td><b>NAS</b></td><td>File level — dedicated appliance</td><td>Small office backups, media storage</td></tr>
+<tr><td><b>SAN</b></td><td>Block level — separate network fabric</td><td>Servers see raw disks; datacentre</td></tr>
+</table>
+
+<h2>RADIUS and network login</h2>
+<ul>
+<li><b>RADIUS</b> — central authentication for WiFi (802.1X/WPA2-Enterprise), VPN, and some switch port auth.</li>
+<li>User connects to WiFi → AP forwards credentials to RADIUS → access granted or denied centrally.</li>
+</ul>
+
+<h2>Scenario pick-list</h2>
+<ul>
+<li><b>One box: firewall + IPS + AV + web filter</b> → UTM.</li>
+<li><b>Spread web traffic across six identical servers</b> → load balancer.</li>
+<li><b>Filter spam before Exchange</b> → spam gateway.</li>
+<li><b>Smart thermostat on corporate LAN</b> → IoT VLAN/segmentation.</li>
+<li><b>Factory PLC control network</b> → SCADA/ICS isolation.</li>
+<li><b>Collect router and switch logs centrally</b> → syslog server.</li>
+</ul>
 `,
 quiz:[
 {q:"Which server centrally collects log messages from routers, switches, and servers?", o:["SNMP manager","Syslog server","AAA server","Proxy server"], a:1, e:"Syslog is the standard protocol/service for centralised log collection. SNMP monitors device metrics; it's related but distinct."},
@@ -970,6 +1063,34 @@ notes:`
 <li>Global unicast (internet-routable) currently allocated from <b>2000::/3</b> (addresses starting 2 or 3).</li>
 <li>No NAT needed — address space is vast; SLAAC lets hosts self-configure from router advertisements.</li>
 </ul>
+
+<h2>Loopback and link-local — don't confuse them</h2>
+<table>
+<tr><th>Address</th><th>Protocol</th><th>Meaning</th></tr>
+<tr><td>127.0.0.1</td><td>IPv4</td><td>Loopback — test local TCP/IP stack</td></tr>
+<tr><td>169.254.x.x</td><td>IPv4</td><td>APIPA — DHCP failed, local segment only</td></tr>
+<tr><td>::1</td><td>IPv6</td><td>Loopback</td></tr>
+<tr><td>fe80::</td><td>IPv6</td><td>Link-local — always present, local segment only</td></tr>
+</table>
+
+<h2>SOHO setup — typical order</h2>
+<ol style="margin:0 0 14px 20px">
+<li>Connect modem/ONT → router WAN port.</li>
+<li>Configure WAN (often DHCP from ISP automatically).</li>
+<li>Set LAN subnet (commonly 192.168.0.x or 192.168.1.x /24).</li>
+<li>Enable DHCP server on LAN — scope, gateway (router LAN IP), DNS (router or ISP/public).</li>
+<li>Configure WiFi SSID, WPA2/WPA3 security, separate guest network if needed.</li>
+<li>Reserve IPs for printer/server if required.</li>
+</ol>
+
+<h2>Subnet quick reference</h2>
+<table>
+<tr><th>Mask</th><th>Prefix</th><th>Usable hosts (/24 style)</th></tr>
+<tr><td>255.255.255.0</td><td>/24</td><td>254</td></tr>
+<tr><td>255.255.0.0</td><td>/16</td><td>65,534</td></tr>
+<tr><td>255.0.0.0</td><td>/8</td><td>16,777,214</td></tr>
+</table>
+<div class="keyfact"><b>172.16–172.31 only:</b> 172.32.x.x is public — a favourite trick question alongside 10.x and 192.168.x.</div>
 `,
 quiz:[
 {q:"A workstation has the address 169.254.31.7 and cannot reach the internet. What does this indicate?", o:["It has a static misconfiguration","It failed to contact a DHCP server and self-assigned an APIPA address","It was assigned by the ISP","Its NIC has failed"], a:1, e:"169.254.x.x is APIPA — the automatic fallback when DHCP doesn't respond. The machine can only talk to the local segment. Check the DHCP server/connectivity."},
@@ -1024,6 +1145,36 @@ notes:`
 <li>A <b>VPN</b> creates an encrypted tunnel across an untrusted network (the internet), making the remote device behave as if on the private LAN.</li>
 <li>Types: <b>remote access</b> (client → office) and <b>site-to-site</b> (office ↔ office, router-to-router, always on).</li>
 <li>Standard answer for remote workers and for protecting traffic on public WiFi.</li>
+</ul>
+
+<h2>NAT, PAT, and port forwarding</h2>
+<ul>
+<li><b>NAT</b> — router translates private internal addresses to its public IP for internet access.</li>
+<li><b>PAT (NAT overload)</b> — many internal hosts share one public IP using different source ports.</li>
+<li><b>Port forwarding</b> — inbound traffic on a specific public port (e.g. 443) maps to one internal server — needed to host services behind NAT.</li>
+</ul>
+
+<h2>More DNS records</h2>
+<table>
+<tr><th>Record</th><th>Purpose</th></tr>
+<tr><td><b>CNAME</b></td><td>Alias — one name points to another hostname</td></tr>
+<tr><td><b>PTR</b></td><td>Reverse lookup — IP → hostname (often mail anti-spam checks)</td></tr>
+</table>
+
+<h2>QoS — when voice and video matter</h2>
+<ul>
+<li><b>Quality of Service</b> — prioritises time-sensitive traffic (VoIP, video) over bulk downloads on congested links.</li>
+<li>Often configured on routers and managed switches; wrong QoS hurts call quality before raw bandwidth looks full.</li>
+</ul>
+
+<h2>Scenario pick-list</h2>
+<ul>
+<li><b>Guest WiFi isolated from staff</b> → VLANs on managed switch/AP.</li>
+<li><b>Remote worker on café WiFi needs file server</b> → remote-access VPN.</li>
+<li><b>Two offices always connected</b> → site-to-site VPN between routers.</li>
+<li><b>Mail rejected as spoofed</b> → check SPF/DKIM/DMARC TXT records.</li>
+<li><b>Home server behind router needs HTTPS from internet</b> → port forward 443 to server IP (prefer DHCP reservation).</li>
+<li><b>Printer always same IP, central control</b> → DHCP reservation by MAC.</li>
 </ul>
 `,
 quiz:[
@@ -1087,6 +1238,7 @@ notes:`
 <li><b>WAN</b> — wide area: country/global scale; the internet is the biggest WAN.</li>
 <li><b>SAN</b> — storage area network: dedicated high-speed network giving servers block-level access to storage arrays.</li>
 </ul>
+<div class="keyfact"><b>PAN vs LAN vs MAN vs WAN:</b> Bluetooth around you = PAN · one site = LAN · city = MAN · internet/global = WAN. SAN is storage fabric, not general office LAN.</div>
 `,
 quiz:[
 {q:"A rural user's only broadband option gives usable bandwidth but very high latency, making video calls painful. Which connection type is this?", o:["Cable","DSL","Satellite","Fibre"], a:2, e:"Geostationary satellite links involve a ~70,000 km round trip — bandwidth can be fine but latency is inherently high, hurting real-time applications."},
@@ -1140,6 +1292,34 @@ notes:`
 <h2>Termination standards</h2>
 <ul>
 <li><b>T568A and T568B</b> wiring orders — use the same standard at both ends for a straight-through cable. Mixed A/B ends make a (legacy) crossover cable. B is the common commercial default.</li>
+</ul>
+
+<h2>Protocol analyzer and advanced CLI</h2>
+<ul>
+<li><b>Protocol analyzer / packet sniffer</b> (Wireshark) — captures and decodes frames/packets on a link; used for deep troubleshooting and security analysis. Often fed by a SPAN/mirror port or network tap.</li>
+<li><b>pathping / mtr</b> — combines ping and traceroute with per-hop loss stats — find flaky routes.</li>
+</ul>
+
+<h2>Diagnostic workflow — symptom to tool</h2>
+<table>
+<tr><th>Symptom</th><th>Tool / command first</th></tr>
+<tr><td>No IP / 169.254.x.x</td><td>ipconfig — check DHCP; verify scope/server</td></tr>
+<tr><td>IP works, names fail</td><td>nslookup / dig — DNS</td></tr>
+<tr><td>Can't reach any external IP</td><td>ping gateway, then ping 8.8.8.8 — local vs ISP</td></tr>
+<tr><td>Intermittent drops on one cable run</td><td>Cable tester — opens/shorts</td></tr>
+<tr><td>Which cable in the bundle?</td><td>Toner probe</td></tr>
+<tr><td>Suspect NIC port hardware</td><td>Loopback plug</td></tr>
+<tr><td>WiFi slow / dead zones</td><td>WiFi analyzer — channel overlap, signal</td></tr>
+<tr><td>Need to inspect packet contents</td><td>Protocol analyzer + tap or mirror port</td></tr>
+</table>
+
+<h2>Scenario pick-list</h2>
+<ul>
+<li><b>Made patch cable, verify wire map</b> → cable tester after crimper.</li>
+<li><b>Terminate to patch panel</b> → punchdown tool.</li>
+<li><b>Monitor link between switches secretly</b> → network tap.</li>
+<li><b>Neighbours on channel 6, office also on 6, overlapping 4 and 8</b> → move to 1 or 11.</li>
+<li><b>ping google.com fails, ping 8.8.8.8 works</b> → nslookup DNS, not replace NIC.</li>
 </ul>
 `,
 quiz:[

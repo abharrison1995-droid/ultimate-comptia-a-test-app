@@ -44,6 +44,17 @@ assert('1.4 APN and tethering content', await page.evaluate(() => {
 }));
 assert('1.4 connectivity symptom table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Captive portal')));
 await page.click('button:has-text("All 1.0 topics")');
+await page.click('.brand');
+await page.locator('.domain-card-core1').filter({ hasText: '2.0' }).click();
+assert('Networking domain hero', await page.isVisible('.domain-hero'));
+await page.click('text=2.2 Compare');
+assert('2.2 router vs switch table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Layer')));
+await page.click('button:has-text("All 2.0 topics")');
+await page.click('text=2.6 Compare');
+assert('2.6 NAT and port forwarding', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Port forwarding')));
+await page.click('button:has-text("All 2.0 topics")');
+await page.click('.brand');
+await page.locator('.domain-card-core1').filter({ hasText: '1.0' }).click();
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
 assert('Revision sheet wraps notes', await page.isVisible('.notes-sheet'));
