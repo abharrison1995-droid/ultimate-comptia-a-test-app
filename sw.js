@@ -1,4 +1,4 @@
-const CACHE = "aplus-revision-v10";
+const CACHE = "aplus-revision-v11";
 const ASSETS = [
   "./",
   "./index.html",

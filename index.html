@@ -153,7 +153,16 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .game-item.shape-item{padding:8px}
 .game-item.shape-item svg{width:44px;height:44px}
 .game-item.port-num{font-family:var(--display);font-size:1.05rem;font-weight:800}
-.game-toast{text-align:center;font-weight:700;font-size:1rem;min-height:1.6em;margin:10px 0;transition:opacity .2s}
+.game-col-head{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:center;margin-bottom:4px}
+.port-svc{display:block;line-height:1.2}
+.port-cat{display:block;font-size:.65rem;font-weight:700;color:var(--accent);margin-top:3px;letter-spacing:.02em}
+.port-recap{margin-top:18px;text-align:left;max-width:440px;margin-left:auto;margin-right:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.port-recap h3{font-family:var(--display);font-size:.95rem;text-align:center;margin:0 0 10px}
+.port-recap-row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.port-recap-row:last-child{border-bottom:none}
+.port-recap-num{font-family:var(--display);font-weight:800;color:var(--accent)}
+.port-recap-hint{grid-column:1/-1;font-size:.76rem;color:var(--muted);line-height:1.35}
+.game-toast{text-align:center;font-weight:700;font-size:.92rem;line-height:1.35;min-height:1.6em;margin:10px 0;padding:0 8px;transition:opacity .2s}
 .game-toast.good{color:var(--good)}
 .game-toast.bad{color:var(--bad)}
 .game-mode{display:flex;gap:8px;justify-content:center;margin:14px 0;flex-wrap:wrap}
@@ -3730,7 +3739,7 @@ if("serviceWorker" in navigator){
    Revision Games — tap-to-connect matching drills
    ============================================================ */
 const GAME_CATALOG = [
-  {id:"ports", icon:"🔌", name:"Port Match", desc:"Plug services into the right port numbers", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]},
+  {id:"ports", icon:"🔌", name:"Port Match", desc:"Match services to default ports — category tags & hints on every link", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]},
   {id:"connectors", icon:"🔗", name:"Connector Snap", desc:"Match cable shapes to their names & uses", ready:true, type:"match", matchType:"id", shapes:true, count:6, hub:"🔗", domains:[{core:"core1",num:"1.0"},{core:"core1",num:"3.0"}]},
   {id:"tools", icon:"🧰", name:"Tool Toss", desc:"Match symptoms to the first diagnostic tool or step", ready:true, type:"match", matchType:"id", count:6, hub:"🧰", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]},
   {id:"raid", icon:"💾", name:"RAID Stack", desc:"Pair RAID levels with drives & fault tolerance", ready:true, type:"match", matchType:"id", count:5, hub:"💾", domains:[{core:"core1",num:"3.0"}]},
@@ -3745,21 +3754,53 @@ const GAME_CATALOG = [
   {id:"storychat", icon:"💬", name:"Fix-It Fables", desc:"Chat with legends — choose your answers to shape each tech rescue story", ready:true, type:"story", count:5, hub:"💬", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"},{core:"core2",num:"4.0"}]},
   {id:"millionaire", icon:"💰", name:"A+ Millionaire", desc:"Who Wants to Be a Millionaire style — lifelines, rising stakes, exam questions", ready:true, type:"millionaire", count:15, hub:"💰", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]}
 ];
+const PORT_CAT = {web:"Web",mail:"Mail",remote:"Remote",file:"Files",dir:"Directory",net:"Network",mgmt:"Mgmt",time:"Time",auth:"Auth"};
 const PORT_DATA = {
   normal:[
-    {name:"HTTP",port:"80"},{name:"HTTPS",port:"443"},{name:"FTP",port:"21"},
-    {name:"SSH",port:"22"},{name:"Telnet",port:"23"},{name:"SMTP",port:"25"},
-    {name:"DNS",port:"53"},{name:"DHCP",port:"67"},{name:"POP3",port:"110"},
-    {name:"IMAP",port:"143"},{name:"SNMP",port:"161"},{name:"LDAP",port:"389"},
-    {name:"RDP",port:"3389"},{name:"SMB",port:"445"}
+    {name:"HTTP",port:"80",cat:"web",hint:"Unencrypted web traffic"},
+    {name:"HTTPS",port:"443",cat:"web",hint:"Encrypted web (TLS/SSL)"},
+    {name:"FTP",port:"21",cat:"file",hint:"File transfer (control channel)"},
+    {name:"SSH",port:"22",cat:"remote",hint:"Secure shell & SFTP"},
+    {name:"Telnet",port:"23",cat:"remote",hint:"Legacy remote login — insecure"},
+    {name:"SMTP",port:"25",cat:"mail",hint:"Outbound mail transfer"},
+    {name:"DNS",port:"53",cat:"net",hint:"Name resolution (TCP & UDP)"},
+    {name:"DHCP",port:"67",cat:"net",hint:"Server assigns IPs (client uses 68)"},
+    {name:"Kerberos",port:"88",cat:"auth",hint:"Domain authentication tickets"},
+    {name:"POP3",port:"110",cat:"mail",hint:"Download mail from server"},
+    {name:"NTP",port:"123",cat:"time",hint:"Clock sync — Kerberos needs accurate time"},
+    {name:"IMAP",port:"143",cat:"mail",hint:"Mail stays on server; folders sync"},
+    {name:"SNMP",port:"161",cat:"mgmt",hint:"Network device monitoring"},
+    {name:"LDAP",port:"389",cat:"dir",hint:"Directory services (users & groups)"},
+    {name:"SMB",port:"445",cat:"file",hint:"Windows file & printer sharing"},
+    {name:"RDP",port:"3389",cat:"remote",hint:"Windows remote desktop"},
+    {name:"TFTP",port:"69",cat:"file",hint:"Trivial FTP — no auth, often PXE boot"},
+    {name:"RADIUS",port:"1812",cat:"auth",hint:"Wi‑Fi / VPN authentication"}
   ],
   hard:[
-    {name:"HTTP",port:"80"},{name:"HTTPS",port:"443"},{name:"FTP",port:"21"},{name:"FTPS",port:"990"},
-    {name:"SSH",port:"22"},{name:"Telnet",port:"23"},{name:"SMTP",port:"25"},{name:"SMTPS",port:"465"},
-    {name:"SMTP submit",port:"587"},{name:"DNS",port:"53"},{name:"DHCP",port:"67"},
-    {name:"POP3",port:"110"},{name:"POP3S",port:"995"},{name:"IMAP",port:"143"},{name:"IMAPS",port:"993"},
-    {name:"SNMP",port:"161"},{name:"LDAP",port:"389"},{name:"LDAPS",port:"636"},
-    {name:"RDP",port:"3389"},{name:"SMB",port:"445"},{name:"NTP",port:"123"},{name:"TFTP",port:"69"}
+    {name:"HTTP",port:"80",cat:"web",hint:"Cleartext web — know the secure twin"},
+    {name:"HTTPS",port:"443",cat:"web",hint:"TLS web — the port you want in production"},
+    {name:"FTP",port:"21",cat:"file",hint:"FTP control — data uses another port"},
+    {name:"FTPS",port:"990",cat:"file",hint:"FTP over implicit TLS"},
+    {name:"SSH",port:"22",cat:"remote",hint:"Encrypted remote access"},
+    {name:"Telnet",port:"23",cat:"remote",hint:"Unencrypted — exam trap vs SSH"},
+    {name:"SMTP",port:"25",cat:"mail",hint:"Server-to-server mail relay"},
+    {name:"SMTPS",port:"465",cat:"mail",hint:"SMTP over SSL (legacy secure)"},
+    {name:"SMTP submit",port:"587",cat:"mail",hint:"Client submission with STARTTLS"},
+    {name:"DNS",port:"53",cat:"net",hint:"Resolves names to IP addresses"},
+    {name:"DHCP",port:"67",cat:"net",hint:"Hands out lease info to clients"},
+    {name:"Kerberos",port:"88",cat:"auth",hint:"AD ticket-granting — time sync matters"},
+    {name:"POP3",port:"110",cat:"mail",hint:"Plain POP3 download"},
+    {name:"POP3S",port:"995",cat:"mail",hint:"POP3 over TLS"},
+    {name:"IMAP",port:"143",cat:"mail",hint:"Plain IMAP — mail on server"},
+    {name:"IMAPS",port:"993",cat:"mail",hint:"IMAP over TLS"},
+    {name:"SNMP",port:"161",cat:"mgmt",hint:"Queries switches, printers, APs"},
+    {name:"LDAP",port:"389",cat:"dir",hint:"Plain directory lookups"},
+    {name:"LDAPS",port:"636",cat:"dir",hint:"LDAP over TLS"},
+    {name:"RDP",port:"3389",cat:"remote",hint:"Remote Desktop Protocol"},
+    {name:"SMB",port:"445",cat:"file",hint:"Direct SMB — no NetBIOS needed"},
+    {name:"NTP",port:"123",cat:"time",hint:"Keeps domain clocks aligned"},
+    {name:"TFTP",port:"69",cat:"file",hint:"Firmware & thin-client boot images"},
+    {name:"RADIUS",port:"1812",cat:"auth",hint:"802.1X / enterprise Wi‑Fi auth"}
   ]
 };
 const CONNECTOR_DATA = [
@@ -4266,6 +4307,12 @@ const GAME_TOASTS = {
   seqBad:["🚧 Wrong turn on the trail!","↩️ That step comes later!"]
 };
 function gameMeta(id){ return GAME_CATALOG.find(g=>g.id===id); }
+function renderPortRecap(pairs){
+  const rows = [...pairs].sort((a,b)=>+a.port - +b.port).map(p=>`<div class="port-recap-row">
+    <span class="port-recap-svc">${esc(p.name)}</span><span class="port-recap-num">${p.port}</span>
+    <span class="port-recap-hint">${esc(p.hint||"")}</span></div>`).join("");
+  return `<div class="port-recap"><h3>Your port cheat sheet</h3>${rows}</div>`;
+}
 function gamePairCount(id, mode){
   const m = gameMeta(id);
   if(!m) return 6;
@@ -4297,7 +4344,7 @@ function buildPortGame(mode){
   const unique = pool.filter(p=>{ const k=p.name+"|"+p.port; if(seen.has(k)) return false; seen.add(k); return true; });
   const count = gamePairCount("ports", mode);
   const pairs = unique.slice(0, count);
-  const left = shuffle(pairs.map(p=>({id:p.name, text:p.name, match:p.port})));
+  const left = shuffle(pairs.map(p=>({id:p.name, text:p.name, match:p.port, hint:p.hint, cat:p.cat})));
   const right = shuffle(pairs.map(p=>({id:p.port, text:p.port, match:p.name})));
   return gameShell({id:"ports", type:"match", matchType:"port", mode, pairs, left, right});
 }
@@ -4411,7 +4458,11 @@ function gameTap(side, itemId){
     game.matched["L:"+leftItem.id] = true;
     game.matched["R:"+rightKey(rightItem)] = true;
     game.lines.push({left:leftItem.id, right:rightKey(rightItem)});
-    game.toast = pickToast("good");
+    if(game.matchType==="port" && leftItem.hint){
+      game.toast = `🔌 ${leftItem.text} :${leftItem.match} — ${leftItem.hint}`;
+    } else {
+      game.toast = pickToast("good");
+    }
     game.toastKind = "good";
     if(Object.keys(game.matched).length/2 >= game.pairs.length){
       game.done = true;
@@ -4419,7 +4470,11 @@ function gameTap(side, itemId){
     }
   } else {
     game.mistakes++;
-    game.toast = pickToast("bad");
+    if(game.matchType==="port"){
+      game.toast = `${leftItem.text} → port ${leftItem.match}, not ${rightItem.text}`;
+    } else {
+      game.toast = pickToast("bad");
+    }
     game.toastKind = "bad";
     game.flash = {left:leftId, right:rightId};
     setTimeout(()=>{ if(game && !game.done){ game.flash=null; renderGame(); } }, 450);
@@ -4568,7 +4623,9 @@ function renderGame(){
       <button class="mode-chip ${game.mode==="normal"?"active":""}" onclick="setGameMode('normal')">😊 Normal — names & numbers</button>
       <button class="mode-chip hard ${game.mode==="hard"?"active":""}" onclick="setGameMode('hard')">🔥 Hard — secure ports & traps</button>
     </div>` : "";
-    const hint = meta.type==="story"
+    const hint = meta.id==="ports"
+      ? "Tap a service, then its port number. Each correct link shows a memory hint. Hard mode adds secure mail & directory traps (465, 587, 993, 636…)."
+      : meta.type==="story"
       ? "Pick a legend — they'll chat you through a tech rescue. Answer from four options at each beat."
       : meta.type==="millionaire"
       ? "15 exam questions, rising stakes, three lifelines. Pick an answer, lock in your final answer, and listen for Agent Chip."
@@ -4634,6 +4691,7 @@ function renderGame(){
     const storyNote = game.type==="story" ? `<p class="sub" style="margin-top:0">${esc(game.story.name)} · ${game.mistakes} wrong pick${game.mistakes===1?"":"s"}</p>` : "";
     const modeNote = game.mode==="hard" && game.type!=="story" ? " · Hard mode" : "";
     const replayId = game.type==="story" ? "storychat" : game.id;
+    const portRecap = game.id==="ports" ? renderPortRecap(game.pairs) : "";
     app.innerHTML = `<div class="result">
       <div class="game-done-emoji">${game.mistakes===0?"🏆":"🎉"}</div>
       <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
@@ -4641,6 +4699,7 @@ function renderGame(){
       <div class="verdict">${verdict}</div>
       ${storyNote}
       <p class="sub" style="margin-top:0">${game.type==="story" ? "" : game.mistakes+" mistakes"}${modeNote}</p>
+      ${portRecap}
       <div class="row">
         <button class="btn primary" onclick="startGame('${replayId}','${game.mode||"normal"}')">Play again</button>
         <button class="btn" onclick="game=null;go('games')">All games</button>
@@ -4748,7 +4807,11 @@ function renderGame(){
     if(matched["L:"+item.id]) cls += " matched";
     else if(game.selected?.side==="left" && game.selected.id===item.id) cls += " selected";
     else if(flash.left===item.id) cls += " wrong-shake";
-    const inner = item.svg || esc(item.text);
+    let inner;
+    if(item.svg) inner = item.svg;
+    else if(game.matchType==="port" && item.cat){
+      inner = `<span class="port-svc">${esc(item.text)}</span><span class="port-cat">${esc(PORT_CAT[item.cat]||item.cat)}</span>`;
+    } else inner = esc(item.text);
     return `<button type="button" class="${cls}" data-game-id="L:${item.id}" onclick="gameTap('left','${item.id}')" ${matched["L:"+item.id]?"disabled":""}>${inner}</button>`;
   }).join("");
   const rightHtml = game.right.map(item=>{
@@ -4759,15 +4822,17 @@ function renderGame(){
     else if(flash.right===rid) cls += " wrong-shake";
     return `<button type="button" class="${cls}" data-game-id="R:${rid}" onclick="gameTap('right','${rid}')" ${matched["R:"+rid]?"disabled":""}>${esc(item.text)}</button>`;
   }).join("");
+  const colHeadL = game.matchType==="port" ? `<div class="game-col-head">Service</div>` : "";
+  const colHeadR = game.matchType==="port" ? `<div class="game-col-head">Port</div>` : "";
   const done = Object.keys(matched).length/2;
   app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} ${esc(meta.name)}${game.mode==="hard"?" · Hard":""}</span><span>${done}/${game.pairs.length} linked</span></div>
     <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap left, then right — connect the match!")}</div>
     <div class="game-board" id="gameBoard">
       <svg class="game-cables" id="gameCables" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="game-cols">
-        <div class="game-col">${leftHtml}</div>
+        <div class="game-col">${colHeadL}${leftHtml}</div>
         <div class="game-hub-icon">${meta.hub||"🔌"}</div>
-        <div class="game-col">${rightHtml}</div>
+        <div class="game-col">${colHeadR}${rightHtml}</div>
       </div>
     </div>`;
   requestAnimationFrame(drawGameCables);

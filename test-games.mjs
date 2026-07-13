@@ -55,6 +55,9 @@ await goToGamesHub();
 await openGame('Port Match');
 await playCurrentMatch();
 assert('Port Match completes', await page.isVisible('text=Play again'));
+assert('Port Match hints on pool', await page.evaluate(() =>
+  PORT_DATA.normal.every(p => p.hint) && PORT_DATA.hard.every(p => p.hint)
+));
 
 await openGame('Tool Toss');
 await playCurrentMatch();
