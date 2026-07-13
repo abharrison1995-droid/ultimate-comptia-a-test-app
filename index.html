@@ -573,10 +573,41 @@ notes:`
 <li><b>2G/3G/4G/5G:</b> generations of cellular. 4G LTE is the data workhorse; 5G adds higher speeds/lower latency. 2G/3G are largely switched off in the UK.</li>
 <li><b>GSM vs CDMA:</b> the two legacy network families. <b>GSM</b> (global standard, SIM-based — swap the SIM, keep the phone). <b>CDMA</b> (US carriers like Verizon/Sprint historically, handset tied to carrier). 4G/5G converged on SIM-based standards.</li>
 <li><b>PRL updates (Preferred Roaming List):</b> a carrier-pushed update — mainly on CDMA networks — telling the phone which towers/partners to prefer when roaming. Symptom of a stale PRL: poor roaming connectivity.</li>
+<li><b>APN (Access Point Name):</b> carrier settings that tell the phone how to reach the mobile data network. Wrong or missing APN → mobile data works on WiFi but not on cellular, or MMS fails.</li>
+<li><b>IMEI</b> — unique handset identifier; carriers use it for activation and blocking stolen devices (not the same as a SIM).</li>
+</ul>
+
+<h2>Cellular generations — what each is for</h2>
+<table>
+<tr><th>Generation</th><th>Typical use</th><th>Exam note</th></tr>
+<tr><td><b>4G LTE</b></td><td>Current mobile broadband standard — browsing, streaming, tethering</td><td>Default data network on modern phones</td></tr>
+<tr><td><b>5G</b></td><td>Higher throughput, lower latency</td><td>Better for dense areas and real-time apps; not always available everywhere</td></tr>
+<tr><td><b>2G/3G</b></td><td>Legacy voice/data</td><td>Largely retired in the UK — know they existed, not current deploy</td></tr>
+</table>
+
+<h2>Sharing mobile data — hotspot vs tethering</h2>
+<table>
+<tr><th>Method</th><th>How</th><th>Best for</th></tr>
+<tr><td><b>WiFi hotspot</b></td><td>Phone broadcasts a WiFi network other devices join</td><td>Multiple devices, quick setup; uses more phone battery</td></tr>
+<tr><td><b>USB tethering</b></td><td>Phone connected by cable to laptop</td><td>Stable link, charges phone, single device — field engineer favourite</td></tr>
+<tr><td><b>Bluetooth tethering</b></td><td>Phone shares data over paired Bluetooth</td><td>Low power, slow — backup when WiFi/USB unavailable</td></tr>
+</table>
+<div class="keyfact"><b>Data cap trap:</b> large app updates, cloud photo sync, and video over cellular burn through monthly allowances — configure warnings/limits and prefer WiFi for heavy sync.</div>
+
+<h2>WiFi on mobile devices</h2>
+<ul>
+<li><b>Open vs secured</b> — WPA2/WPA3 personal for home; <b>WPA2-Enterprise</b> (802.1X + RADIUS) for office WiFi — username/password or certificate.</li>
+<li><b>Captive portal</b> — hotel/café WiFi that opens a login page in the browser before granting internet access.</li>
+<li><b>Airplane mode</b> — disables cellular, WiFi, and Bluetooth radios; WiFi/Bluetooth can often be re-enabled individually while cellular stays off.</li>
+<li><b>Forget network</b> — first fix for saved WiFi that won't connect after a password change.</li>
 </ul>
 
 <h2>Bluetooth pairing — know the sequence</h2>
 <div class="callout"><b>Learn this order:</b> 1) Enable Bluetooth → 2) Put the accessory in pairing/discoverable mode → 3) Search/select the device on the phone → 4) Enter or confirm the PIN code → 5) Test connectivity.</div>
+<ul>
+<li>If pairing fails: toggle Bluetooth off/on, forget the device and re-pair, confirm the accessory isn't already bonded to another host.</li>
+<li><b>Bluetooth LE</b> — low-energy variant for wearables, beacons, and some keyboards; still requires pairing for trusted connections.</li>
+</ul>
 
 <h2>Location services</h2>
 <ul>
@@ -589,7 +620,10 @@ notes:`
 <li><b>MDM (Mobile Device Management):</b> corporate control of the <b>whole device</b> — enforce passcodes and encryption, push profiles/apps, remote lock and wipe.</li>
 <li><b>MAM (Mobile Application Management):</b> control of <b>corporate apps and their data only</b> — ideal for BYOD, where the company can wipe its container without touching personal photos.</li>
 <li><b>Two-factor authentication (2FA):</b> something you know + something you have/are — authenticator apps, SMS codes, biometrics — standard for corporate account enrolment.</li>
+<li><b>Work profile (Android) / managed apps (iOS)</b> — separates corporate data from personal apps on BYOD; pairs with MAM rather than wiping the whole phone.</li>
+<li><b>Corporate VPN profile</b> — pushed via MDM so remote users reach internal resources securely over cellular or public WiFi.</li>
 </ul>
+<div class="keyfact"><b>MDM vs MAM:</b> company-owned phone, full remote wipe → MDM. Personal phone, wipe only work email/apps → MAM or work profile.</div>
 
 <h2>Email configuration — the port table</h2>
 <table>
@@ -601,13 +635,44 @@ notes:`
 <ul>
 <li><b>Exchange / Microsoft 365, Gmail, iCloud:</b> commercial providers usually auto-configure — just email + password (+2FA). Corporate Exchange (ActiveSync) syncs mail, contacts and calendar together.</li>
 <li><b>S/MIME:</b> certificate-based <b>signing and encryption of email</b> — proves the sender and protects content. Requires certificates installed on the device.</li>
+<li><b>ActiveSync</b> — Microsoft protocol syncing mail, contacts, and calendar in one account; common on Exchange and Microsoft 365 mobile setup.</li>
 </ul>
+
+<h2>POP3 vs IMAP vs SMTP — pick the right protocol</h2>
+<table>
+<tr><th>Need</th><th>Protocol</th><th>Why</th></tr>
+<tr><td>Mail on phone, laptop, and tablet — all stay in sync</td><td><b>IMAP</b> (993)</td><td>Server holds the mailbox; devices mirror folders</td></tr>
+<tr><td>Download mail to one device and remove from server</td><td><b>POP3</b> (995 secure)</td><td>Single-device, offline archive style</td></tr>
+<tr><td>Send outbound mail from the phone</td><td><b>SMTP</b> (587 STARTTLS or 465 SSL)</td><td>Submission to the mail server — not for retrieval</td></tr>
+</table>
+<div class="callout"><b>Port trap pairs:</b> POP3 = 110/995 · IMAP = 143/993 · SMTP = 25/587/465. Exams love swapping 995 and 993.</div>
 
 <h2>Data synchronisation</h2>
 <ul>
 <li>Sync targets: <b>to the cloud</b> (contacts, calendar, photos, app data — Google/iCloud/M365), <b>to the desktop</b> (e.g. device backups), and <b>to the car</b> (Android Auto/CarPlay contact and media sync).</li>
 <li>What syncs via corporate accounts (ActiveSync/Exchange): <b>mail, contacts, calendar</b> together — one account entry populates all three, and a replacement phone restores them by signing in.</li>
 <li><b>Data caps:</b> cellular plans meter usage — configure devices to warn/limit at thresholds, prefer WiFi for large syncs and updates, and watch for background sync burning through an allowance (a symptom that doubles as a malware indicator, see 5.5).</li>
+</ul>
+
+<h2>Mobile connectivity — symptom to first fix</h2>
+<table>
+<tr><th>Symptom</th><th>Check first</th></tr>
+<tr><td>No cellular data, WiFi works</td><td>Mobile data toggle, APN settings, aeroplane mode, account/plan active</td></tr>
+<tr><td>No service / no bars</td><td>SIM seated, aeroplane mode off, carrier outage, PRL update (CDMA roaming)</td></tr>
+<tr><td>WiFi connects but no internet</td><td>Captive portal login, wrong password → forget network, DNS/gateway on corporate WiFi</td></tr>
+<tr><td>Bluetooth won't pair</td><td>Enable Bluetooth, pairing mode on accessory, forget old pairing, PIN step</td></tr>
+<tr><td>Mail sends but won't receive</td><td>IMAP/POP3 server and port (993 vs 995), not SMTP settings alone</td></tr>
+<tr><td>Contacts/calendar missing on new phone</td><td>Sign into same cloud/Exchange account — sync is account-based</td></tr>
+</table>
+
+<h2>Scenario pick-list</h2>
+<ul>
+<li><b>Field laptop needs stable 5G via phone, save battery</b> → USB tethering.</li>
+<li><b>BYOD — wipe work email only if employee leaves</b> → MAM or work profile, not full MDM wipe.</li>
+<li><b>Company phone lost — locate and erase everything</b> → MDM remote wipe.</li>
+<li><b>Solicitor must prove email authenticity</b> → S/MIME signing certificate.</li>
+<li><b>Roaming CDMA phone picks wrong towers</b> → PRL update from carrier.</li>
+<li><b>New phone, same mail on three devices</b> → IMAP on 993, not POP3.</li>
 </ul>
 `,
 quiz:[

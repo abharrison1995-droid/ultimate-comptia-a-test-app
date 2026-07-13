@@ -37,6 +37,12 @@ assert('1.2 touch technologies section', await page.evaluate(() => !!document.ge
 await page.click('button.sub-nav-btn:has-text("1.3")');
 assert('1.3 dock vs hub table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('KVM switch')));
 assert('1.3 scenario pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Contactless payment')));
+await page.click('button.sub-nav-btn:has-text("1.4")');
+assert('1.4 APN and tethering content', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('APN') && t.includes('USB tethering');
+}));
+assert('1.4 connectivity symptom table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Captive portal')));
 await page.click('button:has-text("All 1.0 topics")');
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
