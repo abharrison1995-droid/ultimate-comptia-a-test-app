@@ -4053,10 +4053,7 @@ function render(){
     crumbs.innerHTML = "220-1201 · 220-1202";
     let html = storageWarning() + installBanner() + resumeBanner() + progressDashboard() +
       `<h1 class="page">CompTIA A+ Revision Guide</h1>
-      <p class="sub">V15 exams · Pick a domain, read the notes, sit the mini mocks, then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>
-      <div class="eyebrow">🎮 Revision Games</div>
-      <div class="grid" style="margin-bottom:12px">${renderGamesHub(2)}</div>
-      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all games →</button></p>`;
+      <p class="sub">V15 exams · Pick a domain, read the notes, sit the mini mocks, then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>`;
     for(const key of ["core1","core2"]){
       const c = ROSTER[key];
       html += `<div class="eyebrow">${c.name} · ${c.code}</div><div class="grid" style="margin-bottom:26px">`;
@@ -4075,6 +4072,9 @@ function render(){
       }
       html += `</div>`;
     }
+    html += `<div class="eyebrow">🎮 Revision Games</div>
+      <div class="grid" style="margin-bottom:12px">${renderGamesHub(2)}</div>
+      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all games →</button></p>`;
     app.innerHTML = html;
     return;
   }
