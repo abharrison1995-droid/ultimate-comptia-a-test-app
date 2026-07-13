@@ -69,7 +69,7 @@ for (let i = 0; i < 5; i++) {
 assert('Troubleshoot Trail completes', await page.isVisible('text=Play again'));
 
 assert('Millionaire tiered pool', await page.evaluate(() =>
-  MILLIONAIRE_POOL.warmup.length === 15 && MILLIONAIRE_POOL.mid.length === 15 && MILLIONAIRE_POOL.high.length === 15
+  MILLIONAIRE_POOL.warmup.length === 25 && MILLIONAIRE_POOL.mid.length === 25 && MILLIONAIRE_POOL.high.length === 25
 ));
 assert('10 Fix-It Fables characters', await page.evaluate(() => STORY_DATA.length === 10));
 
