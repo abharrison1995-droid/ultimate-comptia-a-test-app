@@ -110,6 +110,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-card-core1:hover{border-color:#2563EB}
 .domain-hero{border-radius:16px;padding:20px;margin:0 0 18px;border:2px solid var(--line);background:linear-gradient(135deg,var(--panel) 60%,var(--accent-soft))}
 .domain-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,var(--panel) 50%,#EFF6FF 100%)}
+.domain-hero-hardware{border-color:#FCD34D;background:linear-gradient(135deg,var(--panel) 50%,#FFFBEB 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -118,6 +119,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-stat-pill strong{color:var(--ink)}
 .sheet-hero{border-radius:14px;padding:14px 16px;margin:0 0 14px;border:1px solid var(--line);background:var(--panel)}
 .sheet-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,#EFF6FF,var(--panel))}
+.sheet-hero-hardware{border-color:#FCD34D;background:linear-gradient(135deg,#FFFBEB,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -1435,6 +1437,19 @@ notes:`
 <ul>
 <li><b>RJ45</b> Ethernet · <b>RJ11</b> phone/DSL · <b>F-type</b> coax · <b>ST/SC/LC</b> fibre · <b>punchdown block</b> (110 panel/keystone terminations — tool in 2.8) · <b>USB-C / microUSB / miniUSB</b> · <b>Lightning</b> · <b>Molex</b> (legacy 4-pin peripheral power) · <b>DB9</b> serial.</li>
 </ul>
+
+<h2>Scenario pick-list — match cable to the job</h2>
+<table>
+<tr><th>Scenario</th><th>Best choice</th><th>Why</th></tr>
+<tr><td>10 Gbps to full 100 m in a drop ceiling (air-handling)</td><td>Cat 6a plenum</td><td>Full copper distance + fire code for plenum spaces</td></tr>
+<tr><td>Factory floor with welders and motors</td><td>STP or fibre</td><td>EMI shielding or immunity</td></tr>
+<tr><td>5 km between buildings</td><td>Single-mode fibre (LC/SC)</td><td>Copper stops at 100 m</td></tr>
+<tr><td>Cable modem in a home</td><td>RG-6 with F-type</td><td>Coax broadband standard</td></tr>
+<tr><td>Laptop HDMI to legacy VGA projector</td><td>Active HDMI→VGA converter</td><td>Analogue/digital conversion needs electronics</td></tr>
+<tr><td>Two monitors from one PC DisplayPort output</td><td>DisplayPort daisy-chain (MST)</td><td>HDMI cannot chain monitors the same way</td></tr>
+<tr><td>External SSD on a phone/laptop</td><td>USB-C (check USB 3.x/Thunderbolt)</td><td>Same connector shape ≠ same speed/features</td></tr>
+</table>
+<div class="keyfact"><b>Passive vs active:</b> DVI-D ↔ HDMI = passive OK (both digital video). VGA ↔ anything digital = active converter required. Exam loves "cheap passive cable didn't work" → wrong signal type.</div>
 `,
 quiz:[
 {q:"A cable run must pass through the air-handling space above a suspended ceiling. Which cable is required?", o:["Direct burial Cat 6","Plenum-rated Cat 6","Standard PVC Cat 5e","Shielded riser cable"], a:1, e:"Plenum spaces carry breathable air, so fire code requires plenum-rated jackets that resist burning and emit minimal toxic smoke."},
@@ -1478,6 +1493,35 @@ notes:`
 <li>When physical RAM fills, the OS pages less-used data to a <b>page file/swap partition</b> on disk.</li>
 <li>Disk is orders of magnitude slower than RAM — heavy paging = system-wide crawl and constant disk activity. The hardware fix is <b>more RAM</b>.</li>
 </ul>
+
+<h2>Installation procedure — do not skip steps</h2>
+<ol>
+<li><b>Power off</b> and unplug; discharge static (wrist strap or touch grounded metal).</li>
+<li>Confirm <b>form factor</b> (DIMM vs SODIMM) and <b>DDR generation</b> match the board manual.</li>
+<li>Open retention clips; align the module's <b>key notch</b> with the slot — it fits one way only.</li>
+<li>Insert at ~30° angle, press down until clips <b>snap closed</b> on both ends.</li>
+<li>For dual/quad channel: populate <b>matched pairs/sets</b> in the slots the manual specifies — not "any free slots".</li>
+<li>First boot: verify total capacity in BIOS/UEFI and OS; run a memory test if POST fails or capacity is wrong.</li>
+</ol>
+
+<h2>Dual-channel pairing — typical four-slot desktop board</h2>
+<table>
+<tr><th>Goal</th><th>Two modules (8 GB × 2)</th><th>Four modules (8 GB × 4)</th></tr>
+<tr><td>Enable dual channel</td><td>Slots <b>A2 + B2</b> (often 2 and 4 — check manual; colour pairs)</td><td>All four slots with matched kit → dual channel</td></tr>
+<tr><td>Common mistake</td><td>Slots 1 + 2 adjacent → often <b>single channel</b></td><td>Mixing unmatched sizes → flex mode, runs at slowest speed</td></tr>
+<tr><td>Bandwidth result</td><td>~2× memory bandwidth vs one stick</td><td>Quad-channel boards (HEDT/server) need four matched sticks in designated slots</td></tr>
+</table>
+
+<h2>Capacity planning — how much RAM?</h2>
+<ul>
+<li><b>4 GB</b> — bare minimum (Windows 11 floor); constant paging on modern workloads.</li>
+<li><b>8 GB</b> — light office/web; struggles with many tabs + video calls.</li>
+<li><b>16 GB</b> — mainstream desktop/laptop sweet spot for most users.</li>
+<li><b>32 GB+</b> — VMs, video editing, CAD, development, servers.</li>
+<li>32-bit OS caps at ~4 GB usable regardless of installed RAM — always match OS bitness to workload.</li>
+</ul>
+
+<div class="keyfact"><b>Three RAM traps:</b> (1) DDR generations are keyed differently — won't seat = wrong generation. (2) Two sticks in wrong slots = single-channel bandwidth. (3) "Disk light always on, PC crawls" = paging → add RAM, not faster disk first.</div>
 <div class="callout"><b>Exam angle:</b> "system slows dramatically with many apps open, disk light constantly on" → RAM exhausted, paging to disk → add RAM. "Server must detect and correct memory errors" → ECC. "Two modules but bandwidth of one" → wrong slots for dual channel.</div>
 `,
 quiz:[
@@ -1526,6 +1570,39 @@ notes:`
 <tr><td><b>RAID 5</b></td><td>Striping + parity</td><td>3</td><td>Survives 1 drive</td><td>Capacity = n−1 drives</td></tr>
 <tr><td><b>RAID 10</b></td><td>Stripe of mirrors</td><td>4</td><td>Survives 1 per mirror pair</td><td>Speed + redundancy, 50% efficiency</td></tr>
 </table>
+
+<h2>Scenario pick-list — match storage to the need</h2>
+<table>
+<tr><th>Scenario</th><th>Best choice</th></tr>
+<tr><td>Boot drive — maximum responsiveness on a modern PC</td><td>M.2 NVMe SSD</td></tr>
+<tr><td>Bulk archive — cheap terabytes, rarely accessed</td><td>3.5" 7,200 RPM HDD</td></tr>
+<tr><td>Laptop in a vehicle / field kit subject to bumps</td><td>SSD (2.5" SATA or M.2)</td></tr>
+<tr><td>Two drives, survive one failure, minimum cost</td><td>RAID 1 mirroring</td></tr>
+<tr><td>Three 4 TB drives, max capacity + one-drive fault tolerance</td><td>RAID 5 (8 TB usable)</td></tr>
+<tr><td>Four drives, video editing speed + redundancy</td><td>RAID 10</td></tr>
+<tr><td>Fastest throughput, data loss acceptable (scratch disk)</td><td>RAID 0 striping</td></tr>
+<tr><td>Camera/phone expandable storage</td><td>microSD (check speed class / UHS)</td></tr>
+</table>
+
+<h2>NVMe vs SATA — exam traps</h2>
+<ul>
+<li><b>M.2 is a shape, not a protocol</b> — the same slot may wire SATA only, NVMe/PCIe only, or both (check the board spec).</li>
+<li>NVMe drive in a SATA-only M.2 slot: physically fits, <b>never detected</b>.</li>
+<li>SATA III ceiling ≈ 600 MB/s; NVMe over PCIe 3.0/4.0/5.0 reaches thousands of MB/s.</li>
+<li>2.5" SSDs are always SATA; M.2 can be either — read the label (NVMe vs SATA).</li>
+<li><b>Hot-swap</b> — enterprise drive bays and some external enclosures allow replacing a drive without powering down; consumer internal SATA usually requires shutdown.</li>
+</ul>
+
+<h2>Physical installation — internal drives</h2>
+<ol>
+<li>Power off, unplug, discharge static.</li>
+<li>Mount 3.5"/2.5" drive in bay; connect <b>SATA data</b> (7-pin) to motherboard and <b>SATA power</b> (15-pin) from PSU.</li>
+<li>M.2: insert at angle into slot, screw down standoff; confirm slot supports NVMe if installing NVMe.</li>
+<li>Boot → BIOS sees drive → OS: initialise (GPT for modern), partition, format, assign letter.</li>
+<li>RAID arrays: configure in BIOS/UEFI RAID utility or OS before relying on the volume.</li>
+</ol>
+
+<div class="keyfact"><b>RAID ≠ backup:</b> ransomware, accidental delete, and fire destroy every mirror/stripe simultaneously. RAID is for uptime through drive failure — backups are separate.</div>
 <div class="callout"><b>Exam angle:</b> RAID is <b>availability, not backup</b> — deletion, ransomware, and fire mirror across the array perfectly. "Fastest, don't care about data loss" → 0. "Two drives, redundancy" → 1. "Three+ drives, efficient redundancy" → 5. "Performance AND redundancy" → 10.</div>
 `,
 quiz:[
@@ -1556,6 +1633,18 @@ notes:`
 <li><b>PCI</b> — legacy parallel slot, exam-relevant only as "the old one".</li>
 </ul>
 
+<h2>PCIe generations — bandwidth per lane (approx.)</h2>
+<table>
+<tr><th>Generation</th><th>Per lane</th><th>x16 example</th><th>Notes</th></tr>
+<tr><td>PCIe 3.0</td><td>~1 GB/s</td><td>~16 GB/s</td><td>Common on older boards</td></tr>
+<tr><td>PCIe 4.0</td><td>~2 GB/s</td><td>~32 GB/s</td><td>Current mainstream</td></tr>
+<tr><td>PCIe 5.0</td><td>~4 GB/s</td><td>~64 GB/s</td><td>Newer high-end platforms</td></tr>
+</table>
+<ul>
+<li>A PCIe 4.0 GPU in a PCIe 3.0 x16 slot still works — runs at the slower generation.</li>
+<li>Lane splitting: some boards share lanes between M.2 and PCIe slots — installing both may drop GPU to x8.</li>
+</ul>
+
 <h2>CPU sockets and installation</h2>
 <ul>
 <li><b>Intel: LGA</b> (pins in the socket). <b>AMD: traditionally PGA</b> (pins on the chip — AM4), with newer AM5 moving to LGA. Socket must match CPU exactly.</li>
@@ -1584,6 +1673,30 @@ notes:`
 <li>Cards: <b>video/GPU</b> (x16, may need PCIe power leads), <b>capture card</b> (recording/streaming HDMI sources), <b>NIC</b>, <b>sound card</b>.</li>
 <li>Cooling: case fans (front intake/rear exhaust), <b>heatsinks</b> + thermal paste/pads, <b>liquid/AIO coolers</b> for high-TDP chips. Overheating symptoms: throttling slowdowns, shutdowns under load.</li>
 </ul>
+
+<h2>Build checklist — motherboard, CPU, and cards</h2>
+<ol>
+<li>Verify <b>case ↔ board form factor</b> (standoffs aligned, I/O shield fitted).</li>
+<li>Install PSU, route cables; connect 24-pin + EPS before heavy cards block access.</li>
+<li>CPU: align triangle/notch, drop in socket (no force), close retention arm; <b>pea-sized thermal paste</b>, mount cooler.</li>
+<li>RAM in correct channel slots; M.2 drives before GPU if slot is under the card.</li>
+<li>Insert expansion cards until latch clicks; connect any required PCIe power to GPU.</li>
+<li>Front-panel headers (power switch, LEDs, USB) per manual — easy to miswire.</li>
+<li>First POST: one stick RAM / minimal config if no display; listen for beep codes.</li>
+</ol>
+
+<h2>POST and firmware — symptom → likely fix</h2>
+<table>
+<tr><th>Symptom</th><th>Likely cause</th><th>First action</th></tr>
+<tr><td>Time/date wrong every cold boot</td><td>Dead CR2032 CMOS battery</td><td>Replace battery</td></tr>
+<tr><td>No POST, no beep, fans spin</td><td>Power, CPU seating, RAM not fully seated</td><td>Reseat RAM/CPU, check EPS power</td></tr>
+<tr><td>Hypervisor won't start, VT-x "unavailable"</td><td>Virtualization disabled in BIOS</td><td>Enable Intel VT-x / AMD-V</td></tr>
+<tr><td>Windows 11 upgrade blocked</td><td>TPM 2.0 or Secure Boot off</td><td>Enable fTPM/PTT and Secure Boot in UEFI</td></tr>
+<tr><td>GPU works but crashes under gaming load</td><td>Missing PCIe power, PSU wattage, overheating</td><td>Connect 6/8-pin leads; check temps and PSU sizing</td></tr>
+<tr><td>USB boot install fails on new PC</td><td>Secure Boot or wrong boot order</td><td>Adjust boot order; temporarily disable Secure Boot if media unsigned</td></tr>
+</table>
+
+<div class="keyfact"><b>TPM vs HSM:</b> TPM = chip/firmware on the endpoint (BitLocker, Windows 11). HSM = dedicated tamper-resistant crypto appliance for keys at scale. Secure Boot verifies boot loaders; it does not encrypt the drive.</div>
 `,
 quiz:[
 {q:"Which slot does a modern graphics card install into?", o:["PCIe x1","PCIe x16","PCI","AGP"], a:1, e:"GPUs use the full-length PCIe x16 slot for maximum lane bandwidth. AGP and PCI are legacy."},
@@ -1689,6 +1802,40 @@ notes:`
 <li><b>Flatbed</b> (single pages, books, fragile items) vs <b>ADF</b> — automatic document feeder for multipage jobs; duplex ADFs scan both sides.</li>
 <li>Scan destinations: <b>scan-to-email</b> (needs SMTP settings), <b>scan-to-folder/SMB</b> (needs a share path and credentials), <b>scan-to-cloud</b> services.</li>
 </ul>
+
+<h2>Connection methods — compare and choose</h2>
+<table>
+<tr><th>Method</th><th>Best for</th><th>Limitations</th></tr>
+<tr><td><b>USB</b></td><td>Single PC, home desk</td><td>Host PC must be on; one user at a time</td></tr>
+<tr><td><b>Wired Ethernet</b></td><td>Office fleet, stable IP</td><td>Cable run to device</td></tr>
+<tr><td><b>Wi‑Fi</b></td><td>Flexible placement, no new cable</td><td>Signal/interference; configure SSID/security on panel</td></tr>
+<tr><td><b>Bluetooth</b></td><td>Personal mobile printing nearby</td><td>Short range; not typical for 30-user office</td></tr>
+<tr><td><b>Shared via PC</b></td><td>Legacy USB-only printer</td><td>Share host must stay powered on — poor reliability</td></tr>
+<tr><td><b>Network printer (own IP)</b></td><td>Business default — many users</td><td>Install driver per OS; static/DHCP reservation recommended</td></tr>
+</table>
+
+<h2>Scan scenarios — pick the right path</h2>
+<table>
+<tr><th>Job</th><th>Hardware / setting</th></tr>
+<tr><td>60-page double-sided contract</td><td>Duplex ADF</td></tr>
+<tr><td>Bound book page, fragile photo</td><td>Flatbed</td></tr>
+<tr><td>Invoice stack, one side only</td><td>Simple ADF</td></tr>
+<tr><td>Scan to shared finance folder</td><td>Scan-to-SMB (path + credentials on MFD)</td></tr>
+<tr><td>Scan to user's inbox after email migration</td><td>Update SMTP settings on device</td></tr>
+<tr><td>High-quality colour proof for client</td><td>Flatbed or ADF + high DPI; PostScript driver if colour-critical</td></tr>
+</table>
+
+<h2>Deployment checklist — new office printer/MFD</h2>
+<ol>
+<li>Unbox, remove transit locks/tape (especially laser — drum/fuser shipping locks).</li>
+<li>Connect power + network (or USB); assign static IP or DHCP reservation.</li>
+<li>Install <b>correct driver</b> for exact model and OS (PCL vs PostScript per workflow).</li>
+<li>Configure trays, default duplex, and paper types (letterhead tray mapping).</li>
+<li>Enable authentication/badge release if shared; set audit logging if required.</li>
+<li>Test print + scan to each destination (email, folder) before go-live.</li>
+</ol>
+
+<div class="keyfact"><b>Garbage pages trap:</b> random symbols on every page = wrong or corrupt driver — reinstall the exact model driver. Smudges that wipe off = fuser (3.7). Streaks in one colour = inkjet head cleaning.</div>
 `,
 quiz:[
 {q:"A design studio requires that proofs print identically on every printer in the workflow. Which driver/page-description language should they standardise on?", o:["PCL","PostScript","XPS","Raw text"], a:1, e:"PostScript is device-independent — the page renders identically on any compliant printer, which is why the graphics/print industry uses it. PCL output can vary by device."},
@@ -1719,6 +1866,17 @@ notes:`
 <tr><td>7</td><td><b>Cleaning</b></td><td>Residual toner scraped from the drum</td></tr>
 </table>
 <div class="callout"><b>Mnemonic:</b> <i>People Choose Extra Drinks To Feel Cheerful.</i> Symptom links: smudges that wipe off → <b>fuser</b> not melting toner. Repeating marks down the page → <b>drum</b> defect. Vertical streaks → dirty drum/low toner. Ghost images → cleaning/drum issue.</div>
+
+<h2>Laser symptom → component (quick reference)</h2>
+<table>
+<tr><th>Symptom</th><th>Most likely component</th></tr>
+<tr><td>Toner rubs off when touched; not fused</td><td>Fuser assembly</td></tr>
+<tr><td>Same defect repeats at fixed interval down page</td><td>Imaging drum (circumference defect)</td></tr>
+<tr><td>Light print, vertical white streak</td><td>Low toner or dirty drum</td></tr>
+<tr><td>Pale ghost of previous page</td><td>Cleaning stage / drum not clearing toner</td></tr>
+<tr><td>Black lines across page</td><td>Scratch on drum or debris on glass (if scanning)</td></tr>
+<tr><td>Paper jams at exit, wrinkled pages</td><td>Worn fuser rollers (maintenance kit)</td></tr>
+</table>
 <ul>
 <li>Consumables: <b>toner cartridge</b>, <b>imaging drum</b> (sometimes combined), <b>fuser assembly</b>, transfer belt/rollers, <b>maintenance kit</b> (rollers, fuser) at set page counts. Laser output is dry and permanent immediately.</li>
 </ul>
@@ -4162,7 +4320,8 @@ function renderDomainCard(coreKey, d, built){
 function renderDomainHero(coreKey, d){
   const icon = DOMAIN_ICONS[coreKey]?.[d.num] || "📘";
   const topicMins = d.subs.reduce((n,s)=>n+noteReadMeta(s.notes).min,0);
-  return `<div class="domain-hero domain-hero-${coreKey}">
+  const domainTheme = coreKey==="core1" && d.num==="3.0" ? " domain-hero-hardware" : ` domain-hero-${coreKey}`;
+  return `<div class="domain-hero${domainTheme}">
     <div class="domain-hero-head"><span class="domain-icon">${icon}</span><div>
       <div class="eyebrow">${ROSTER[coreKey].name} · ${d.weight}% of exam</div>
       <h1 class="page">${d.num} ${esc(d.name)}</h1></div></div>
@@ -5500,7 +5659,7 @@ function render(){
     const s = d.subs.find(x=>x.id===view.sub);
     const sheet = prepNotesSheet(s.notes, s.id);
     const icon = DOMAIN_ICONS[view.core]?.[d.num] || "📘";
-    const sheetHeroCls = view.core==="core1" ? " sheet-hero-core1" : "";
+    const sheetHeroCls = view.core==="core1" && view.num==="3.0" ? " sheet-hero-hardware" : view.core==="core1" ? " sheet-hero-core1" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
     app.innerHTML = `<div class="sheet-hero${sheetHeroCls}">
       <div class="eyebrow">Revision sheet · Domain ${d.num}</div>
