@@ -191,6 +191,23 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .story-picks .opt{text-align:left}
 .story-narrator{font-size:.88rem;color:var(--muted);font-style:italic;text-align:center;margin:8px 0}
 .game-card.locked{opacity:.55;cursor:default}
+.millionaire-wrap{display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:16px;align-items:start}
+@media (max-width:600px){.millionaire-wrap{grid-template-columns:1fr}}
+.millionaire-ladder{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px 8px;font-size:.78rem}
+.millionaire-ladder .run{display:flex;justify-content:space-between;padding:4px 8px;border-radius:6px;color:var(--muted)}
+.millionaire-ladder .run.safe{font-weight:700;color:var(--amber)}
+.millionaire-ladder .run.here{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.millionaire-ladder .run.done{color:var(--good)}
+.millionaire-prize{font-family:var(--display);font-weight:800;font-size:1.35rem;color:var(--accent);margin:8px 0 12px}
+.millionaire-lifelines{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.millionaire-lifelines .btn{font-size:.82rem;padding:8px 12px}
+.millionaire-lifelines .btn.used{opacity:.45;pointer-events:none}
+.millionaire-hint{font-size:.88rem;color:var(--muted);background:var(--accent-soft);border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.millionaire-audience{display:grid;gap:6px;margin-bottom:12px}
+.millionaire-audience .bar-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:.82rem}
+.millionaire-audience .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.millionaire-audience .bar i{display:block;height:100%;background:var(--accent)}
+.opt.hidden-opt{display:none}
 @media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}.save-status{display:none}.game-item{font-size:.82rem;padding:10px 6px}}
 @supports(padding:max(0px)){
   header.app{padding-top:max(12px,env(safe-area-inset-top))}
@@ -3671,7 +3688,7 @@ const GAME_CATALOG = [
   {id:"subnet", icon:"🔢", name:"Subnet Snap", desc:"Match IP + mask to the network address", ready:true, type:"match", matchType:"id", count:5, hub:"🔢", domains:[{core:"core1",num:"2.0"}]},
   {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]},
   {id:"storychat", icon:"💬", name:"Fix-It Fables", desc:"Chat with legends — choose your answers to shape each tech rescue story", ready:true, type:"story", count:5, hub:"💬", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"},{core:"core2",num:"4.0"}]},
-  {id:"millionaire", icon:"💰", name:"A+ Millionaire", desc:"Who Wants to Be a Millionaire style — lifelines, rising stakes, exam questions", ready:false, type:"millionaire", count:15, hub:"💰", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]}
+  {id:"millionaire", icon:"💰", name:"A+ Millionaire", desc:"Who Wants to Be a Millionaire style — lifelines, rising stakes, exam questions", ready:true, type:"millionaire", count:15, hub:"💰", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]}
 ];
 const PORT_DATA = {
   normal:[
@@ -3859,6 +3876,107 @@ steps:[
 {msg:"Closing time backup for today's sales — which type runs fastest after a full weekend backup?",o:["Full only every night","Incremental since last backup of any type","Delete the database","Screenshot the screen"],a:1,e:"Incrementals capture only changes since the last backup — quick for nightly POS closes after a full.",react:"You saved Flavortown IT, baby! This rig's certified money!"}
 ]}
 ];
+const MILLIONAIRE_LADDER = [100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,900000];
+const MILLIONAIRE_SAFE_AT = [4,9];
+const MILLIONAIRE_FRIENDS = ["Your A+ tutor","A bootcamp buddy","Professor Pixel","That one friend who passed first try"];
+function formatMillionairePrize(n){
+  if(n>=1000000) return "900K pts";
+  if(n>=1000) return (n/1000)+"K pts";
+  return n+" pts";
+}
+function collectQuizPool(){
+  const pool = [];
+  for(const d of DOMAINS){
+    for(const s of d.subs) pool.push(...s.quiz);
+    if(d.mock) pool.push(...d.mock);
+  }
+  return pool;
+}
+function buildMillionaireGame(){
+  const pool = collectQuizPool();
+  const qs = shuffle(pool).slice(0, 15).map(q=>{
+    const opts = q.o.map((t,i)=>({t, correct:i===q.a}));
+    return {q:q.q, opts:shuffle(opts), ex:q.e};
+  });
+  return {id:"millionaire", type:"millionaire", mode:"normal", phase:"play",
+    qs, i:0, safePrize:0, finalPrize:0, done:false, lost:false, won:false, walked:false,
+    answered:false, picked:null, mistakes:0,
+    lifelines:{fifty:false, phone:false, audience:false},
+    hidden:new Set(), phoneMsg:"", audiencePct:null};
+}
+function millionaireOffer(idx){ return idx>0 ? MILLIONAIRE_LADDER[idx-1] : 0; }
+function millionaireLifeline(kind){
+  if(!game || game.answered || game.done || game.type!=="millionaire") return;
+  if(game.lifelines[kind]) return;
+  const q = game.qs[game.i];
+  const correctIdx = q.opts.findIndex(o=>o.correct);
+  const wrongIdx = q.opts.map((o,i)=>i).filter(i=>i!==correctIdx);
+  if(kind==="fifty"){
+    shuffle(wrongIdx).slice(0,2).forEach(i=>game.hidden.add(i));
+  } else if(kind==="phone"){
+    const pick = Math.random()<0.75 ? correctIdx : wrongIdx[Math.floor(Math.random()*wrongIdx.length)];
+    const who = MILLIONAIRE_FRIENDS[Math.floor(Math.random()*MILLIONAIRE_FRIENDS.length)];
+    game.phoneMsg = `${who} says: "I'm fairly sure it's… ${q.opts[pick].t}"`;
+  } else if(kind==="audience"){
+    const pct = [0,0,0,0];
+    let rem = 100;
+    const correctPct = 38+Math.floor(Math.random()*32);
+    pct[correctIdx] = correctPct;
+    rem -= correctPct;
+    const others = shuffle(wrongIdx.slice());
+    others.forEach((idx,n)=>{
+      const share = n===others.length-1 ? rem : Math.floor(rem/(others.length-n));
+      pct[idx] = share;
+      rem -= share;
+    });
+    game.audiencePct = pct;
+  }
+  game.lifelines[kind] = true;
+  renderGame();
+}
+function millionaireWalk(){
+  if(!game || game.answered || game.done || game.type!=="millionaire") return;
+  game.walked = true;
+  game.done = true;
+  game.finalPrize = millionaireOffer(game.i);
+  recordScore(gameScoreKey("millionaire"), game.i, game.qs.length);
+  renderGame();
+}
+function millionairePick(idx){
+  if(!game || game.answered || game.done || game.type!=="millionaire" || game.hidden.has(idx)) return;
+  game.answered = true;
+  game.picked = idx;
+  const q = game.qs[game.i];
+  const correct = q.opts[idx].correct;
+  if(correct){
+    if(game.i>=game.qs.length-1){
+      game.won = true;
+      game.done = true;
+      game.finalPrize = MILLIONAIRE_LADDER[game.i];
+      recordScore(gameScoreKey("millionaire"), game.qs.length, game.qs.length);
+    }
+  } else {
+    game.lost = true;
+    game.done = true;
+    game.mistakes++;
+    game.finalPrize = game.safePrize;
+    recordScore(gameScoreKey("millionaire"), game.i, game.qs.length);
+  }
+  renderGame();
+}
+function millionaireNext(){
+  if(!game || !game.answered || game.done || game.type!=="millionaire") return;
+  const q = game.qs[game.i];
+  if(!q.opts[game.picked].correct) return;
+  if(MILLIONAIRE_SAFE_AT.includes(game.i)) game.safePrize = MILLIONAIRE_LADDER[game.i];
+  game.i++;
+  game.answered = false;
+  game.picked = null;
+  game.hidden = new Set();
+  game.phoneMsg = "";
+  game.audiencePct = null;
+  renderGame();
+}
 const GAME_TOASTS = {
   good:["⚡ Patch perfect!","🔌 Connected!","✨ Nice run!","🎉 Nailed it!","💚 Solid match!"],
   bad:["💥 Spark! Wrong match","🔥 Not quite — try again!","⚠️ Crosstalk! Retry","🔌 Loose connection — retry"],
@@ -3871,6 +3989,7 @@ function gamePairCount(id, mode){
   if(!m) return 6;
   if(id==="ports") return mode==="hard" ? (m.countHard||10) : m.count;
   if(id==="storychat") return 5;
+  if(id==="millionaire") return 15;
   return m.count || 6;
 }
 function gameScoreKey(id, mode){ return "game_"+id+(mode?"_"+mode:""); }
@@ -3880,6 +3999,10 @@ function gameScorePill(id, mode, total){
   if(!s) return "";
   const best = typeof s === "number" ? s : s.best;
   if(best == null) return "";
+  if(id==="millionaire"){
+    const prize = best>=total ? MILLIONAIRE_LADDER[total-1] : (best>0 ? MILLIONAIRE_LADDER[best-1] : 0);
+    return `<span class="pill score ${best<total?"low":""}">Best: ${formatMillionairePrize(prize)}</span>`;
+  }
   return `<span class="pill score ${best<total?"low":""}">Best: ${best}/${total}</span>`;
 }
 function pickToast(kind){ const a = GAME_TOASTS[kind]; return a[Math.floor(Math.random()*a.length)]; }
@@ -3964,6 +4087,7 @@ function startGame(id, mode){
     return;
   }
   if(meta.type==="sequence") game = buildSequenceGame();
+  else if(meta.type==="millionaire") game = buildMillionaireGame();
   else if(id==="ports") game = buildPortGame(mode||"normal");
   else if(id==="connectors") game = buildConnectorGame();
   else game = buildStandardGame(id);
@@ -4135,6 +4259,7 @@ function renderGame(){
     game = {id:view.gameId, phase:"intro", mode:view.mode||"normal"};
   }
   const total = game.type==="story" ? (game.story?.steps.length || gamePairCount(view.gameId, game.mode))
+    : game.type==="millionaire" ? (game.qs?.length || gamePairCount(view.gameId, game.mode))
     : game.type==="sequence" ? (game.total||meta.count) : (game.pairs?.length || gamePairCount(view.gameId, game.mode));
   if(game.phase==="intro"){
     const modes = meta.modes ? `<div class="game-mode">
@@ -4143,6 +4268,8 @@ function renderGame(){
     </div>` : "";
     const hint = meta.type==="story"
       ? "Pick a legend — they'll chat you through a tech rescue. Answer from four options at each beat."
+      : meta.type==="millionaire"
+      ? "15 exam questions, rising stakes, three lifelines. One wrong answer ends the run — unless you've passed a checkpoint."
       : meta.type==="sequence"
       ? "Steps are shuffled — tap them in the correct troubleshooting order."
       : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
@@ -4168,6 +4295,25 @@ function renderGame(){
     return;
   }
   if(game.done){
+    if(game.type==="millionaire"){
+      const emoji = game.won ? "🏆" : game.walked ? "💼" : "😬";
+      const headline = game.won ? "You're an A+ Millionaire!" : game.walked ? "You walked away!" : "Game over";
+      const sub = game.won ? "Flawless run to the top of the ladder." : game.walked
+        ? `You banked ${formatMillionairePrize(game.finalPrize)} at question ${game.i+1}.`
+        : `Wrong answer — you leave with ${formatMillionairePrize(game.finalPrize)}.`;
+      const review = game.lost ? `<div class="explain" style="text-align:left;margin-top:14px"><b>Explanation:</b> ${esc(game.qs[game.i].ex)}</div>` : "";
+      app.innerHTML = `<div class="result">
+        <div class="game-done-emoji">${emoji}</div>
+        <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
+        <div class="big" style="color:var(--good)">${formatMillionairePrize(game.finalPrize)}</div>
+        <div class="verdict">${headline}</div>
+        <p class="sub" style="margin-top:0">${sub}</p>
+        <div class="row">
+          <button class="btn primary" onclick="startGame('millionaire')">Play again</button>
+          <button class="btn" onclick="game=null;go('games')">All games</button>
+        </div>${review}</div>`;
+      return;
+    }
     let linked, verdict;
     if(game.type==="story"){
       linked = game.right;
@@ -4217,6 +4363,55 @@ function renderGame(){
       const el = document.getElementById("storyHistory");
       if(el) el.scrollTop = el.scrollHeight;
     });
+    return;
+  }
+  if(game.type==="millionaire" && game.phase==="play"){
+    const q = game.qs[game.i];
+    const ladder = MILLIONAIRE_LADDER.map((amt,idx)=>{
+      let cls = "run";
+      if(MILLIONAIRE_SAFE_AT.includes(idx)) cls += " safe";
+      if(idx===game.i) cls += " here";
+      if(idx<game.i) cls += " done";
+      return `<div class="${cls}"><span>Q${idx+1}</span><span>${formatMillionairePrize(amt)}</span></div>`;
+    }).reverse().join("");
+    const lifelineBtn = (id, label, used)=>`<button type="button" class="btn ${used?"used":""}" ${used?"disabled":""} onclick="millionaireLifeline('${id}')">${label}</button>`;
+    const hints = [
+      game.phoneMsg ? `<div class="millionaire-hint">📞 ${esc(game.phoneMsg)}</div>` : "",
+      game.audiencePct ? `<div class="millionaire-audience">${q.opts.map((o,i)=>`<div class="bar-row"><span>${String.fromCharCode(65+i)}</span><div class="bar"><i style="width:${game.audiencePct[i]}%"></i></div><span>${game.audiencePct[i]}%</span></div>`).join("")}</div>` : ""
+    ].join("");
+    let optsHtml = q.opts.map((o,idx)=>{
+      let cls = "opt";
+      if(game.hidden.has(idx)) cls += " hidden-opt";
+      if(game.answered){
+        if(o.correct) cls += " correct";
+        else if(idx===game.picked) cls += " wrong";
+      }
+      return `<button type="button" class="${cls}" ${game.answered?"disabled":""} onclick="millionairePick(${idx})">${String.fromCharCode(65+idx)}. ${esc(o.t)}</button>`;
+    }).join("");
+    let afterHtml = "";
+    if(game.answered){
+      const ok = q.opts[game.picked].correct;
+      afterHtml = `<div class="explain"><b>${ok?"Correct!":"Not quite."}</b> ${esc(q.ex)}</div>`;
+      if(ok && !game.done) afterHtml += `<div class="row"><button class="btn primary" onclick="millionaireNext()">Next question →</button></div>`;
+    } else {
+      afterHtml = `<div class="row" style="margin-top:4px"><button class="btn" onclick="millionaireWalk()">Walk away with ${formatMillionairePrize(millionaireOffer(game.i))}</button></div>`;
+    }
+    app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} Question ${game.i+1} of ${game.qs.length}</span><span>Safe: ${formatMillionairePrize(game.safePrize)}</span></div>
+      <div class="millionaire-prize">Playing for ${formatMillionairePrize(MILLIONAIRE_LADDER[game.i])}</div>
+      <div class="millionaire-wrap">
+        <div>
+          <div class="millionaire-lifelines">
+            ${lifelineBtn("fifty","50:50",game.lifelines.fifty)}
+            ${lifelineBtn("phone","📞 Phone",game.lifelines.phone)}
+            ${lifelineBtn("audience","👥 Audience",game.lifelines.audience)}
+          </div>
+          ${hints}
+          <div class="qtext">${esc(q.q)}</div>
+          ${optsHtml}
+          ${afterHtml}
+        </div>
+        <div class="millionaire-ladder">${ladder}</div>
+      </div>`;
     return;
   }
   if(game.type==="sequence"){

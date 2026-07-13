@@ -81,6 +81,19 @@ for (let i = 0; i < 5; i++) {
 }
 assert('Fix-It Fables completes', await page.isVisible('text=Play again'));
 
+await openGame('A+ Millionaire');
+for (let i = 0; i < 15; i++) {
+  const idx = await page.evaluate(() => game.qs[game.i].opts.findIndex(o => o.correct));
+  await page.locator('.opt').nth(idx).click();
+  await page.waitForTimeout(100);
+  const next = page.locator('button.btn.primary').filter({ hasText: /Next question/ });
+  if (await next.isVisible()) {
+    await next.click();
+    await page.waitForTimeout(100);
+  }
+}
+assert('A+ Millionaire completes', await page.isVisible("text=You're an A+ Millionaire"));
+
 await browser.close();
 server.close();
 process.exit(failed ? 1 : 0);
