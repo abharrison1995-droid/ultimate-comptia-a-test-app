@@ -208,6 +208,14 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .millionaire-audience .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
 .millionaire-audience .bar i{display:block;height:100%;background:var(--accent)}
 .opt.hidden-opt{display:none}
+.opt.pending{border-color:var(--amber);background:#fff8e6;box-shadow:0 0 0 2px var(--amber)}
+.millionaire-host{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(135deg,#1a2744,#243352);color:#e8eef8;border-radius:12px;padding:12px 14px;margin-bottom:14px;border:1px solid #3a4f72}
+.millionaire-host .avatar{font-size:1.6rem;line-height:1}
+.millionaire-host .line{font-size:.92rem;line-height:1.45}
+.millionaire-host .name{font-size:.72rem;font-weight:700;color:#8eb4ff;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.millionaire-final-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.millionaire-final-row .btn.final{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.millionaire-sfx-toggle{font-size:.78rem;color:var(--muted)}
 @media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}.save-status{display:none}.game-item{font-size:.82rem;padding:10px 6px}}
 @supports(padding:max(0px)){
   header.app{padding-top:max(12px,env(safe-area-inset-top))}
@@ -3879,6 +3887,68 @@ steps:[
 const MILLIONAIRE_LADDER = [100,200,300,500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,900000];
 const MILLIONAIRE_SAFE_AT = [4,9];
 const MILLIONAIRE_FRIENDS = ["Your A+ tutor","A bootcamp buddy","Professor Pixel","That one friend who passed first try"];
+const MILLIONAIRE_HOST = {
+  name:"Agent Chip", emoji:"🎙️",
+  welcome:["Welcome to A+ Millionaire! Fifteen questions, three lifelines, two checkpoints — let's see if you're exam ready.",
+    "Agent Chip here. No pressure — but an entire helpdesk is watching. Probably."],
+  question:[
+    ["Let's warm up — low stakes, high learning."],
+    ["Still early days — stay calm, read every option."],
+    ["You're building momentum. Don't rush it."],
+    ["Halfway to the first checkpoint — focus up!"],
+    ["Checkpoint question! Get this right and 1K pts is in the bank."],
+    ["Nice — you're into the money rounds now."],
+    ["The questions get trickier from here. Trust your notes."],
+    ["Deep into the ladder. One slip and it's costly."],
+    ["Second checkpoint ahead — 32K pts on the line!"],
+    ["Checkpoint secured? The big money awaits."],
+    ["Serious stakes now. Breathe. Think. Then lock in."],
+    ["Almost at the summit — composure wins."],
+    ["So close to the top I can smell the certificate."],
+    ["One away from glory. No pressure. Tremendous pressure."],
+    ["This is it — the final question for 900K pts!"]
+  ],
+  pending:(letter)=>[`You've highlighted ${letter}. Sure about that?`,`${letter} is your pick — lock it in when you're ready.`,`Interesting choice… ${letter}. Final answer?`],
+  lifeline:{fifty:["Halving the options — choose wisely!"],phone:["Ring ring — let's hear from a friend."],audience:["Polling the audience… show of hands!"]},
+  correct:["That's correct!","Bang on — nice work!","The cert gods smile upon you."],
+  wrong:["Ouch — that's not it.","So close… or perhaps not close at all.","Game over — but hey, revision counts."],
+  win:["YOU'RE AN A+ MILLIONAIRE! What a run!","Incredible! Flawless ladder climb!","900K pts! The audience goes wild!"],
+  walk:["Smart play — you walked with your points intact.","Knowing when to quit is a skill too."]
+};
+const gameSfx = {on:true, ctx:null};
+function initGameAudio(){
+  if(!gameSfx.ctx) gameSfx.ctx = new (window.AudioContext||window.webkitAudioContext)();
+  if(gameSfx.ctx.state==="suspended") gameSfx.ctx.resume();
+}
+function playGameTone(freq, dur, type, vol){
+  if(!gameSfx.on) return;
+  try{
+    initGameAudio();
+    const ctx=gameSfx.ctx, t=ctx.currentTime;
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type=type||"sine"; o.frequency.value=freq;
+    g.gain.setValueAtTime(vol||0.1,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t+dur);
+  }catch(e){}
+}
+function sfxMillionaire(kind){
+  if(kind==="select") playGameTone(520,.06,"triangle",.08);
+  else if(kind==="final"){ playGameTone(440,.08); setTimeout(()=>playGameTone(880,.22),90); }
+  else if(kind==="correct"){ playGameTone(523,.12); setTimeout(()=>playGameTone(659,.12),100); setTimeout(()=>playGameTone(784,.2),200); }
+  else if(kind==="wrong") playGameTone(140,.4,"sawtooth",.07);
+  else if(kind==="lifeline") playGameTone(330,.05,"square",.06);
+  else if(kind==="walk") playGameTone(392,.15);
+  else if(kind==="win"){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playGameTone(f,.18),i*110)); }
+}
+function toggleGameSfx(){ gameSfx.on=!gameSfx.on; if(game?.type==="millionaire") renderGame(); }
+function hostBanter(pool){ return pool[Math.floor(Math.random()*pool.length)]; }
+function setHostMsg(msg){ if(game && game.type==="millionaire") game.hostMsg=msg; }
+function renderMillionaireHost(){
+  if(!game?.hostMsg) return "";
+  return `<div class="millionaire-host"><div class="avatar">${MILLIONAIRE_HOST.emoji}</div><div><div class="name">${MILLIONAIRE_HOST.name}</div><div class="line">${esc(game.hostMsg)}</div></div></div>`;
+}
 function formatMillionairePrize(n){
   if(n>=1000000) return "900K pts";
   if(n>=1000) return (n/1000)+"K pts";
@@ -3900,7 +3970,8 @@ function buildMillionaireGame(){
   });
   return {id:"millionaire", type:"millionaire", mode:"normal", phase:"play",
     qs, i:0, safePrize:0, finalPrize:0, done:false, lost:false, won:false, walked:false,
-    answered:false, picked:null, mistakes:0,
+    answered:false, picked:null, pending:null, mistakes:0,
+    hostMsg:hostBanter(MILLIONAIRE_HOST.question[0]),
     lifelines:{fifty:false, phone:false, audience:false},
     hidden:new Set(), phoneMsg:"", audiencePct:null};
 }
@@ -3932,27 +4003,52 @@ function millionaireLifeline(kind){
     game.audiencePct = pct;
   }
   game.lifelines[kind] = true;
+  sfxMillionaire("lifeline");
+  setHostMsg(hostBanter(MILLIONAIRE_HOST.lifeline[kind]));
   renderGame();
 }
 function millionaireWalk(){
-  if(!game || game.answered || game.done || game.type!=="millionaire") return;
+  if(!game || game.answered || game.done || game.type!=="millionaire" || game.pending!=null) return;
   game.walked = true;
   game.done = true;
   game.finalPrize = millionaireOffer(game.i);
+  setHostMsg(hostBanter(MILLIONAIRE_HOST.walk));
+  sfxMillionaire("walk");
   recordScore(gameScoreKey("millionaire"), game.i, game.qs.length);
   renderGame();
 }
-function millionairePick(idx){
+function millionaireSelect(idx){
   if(!game || game.answered || game.done || game.type!=="millionaire" || game.hidden.has(idx)) return;
+  game.pending = idx;
+  sfxMillionaire("select");
+  setHostMsg(hostBanter(MILLIONAIRE_HOST.pending(String.fromCharCode(65+idx))));
+  renderGame();
+}
+function millionaireClearPending(){
+  if(!game || game.answered || game.done || game.type!=="millionaire") return;
+  game.pending = null;
+  setHostMsg(hostBanter(MILLIONAIRE_HOST.question[game.i]));
+  renderGame();
+}
+function millionaireConfirm(){
+  if(!game || game.pending==null || game.answered || game.done || game.type!=="millionaire") return;
+  sfxMillionaire("final");
+  setHostMsg("Final answer locked in…");
+  const idx = game.pending;
+  game.pending = null;
   game.answered = true;
   game.picked = idx;
   const q = game.qs[game.i];
   const correct = q.opts[idx].correct;
   if(correct){
+    setHostMsg(hostBanter(MILLIONAIRE_HOST.correct));
+    sfxMillionaire("correct");
     if(game.i>=game.qs.length-1){
       game.won = true;
       game.done = true;
       game.finalPrize = MILLIONAIRE_LADDER[game.i];
+      setHostMsg(hostBanter(MILLIONAIRE_HOST.win));
+      sfxMillionaire("win");
       recordScore(gameScoreKey("millionaire"), game.qs.length, game.qs.length);
     }
   } else {
@@ -3960,9 +4056,14 @@ function millionairePick(idx){
     game.done = true;
     game.mistakes++;
     game.finalPrize = game.safePrize;
+    setHostMsg(hostBanter(MILLIONAIRE_HOST.wrong));
+    sfxMillionaire("wrong");
     recordScore(gameScoreKey("millionaire"), game.i, game.qs.length);
   }
   renderGame();
+}
+function millionairePick(idx){
+  millionaireSelect(idx);
 }
 function millionaireNext(){
   if(!game || !game.answered || game.done || game.type!=="millionaire") return;
@@ -3972,9 +4073,11 @@ function millionaireNext(){
   game.i++;
   game.answered = false;
   game.picked = null;
+  game.pending = null;
   game.hidden = new Set();
   game.phoneMsg = "";
   game.audiencePct = null;
+  setHostMsg(hostBanter(MILLIONAIRE_HOST.question[game.i]));
   renderGame();
 }
 const GAME_TOASTS = {
@@ -4269,7 +4372,7 @@ function renderGame(){
     const hint = meta.type==="story"
       ? "Pick a legend — they'll chat you through a tech rescue. Answer from four options at each beat."
       : meta.type==="millionaire"
-      ? "15 exam questions, rising stakes, three lifelines. One wrong answer ends the run — unless you've passed a checkpoint."
+      ? "15 exam questions, rising stakes, three lifelines. Pick an answer, lock in your final answer, and listen for Agent Chip."
       : meta.type==="sequence"
       ? "Steps are shuffled — tap them in the correct troubleshooting order."
       : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
@@ -4279,6 +4382,8 @@ function renderGame(){
       <p class="sub">${esc(meta.desc)}</p>${modes}
       <p class="sub" style="margin-top:0">${hint}</p>
       <div class="row"><button class="btn primary" onclick="startGame('${view.gameId}','${game.mode}')">Let's play! ⚡</button></div>
+      ${meta.type==="millionaire" ? `<div class="millionaire-host" style="margin-top:18px"><div class="avatar">${MILLIONAIRE_HOST.emoji}</div><div><div class="name">${MILLIONAIRE_HOST.name}</div><div class="line">${esc(hostBanter(MILLIONAIRE_HOST.welcome))}</div></div></div>
+      <p class="sub" style="margin-top:14px;font-size:.85rem">Sound effects · Final answer lock-in · Host banter from Agent Chip</p>` : ""}
       ${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode)) ? `<p class="sub" style="margin-top:14px">${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode))}</p>` : ""}`;
     return;
   }
@@ -4302,12 +4407,14 @@ function renderGame(){
         ? `You banked ${formatMillionairePrize(game.finalPrize)} at question ${game.i+1}.`
         : `Wrong answer — you leave with ${formatMillionairePrize(game.finalPrize)}.`;
       const review = game.lost ? `<div class="explain" style="text-align:left;margin-top:14px"><b>Explanation:</b> ${esc(game.qs[game.i].ex)}</div>` : "";
+      const hostOutro = game.hostMsg ? `<div class="millionaire-host" style="margin-top:16px;text-align:left"><div class="avatar">${MILLIONAIRE_HOST.emoji}</div><div><div class="name">${MILLIONAIRE_HOST.name}</div><div class="line">${esc(game.hostMsg)}</div></div></div>` : "";
       app.innerHTML = `<div class="result">
         <div class="game-done-emoji">${emoji}</div>
         <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
         <div class="big" style="color:var(--good)">${formatMillionairePrize(game.finalPrize)}</div>
         <div class="verdict">${headline}</div>
         <p class="sub" style="margin-top:0">${sub}</p>
+        ${hostOutro}
         <div class="row">
           <button class="btn primary" onclick="startGame('millionaire')">Play again</button>
           <button class="btn" onclick="game=null;go('games')">All games</button>
@@ -4382,22 +4489,31 @@ function renderGame(){
     let optsHtml = q.opts.map((o,idx)=>{
       let cls = "opt";
       if(game.hidden.has(idx)) cls += " hidden-opt";
+      if(game.pending===idx && !game.answered) cls += " pending";
       if(game.answered){
         if(o.correct) cls += " correct";
         else if(idx===game.picked) cls += " wrong";
       }
-      return `<button type="button" class="${cls}" ${game.answered?"disabled":""} onclick="millionairePick(${idx})">${String.fromCharCode(65+idx)}. ${esc(o.t)}</button>`;
+      const disabled = game.answered || (game.pending!=null && game.pending!==idx);
+      return `<button type="button" class="${cls}" ${disabled?"disabled":""} onclick="millionaireSelect(${idx})">${String.fromCharCode(65+idx)}. ${esc(o.t)}</button>`;
     }).join("");
     let afterHtml = "";
     if(game.answered){
       const ok = q.opts[game.picked].correct;
       afterHtml = `<div class="explain"><b>${ok?"Correct!":"Not quite."}</b> ${esc(q.ex)}</div>`;
       if(ok && !game.done) afterHtml += `<div class="row"><button class="btn primary" onclick="millionaireNext()">Next question →</button></div>`;
+    } else if(game.pending!=null){
+      afterHtml = `<div class="millionaire-final-row">
+        <button type="button" class="btn final" onclick="millionaireConfirm()">🔒 Final answer</button>
+        <button type="button" class="btn" onclick="millionaireClearPending()">Change pick</button>
+      </div>`;
     } else {
       afterHtml = `<div class="row" style="margin-top:4px"><button class="btn" onclick="millionaireWalk()">Walk away with ${formatMillionairePrize(millionaireOffer(game.i))}</button></div>`;
     }
-    app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} Question ${game.i+1} of ${game.qs.length}</span><span>Safe: ${formatMillionairePrize(game.safePrize)}</span></div>
+    const sfxToggle = `<button type="button" class="millionaire-sfx-toggle btn" onclick="toggleGameSfx()">${gameSfx.on?"🔊 Sound on":"🔇 Sound off"}</button>`;
+    app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} Question ${game.i+1} of ${game.qs.length}</span><span>Safe: ${formatMillionairePrize(game.safePrize)} ${sfxToggle}</span></div>
       <div class="millionaire-prize">Playing for ${formatMillionairePrize(MILLIONAIRE_LADDER[game.i])}</div>
+      ${renderMillionaireHost()}
       <div class="millionaire-wrap">
         <div>
           <div class="millionaire-lifelines">

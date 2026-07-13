@@ -85,7 +85,9 @@ await openGame('A+ Millionaire');
 for (let i = 0; i < 15; i++) {
   const idx = await page.evaluate(() => game.qs[game.i].opts.findIndex(o => o.correct));
   await page.locator('.opt').nth(idx).click();
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(80);
+  await page.locator('button.btn.final').click();
+  await page.waitForTimeout(120);
   const next = page.locator('button.btn.primary').filter({ hasText: /Next question/ });
   if (await next.isVisible()) {
     await next.click();
