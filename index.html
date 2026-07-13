@@ -110,6 +110,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-card-core1:hover{border-color:#2563EB}
 .domain-hero{border-radius:16px;padding:20px;margin:0 0 18px;border:2px solid var(--line);background:linear-gradient(135deg,var(--panel) 60%,var(--accent-soft))}
 .domain-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,var(--panel) 50%,#EFF6FF 100%)}
+.domain-hero-troubleshoot{border-color:#99F6E4;background:linear-gradient(135deg,var(--panel) 50%,#F0FDFA 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -118,6 +119,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-stat-pill strong{color:var(--ink)}
 .sheet-hero{border-radius:14px;padding:14px 16px;margin:0 0 14px;border:1px solid var(--line);background:var(--panel)}
 .sheet-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,#EFF6FF,var(--panel))}
+.sheet-hero-troubleshoot{border-color:#99F6E4;background:linear-gradient(135deg,#F0FDFA,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -1984,6 +1986,20 @@ notes:`
 <li>Read the <b>vendor documentation</b> before applying firmware, BIOS, or driver updates (step 4).</li>
 <li><b>Document</b> every ticket with description → progress → resolution so the knowledge base grows.</li>
 </ul>
+
+<h2>Scenario pick-list — match the wording to the step</h2>
+<table>
+<tr><th>Scenario cue</th><th>Step</th><th>Do this</th></tr>
+<tr><td>"PC won't start — where do you begin?"</td><td>1 Identify</td><td>Ask what changed; check power/lights; back up if changes follow</td></tr>
+<tr><td>"After questioning, you suspect bad RAM"</td><td>2 Theory</td><td>Form the theory — then plan the least invasive test</td></tr>
+<tr><td>"You suspect the cable — what NEXT?"</td><td>3 Test</td><td>Swap known-good cable / run diagnostic</td></tr>
+<tr><td>"Theory was wrong; no other ideas"</td><td>3 Escalate</td><td>Hand off with notes of what was tried</td></tr>
+<tr><td>"Confirmed PSU — server reboot needed"</td><td>4 Plan</td><td>Schedule maintenance window; have spare PSU ready</td></tr>
+<tr><td>"Fix worked for the reported app"</td><td>5 Verify</td><td>Test full system + add preventive step (alerts, cleaning)</td></tr>
+<tr><td>"Ticket ready to close"</td><td>6 Document</td><td>Write findings, actions, outcome for the KB</td></tr>
+</table>
+
+<div class="keyfact"><b>Distractor trap:</b> answers that jump straight to reimaging, replacing hardware, or documenting — before identify/test — are almost always wrong when the question says FIRST or NEXT.</div>
 <div class="keyfact"><b>28% of Core 1</b> is troubleshooting — nearly every scenario question maps to this methodology. Learn the six steps in order, then drill FIRST vs NEXT wording.</div>
 `,
 quiz:[
@@ -2026,6 +2042,31 @@ notes:`
 <li><b>Inaccurate system date/time</b> while running → CMOS battery or NTP/timezone config.</li>
 <li><b>Grinding noise</b> from the case → a failing <b>fan bearing</b> (or HDD — see 5.3). Smoke/sparks → PSU, stop immediately.</li>
 </ul>
+
+<h2>Symptom → first check (quick map)</h2>
+<table>
+<tr><th>Symptom</th><th>First check / tool</th></tr>
+<tr><td>Repeating POST beeps, no display</td><td>Motherboard manual for beep code → reseat / swap RAM</td></tr>
+<tr><td>Fans spin, black screen, new build</td><td>4/8-pin EPS CPU power + one stick RAM minimum boot</td></tr>
+<tr><td>No power at all (no fans/LEDs)</td><td>Outlet, cable, PSU switch → paperclip/PSU tester</td></tr>
+<tr><td>Date/time resets every cold boot</td><td>Replace CR2032 CMOS battery</td></tr>
+<tr><td>Random BSODs, varied stop codes</td><td>Memory diagnostic (MemTest86 / Windows Memory Diagnostic)</td></tr>
+<tr><td>Shutdown under load, temps normal</td><td>PSU wattage / failing supply</td></tr>
+<tr><td>Shutdown under load, temps high / fans max</td><td>Dust, paste, heatsink seating (thermal throttle)</td></tr>
+<tr><td>Bulging/leaking capacitors</td><td>Replace motherboard</td></tr>
+<tr><td>Burning smell / smoke</td><td>Power off immediately — then inspect PSU/board</td></tr>
+</table>
+
+<h2>Minimum-config / swap order</h2>
+<ol>
+<li>Power off; discharge static.</li>
+<li>One known-good RAM stick in the primary slot; disconnect all non-essential drives/cards.</li>
+<li>Reseat GPU or temporarily try onboard video if available.</li>
+<li>Confirm 24-pin + EPS connected; try known-good PSU if available.</li>
+<li>Listen for beep codes / watch debug LEDs — document the pattern.</li>
+</ol>
+
+<div class="keyfact"><b>Heat vs power:</b> both can shut a PC down under load. High temps + roaring fans = cooling. Normal temps + instant restart = PSU. Don't replace both until you know which.</div>
 <div class="callout"><b>Exam angle:</b> map symptom → first tool: crashes → memory diagnostic. No POST + beeps → count the beeps, check manual. Time resets → CR2032. Bulging caps → new board. Shutdown under load, temps fine → PSU.</div>
 `,
 quiz:[
@@ -2069,6 +2110,28 @@ notes:`
 <li><b>Second failure while degraded</b> (or any failure in RAID 0) — array lost; restore from backup.</li>
 <li><b>RAID not found / controller errors</b> — controller card, its battery/cache, or configuration metadata; don't reinitialise (that destroys data) — import/rescan first.</li>
 </ul>
+
+<h2>Scenario pick-list — storage & RAID</h2>
+<table>
+<tr><th>Scenario</th><th>First / correct action</th></tr>
+<tr><td>HDD clicking, files opening slowly</td><td>Back up immediately → replace drive</td></tr>
+<tr><td>SMART pre-failure warning at POST</td><td>Back up and replace proactively (don't wait)</td></tr>
+<tr><td>"No boot device" — drive missing in UEFI</td><td>Reseat SATA data/power cables; then condemn drive</td></tr>
+<tr><td>RAID 5 one disk failed (amber LED)</td><td>Degraded mode — replace failed disk, rebuild</td></tr>
+<tr><td>Second disk fails before rebuild finishes</td><td>Array lost — restore from backup</td></tr>
+<tr><td>Controller error; tempted to "initialise"</td><td><b>Do not initialise</b> — import/rescan foreign config</td></tr>
+<tr><td>SSD disappears / read-only, no click sounds</td><td>Silent SSD failure — back up whatever remounts, replace</td></tr>
+<tr><td>Power-cut file corruption (drive otherwise healthy)</td><td><code>chkdsk</code> + UPS for prevention</td></tr>
+</table>
+
+<h2>SSD vs HDD failure signatures</h2>
+<ul>
+<li><b>HDD:</b> click/grind, escalating I/O stalls, SMART reallocations — acoustic warning.</li>
+<li><b>SSD:</b> silent — I/O errors, vanishing from detection, read-only lockdown, sudden capacity anomalies. Rely on SMART and backups.</li>
+<li>Either way: <b>data first, replace second</b>. Do not run destructive tools (diskpart clean / format) on suspect volumes with unrecovered data.</li>
+</ul>
+
+<div class="keyfact"><b>Degraded ≠ safe:</b> a RAID array with one failed member still serves data but has <b>zero</b> remaining fault tolerance. Treat it as an emergency replace-and-rebuild, not "it's fine for now".</div>
 <div class="callout"><b>Exam angle:</b> clicking drive → backup NOW. SMART alert → replace proactively. RAID 5 with one dead disk → degraded, replace + rebuild. "Technician reinitialises the array" → wrong, data gone.</div>
 `,
 quiz:[
@@ -2112,6 +2175,26 @@ notes:`
 <li><b>Burn-in</b> — persistent ghost of static content (OLED/plasma especially): permanent; prevent with screen savers/pixel shift/varied content.</li>
 <li><b>Audio issues</b> — HDMI/DP carry audio: set the correct playback device; audio follows the video cable.</li>
 </ul>
+
+<h2>Where is the fault? — isolate display path</h2>
+<table>
+<tr><th>Test</th><th>If artefact/problem…</th><th>Then the fault is likely</th></tr>
+<tr><td>Screenshot on Bad PC, view on another machine</td><td>Still present in the file</td><td>GPU / driver</td></tr>
+<tr><td>Same screenshot, views clean on other PC</td><td>Only visible live on Bad PC's monitor</td><td>Cable, panel, or projector</td></tr>
+<tr><td>Move cable to another known-good monitor</td><td>Problem follows the monitor</td><td>That display / its PSU / backlight</td></tr>
+<tr><td>Problem follows the cable when swapped</td><td>Symptom moves with cable</td><td>Replace the video cable</td></tr>
+<tr><td>Discrete GPU installed; cable in motherboard ports</td><td>No image though PC POSTs</td><td>Plug into the GPU's ports instead</td></tr>
+</table>
+
+<h2>Projector checklist</h2>
+<ol>
+<li>Correct input source (HDMI 1/2) and laptop Fn display toggle.</li>
+<li>Lamp hours / lamp warning light — dim or no image after rated life → replace bulb.</li>
+<li>Thermal cycle: works, shuts down, works after cool-down → clean filter / vents.</li>
+<li>Focus/keystone/native resolution for fuzziness (panel/projector, not GPU artefacts).</li>
+</ol>
+
+<div class="keyfact"><b>Burn-in vs dead pixels:</b> permanent ghost of static layout → burn-in (OLED). Fixed black dots that never change → dead pixels. Soft blurry text on LCD → wrong (non-native) resolution.</div>
 <div class="callout"><b>Exam angle:</b> ghost image permanently visible → burn-in. Same spots always black → dead pixels. Blurry text on LCD → set native resolution. Projector cuts out then recovers → overheating/filter. Everything tinted → cable/pins.</div>
 `,
 quiz:[
@@ -2161,6 +2244,34 @@ notes:`
 <ul>
 <li>Sudden battery drain + heat + data-usage spikes + popups/unknown apps → possible malware: review installed apps and permissions, remove offenders, scan or factory reset (Core 2 covers the full removal procedure).</li>
 </ul>
+
+<h2>Symptom → first action (mobile)</h2>
+<table>
+<tr><th>Symptom</th><th>First action</th></tr>
+<tr><td>Won't charge; known-good cable same behaviour</td><td>Inspect/clean port for lint; then assess port damage</td></tr>
+<tr><td>Charges only at an odd cable angle</td><td>Damaged charge port — repair, don't force</td></tr>
+<tr><td>Rapid drain; battery health ~70%</td><td>Replace degraded battery (apps already ruled out)</td></tr>
+<tr><td>Case bulging / screen lifting</td><td>Stop use, don't charge, replace swollen battery</td></tr>
+<tr><td>Cracked glass, image OK, touch dead in area</td><td>Digitizer/glass assembly</td></tr>
+<tr><td>Touch offset after new protector</td><td>Remove protector and retest</td></tr>
+<tr><td>Bluetooth won't reconnect to known car kit</td><td>Forget/unpair both ends → re-pair</td></tr>
+<tr><td>WiFi/calls dead but device otherwise on</td><td>Airplane mode / radio toggles first</td></tr>
+<tr><td>Dropped in water</td><td>Power off, do <b>not</b> charge; LCI may void warranty</td></tr>
+<tr><td>Drain + heat + unknown apps + data spike</td><td>Malware audit — remove unknown apps/permissions</td></tr>
+</table>
+
+<h2>Connectivity ladder (detail)</h2>
+<ol>
+<li>Toggle airplane mode on/off (resets radios quickly).</li>
+<li>Confirm WiFi / Bluetooth / cellular each enabled.</li>
+<li>Forget network or unpair device → reconnect/re-pair.</li>
+<li>Restart device (and try another known-good hotspot/AP).</li>
+<li>Check distance, interference, carrier coverage.</li>
+<li>Reset network settings (wipes saved WiFi/BT).</li>
+<li>Factory reset only after backup — last resort.</li>
+</ol>
+
+<div class="keyfact"><b>Liquid + charge = worse damage.</b> Power off immediately. Rice is a myth. Manufacturers check LCI stickers — colour change = liquid contact for warranty.</div>
 `,
 quiz:[
 {q:"A phone charges only when the cable is held at an angle, and lately not at all. A known-good cable behaves the same. What should be checked FIRST?", o:["The battery health percentage","The charging port for lint/debris and physical damage","The wall adapter wattage","Airplane mode"], a:1, e:"Compacted pocket lint in the port prevents full insertion and is extremely common; clean carefully, then assess whether the port itself is damaged and needs repair."},
@@ -2210,6 +2321,23 @@ notes:`
 <ul>
 <li><b>Staple jams</b> — clear/reseat the finisher's staple cartridge. <b>Hole punch</b> faults — empty the chad (waste) container, align punch settings to paper size.</li>
 </ul>
+
+<h2>Scenario pick-list — print & scan faults</h2>
+<table>
+<tr><th>Scenario</th><th>Best first fix</th></tr>
+<tr><td>Toner rubs off when touched</td><td>Replace fuser</td></tr>
+<tr><td>Same defect repeats every ~75 mm</td><td>Imaging drum (circumference matching interval)</td></tr>
+<tr><td>Ghost of previous page</td><td>Drum / cleaning stage</td></tr>
+<tr><td>Pages of random symbols (all users after driver push)</td><td>Wrong/corrupt driver on print server — reinstall</td></tr>
+<tr><td>Queue stuck; nothing prints for anyone</td><td>Cancel wedged job + restart print spooler</td></tr>
+<tr><td>Grabs 3–4 sheets at once</td><td>Separation pad (or damp/overfilled paper)</td></tr>
+<tr><td>"Load paper" with full tray</td><td>Clean/replace pickup rollers; fan the ream</td></tr>
+<tr><td>Speckles + toner dust inside</td><td>Toner-safe vacuum (not compressed air)</td></tr>
+<tr><td>Finisher staple error</td><td>Clear/reseat staple cartridge</td></tr>
+<tr><td>Inkjet missing one colour, streaky</td><td>Run head cleaning cycle first</td></tr>
+</table>
+
+<div class="keyfact"><b>Hardware vs software spit:</b> smudges, streaks, repeating marks, jams → consumables/mechanicals (3.7). Garbled symbols, wrong orientation on one app, stuck queue → drivers/settings/spooler.</div>
 `,
 quiz:[
 {q:"Every page from a laser printer smears when touched. Which part has failed?", o:["Transfer roller","Fuser assembly","Pickup roller","Separation pad"], a:1, e:"Loose, smudging toner means the fuser isn't melting it into the paper — the definitive fuser symptom."},
@@ -2250,6 +2378,32 @@ notes:`
 <li><b>External interference</b> — microwaves, cordless phones, Bluetooth, neighbouring WLANs on overlapping channels → survey with a WiFi analyzer (2.8), move to a clean channel (1/6/11 on 2.4 GHz) or to 5 GHz.</li>
 <li><b>Signal/range issues</b> — distance, walls, antenna placement; symptoms worsen with distance from the AP.</li>
 </ul>
+
+<h2>Network triage ladder — wired then wireless</h2>
+<ol>
+<li><b>Physical:</b> link lights? reseat cable? try known-good patch lead and switch port.</li>
+<li><b>IP config:</b> <code>ipconfig /all</code> — APIPA 169.254? wrong static? gateway blank?</li>
+<li><b>Layered pings:</b> loopback → gateway → internet IP (8.8.8.8) → by name (google.com).</li>
+<li><b>Name vs IP:</b> IP works, name fails → DNS. Neither works past gateway → routing/ISP/firewall.</li>
+<li><b>WiFi add-ons:</b> correct SSID/password → channel survey (1/6/11) → move to 5 GHz if 2.4 GHz interference → coverage (extra AP).</li>
+</ol>
+
+<h2>Scenario pick-list — network</h2>
+<table>
+<tr><th>Scenario</th><th>Most likely cause / fix</th></tr>
+<tr><td>Connected, address 169.254.x.x, no internet</td><td>DHCP failure — check DHCP server/path</td></tr>
+<tr><td>Ping 8.8.8.8 works; browse by name fails</td><td>DNS — check/resolve with nslookup</td></tr>
+<tr><td>VoIP choppy; downloads fine</td><td>Jitter → QoS / voice VLAN</td></tr>
+<tr><td>Switch log: port up/down/up</td><td>Port flapping — swap cable, then NIC/port</td></tr>
+<tr><td>WiFi dies when microwave runs</td><td>2.4 GHz interference → 5 GHz or clean channel</td></tr>
+<tr><td>Far end of office: one bar; near AP: fine</td><td>Coverage — reposition AP or add AP</td></tr>
+<tr><td>Gigabit NIC links at 100 Mbps on one wall jack</td><td>Damaged pair / Cat 5 run — test & reterminate</td></tr>
+<tr><td>Whole floor slow; uplink at 100% utilisation</td><td>Congestion — upgrade/spread uplink load</td></tr>
+<tr><td>Drops when desk is knocked</td><td>Patch cable / wall port seating</td></tr>
+<tr><td>Half office APIPA; others with old leases OK</td><td>DHCP outage fingerprint</td></tr>
+</table>
+
+<div class="keyfact"><b>Ping ladder memory aid:</b> 127.0.0.1 (stack) → gateway (LAN route) → public IP (WAN) → FQDN (DNS). Fail at the first step that breaks.</div>
 <div class="callout"><b>Exam angle:</b> "VoIP calls are choppy" → jitter → QoS. "Port goes up and down in the switch log" → flapping → cable/NIC/port swap. "Connected to WiFi but no internet, address 169.254…" → DHCP. "Slow only near the microwave/at the far end of the office" → interference/signal → analyzer.</div>
 `,
 quiz:[
@@ -4162,7 +4316,8 @@ function renderDomainCard(coreKey, d, built){
 function renderDomainHero(coreKey, d){
   const icon = DOMAIN_ICONS[coreKey]?.[d.num] || "📘";
   const topicMins = d.subs.reduce((n,s)=>n+noteReadMeta(s.notes).min,0);
-  return `<div class="domain-hero domain-hero-${coreKey}">
+  const domainTheme = coreKey==="core1" && d.num==="5.0" ? " domain-hero-troubleshoot" : ` domain-hero-${coreKey}`;
+  return `<div class="domain-hero${domainTheme}">
     <div class="domain-hero-head"><span class="domain-icon">${icon}</span><div>
       <div class="eyebrow">${ROSTER[coreKey].name} · ${d.weight}% of exam</div>
       <h1 class="page">${d.num} ${esc(d.name)}</h1></div></div>
@@ -5500,7 +5655,7 @@ function render(){
     const s = d.subs.find(x=>x.id===view.sub);
     const sheet = prepNotesSheet(s.notes, s.id);
     const icon = DOMAIN_ICONS[view.core]?.[d.num] || "📘";
-    const sheetHeroCls = view.core==="core1" ? " sheet-hero-core1" : "";
+    const sheetHeroCls = view.core==="core1" && view.num==="5.0" ? " sheet-hero-troubleshoot" : view.core==="core1" ? " sheet-hero-core1" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
     app.innerHTML = `<div class="sheet-hero${sheetHeroCls}">
       <div class="eyebrow">Revision sheet · Domain ${d.num}</div>
