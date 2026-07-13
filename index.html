@@ -167,6 +167,19 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 @keyframes cable-in{from{stroke-dashoffset:40;opacity:0}to{stroke-dashoffset:0;opacity:.85}}
 @keyframes confetti{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-30px) scale(1.4);opacity:0}}
 .game-done-emoji{font-size:2.5rem;margin-bottom:8px;animation:confetti 1s ease infinite}
+.game-core{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;background:var(--panel);overflow:hidden}
+.game-core summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;cursor:pointer;list-style:none;user-select:none}
+.game-core summary::-webkit-details-marker{display:none}
+.game-core-title{font-family:var(--display);font-weight:800;font-size:1rem}
+.game-core-meta{font-size:.82rem;font-weight:600;color:var(--muted)}
+.game-core summary::after{content:"▸";color:var(--accent);font-size:1.15rem;font-weight:700;transition:transform .2s;flex-shrink:0}
+.game-core[open] summary::after{transform:rotate(90deg)}
+.game-core[open] summary{border-bottom:1px solid var(--line);background:var(--accent-soft)}
+.game-core-body{padding:14px 14px 6px}
+.game-domain{margin-bottom:18px}
+.game-domain:last-child{margin-bottom:6px}
+.game-domain .eyebrow{margin-bottom:4px}
+.game-domain .sub{margin-top:0;margin-bottom:10px}
 @media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}.save-status{display:none}.game-item{font-size:.82rem;padding:10px 6px}}
 @supports(padding:max(0px)){
   header.app{padding-top:max(12px,env(safe-area-inset-top))}
@@ -3954,25 +3967,44 @@ function renderGameCard(g){
 function gamesForDomain(core, num){
   return GAME_CATALOG.filter(g=>g.domains?.some(d=>d.core===core && d.num===num));
 }
-function renderGamesGrouped(){
+function renderDomainGames(coreKey, c, d){
+  const games = gamesForDomain(coreKey, d.num);
+  if(!games.length) return "";
+  return `<div class="game-domain">
+    <div class="eyebrow">${c.name} · ${c.code} — Domain ${d.num}</div>
+    <p class="sub">${esc(d.name)}</p>
+    <div class="grid">${games.map(renderGameCard).join("")}</div>
+  </div>`;
+}
+function renderGamesGrouped(collapsible){
   let html = "";
   for(const coreKey of ["core1","core2"]){
     const c = ROSTER[coreKey];
     let coreHtml = "";
+    const seen = new Set();
     for(const d of c.domains){
-      const games = gamesForDomain(coreKey, d.num);
-      if(!games.length) continue;
-      coreHtml += `<div class="eyebrow">${c.name} · ${c.code} — Domain ${d.num}</div>
-        <p class="sub" style="margin-top:-14px;margin-bottom:10px">${esc(d.name)}</p>
-        <div class="grid" style="margin-bottom:24px">${games.map(renderGameCard).join("")}</div>`;
+      const block = renderDomainGames(coreKey, c, d);
+      if(!block) continue;
+      gamesForDomain(coreKey, d.num).forEach(g=>seen.add(g.id));
+      coreHtml += block;
     }
-    if(coreHtml) html += coreHtml;
+    if(!coreHtml) continue;
+    const domainCount = c.domains.filter(d=>gamesForDomain(coreKey, d.num).length).length;
+    const meta = `${domainCount} domain${domainCount===1?"":"s"} · ${seen.size} game${seen.size===1?"":"s"}`;
+    if(collapsible){
+      html += `<details class="game-core">
+        <summary><span class="game-core-title">${c.name} · ${c.code}</span><span class="game-core-meta">${meta}</span></summary>
+        <div class="game-core-body">${coreHtml}</div>
+      </details>`;
+    } else {
+      html += `<div class="eyebrow" style="margin-top:18px">${c.name} · ${c.code}</div><p class="sub">${meta}</p>${coreHtml}`;
+    }
   }
   return html;
 }
 function renderGamesHub(limit){
   if(limit) return GAME_CATALOG.slice(0, limit).map(renderGameCard).join("");
-  return renderGamesGrouped();
+  return renderGamesGrouped(true);
 }
 function renderGame(){
   const app = document.getElementById("app");
@@ -4140,8 +4172,8 @@ function render(){
     crumbs.innerHTML = "<b>🎮 Revision Games</b>";
     app.innerHTML = `<div class="eyebrow">Quick drills</div>
       <h1 class="page">Revision Games</h1>
-      <p class="sub">${GAME_CATALOG.length} games grouped by exam domain — tap-to-connect & troubleshooting trails.</p>
-      ${renderGamesGrouped()}`;
+      <p class="sub">${GAME_CATALOG.length} games grouped by exam domain — expand Core 1 or Core 2 to browse.</p>
+      ${renderGamesGrouped(true)}`;
     return;
   }
 
