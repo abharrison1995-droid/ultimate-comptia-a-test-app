@@ -180,6 +180,17 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .game-domain:last-child{margin-bottom:6px}
 .game-domain .eyebrow{margin-bottom:4px}
 .game-domain .sub{margin-top:0;margin-bottom:10px}
+.story-chat{max-width:520px;margin:0 auto}
+.story-history{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;max-height:42vh;overflow-y:auto;padding:4px 2px}
+.story-bubble{padding:12px 14px;border-radius:14px;font-size:.93rem;line-height:1.45;max-width:92%}
+.story-bubble.them{align-self:flex-start;background:var(--accent-soft);border-bottom-left-radius:4px}
+.story-bubble.you{align-self:flex-end;background:var(--panel);border:1px solid var(--line);border-bottom-right-radius:4px}
+.story-bubble .who{font-size:.72rem;font-weight:700;color:var(--accent);margin-bottom:4px}
+.story-bubble.you .who{color:var(--muted)}
+.story-picks{display:grid;gap:8px;margin-top:12px}
+.story-picks .opt{text-align:left}
+.story-narrator{font-size:.88rem;color:var(--muted);font-style:italic;text-align:center;margin:8px 0}
+.game-card.locked{opacity:.55;cursor:default}
 @media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}.save-status{display:none}.game-item{font-size:.82rem;padding:10px 6px}}
 @supports(padding:max(0px)){
   header.app{padding-top:max(12px,env(safe-area-inset-top))}
@@ -3658,7 +3669,9 @@ const GAME_CATALOG = [
   {id:"threat", icon:"🎭", name:"Threat Tag", desc:"Tag scenarios with the attack or threat type", ready:true, type:"match", matchType:"id", count:6, hub:"🎭", domains:[{core:"core2",num:"2.0"}]},
   {id:"backup", icon:"💿", name:"Backup Chain", desc:"Match backup types to how they work", ready:true, type:"match", matchType:"id", count:6, hub:"💿", domains:[{core:"core2",num:"4.0"}]},
   {id:"subnet", icon:"🔢", name:"Subnet Snap", desc:"Match IP + mask to the network address", ready:true, type:"match", matchType:"id", count:5, hub:"🔢", domains:[{core:"core1",num:"2.0"}]},
-  {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]}
+  {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]},
+  {id:"storychat", icon:"💬", name:"Fix-It Fables", desc:"Chat with legends — choose your answers to shape each tech rescue story", ready:true, type:"story", count:5, hub:"💬", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"},{core:"core2",num:"4.0"}]},
+  {id:"millionaire", icon:"💰", name:"A+ Millionaire", desc:"Who Wants to Be a Millionaire style — lifelines, rising stakes, exam questions", ready:false, type:"millionaire", count:15, hub:"💰", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]}
 ];
 const PORT_DATA = {
   normal:[
@@ -3799,6 +3812,53 @@ const SEQUENCE_DATA = [
     "Patch OS/apps & create clean restore point"
   ]}
 ];
+const STORY_DATA = [
+{id:"linus", emoji:"🐧", name:"Linus Torvalds", title:"Kernel Panic Hotline", tagline:"A production box is down and he's not thrilled.",
+opening:"Hey. My build server kernel-panicked after an update. Users are yelling on the mailing list. You're on chat support. Don't waste my time.",
+steps:[
+{msg:"First thing: the box won't boot — it drops to emergency mode. What's your FIRST move?",o:["Reinstall Windows Server","Boot a live USB, chroot in, rebuild initramfs (dracut/mkinitcpio)","Delete /boot and hope","Disable Secure Boot because it's annoying"],a:1,e:"After kernel updates, the initramfs must be rebuilt so the bootloader can load the right modules — classic Linux recovery.",react:"Fine. Initramfs rebuilt. It boots. Now SSH is refusing everyone."},
+{msg:"Only key-based auth works but permissions look 'fine' to the intern. What fixes SSH 'bad ownership or modes'?",o:["chmod 777 /etc/ssh","chmod 600 the private key; ~/.ssh 700; authorized_keys 600","Run sshd as root always","Delete known_hosts on the server"],a:1,e:"SSH is picky: private keys and authorized_keys must not be world-readable; .ssh directories need tight permissions.",react:"Good. We're in. Next: a service won't start — systemd blames 'permission denied' on a config in /etc."},
+{msg:"A new config file was copied in as root but the daemon runs as a service account. Best fix?",o:["Run the daemon as root — problem solved","chown/chmod so the service user can read (not world-writable) the config","Move config to /tmp","Disable SELinux/AppArmor permanently"],a:1,e:"Least privilege: services need ownership and permissions matching their service account — not root, not world-readable secrets.",react:"Service is up. Logs show disk errors — SMART is screaming."},
+{msg:"SMART reports reallocated sectors climbing. What's the professional call?",o:["Ignore until fire","Schedule replacement; restore from backup to new drive","Run chkdsk only","Defrag harder"],a:1,e:"Rising reallocated sectors predict drive death — migrate from backup before catastrophic failure.",react:"Cloned to new NVMe. Last thing: interns opened a phishing 'kernel patch' zip."},
+{msg:"A user ran a suspicious script with sudo. What's the FIRST containment step?",o:["Post on social media","Disconnect/isolate the host from the network","Reboot three times","Format immediately without preserving evidence"],a:1,e:"Isolate first — stop spread and command-and-control; then image, scan offline, and follow incident procedure.",react:"…Not terrible. The server lives. I'm going back to C. Don't email me."}
+]},
+{id:"tesla", emoji:"⚡", name:"Nikola Tesla", title:"The Wardenclyffe WiFi Incident", tagline:"Wireless electricity, but make it IEEE.",
+opening:"Greetings! I have erected a magnificent tower of connectivity, yet the lights flicker when the motors spin. You — my apprentice in support — shall answer wisely.",
+steps:[
+{msg:"Motors on the same circuit cause network drops. What phenomenon is MOST likely?",o:["DNS cache poisoning","Electromagnetic interference (EMI) on copper","Too many cat videos","DHCP lease too short"],a:1,e:"Motors and welders generate EMI that can disrupt unshielded copper Ethernet — shielded cable or separation helps.",react:"Precisely! The ether crackles with interference. I separated the feeders."},
+{msg:"We need cable in a noisy workshop. Which is the better choice?",o:["Unshielded Cat 5e next to the motor","STP or fibre away from EMI sources","Coax TV cable","Parallel power extension lead"],a:1,e:"Shielded twisted pair or fibre resists EMI in electrically noisy environments.",react:"Excellent! The sparks still fly, but the packets flow."},
+{msg:"A technician gets a shock touching a rack during a storm. What should have been verified FIRST?",o:["WiFi password complexity","Proper earth/ground bonding of racks and UPS","RGB fan direction","Latest TikTok update"],a:1,e:"Rack and power equipment must be properly grounded — especially with UPS and surge paths.",react:"Ground restored! The tower hums safely."},
+{msg:"UPS beeps during brownouts. What is its PRIMARY job here?",o:["Increase download speed","Condition power and bridge short outages for clean shutdown","Cool the server room","Replace the generator"],a:1,e:"A UPS filters sags and provides battery runtime so systems shut down cleanly — not long-term power.",react:"Splendid! The electrons march in orderly fashion."},
+{msg:"Lightning took out the ISP line but the server survived. What device likely saved the LAN?",o:["A longer patch cable","Surge protector on the network/power path","Second monitor","Bluetooth adapter"],a:1,e:"Surge protection clamps spikes before they reach gear — critical in lightning-prone feeds.",react:"You have tamed the lightning! Wardenclyffe broadcasts once more!"}
+]},
+{id:"einstein", emoji:"🧠", name:"Albert Einstein", title:"Relatively Slow Network", tagline:"Nothing travels faster than light — except complaints.",
+opening:"Imagine you are on a train moving at c... just kidding. My home lab clocks drift and video calls lag. Help me think through this clearly.",
+steps:[
+{msg:"All machines show wrong time after a power cut. First component to suspect?",o:["GPU driver","CR2032 CMOS battery on motherboards","HDMI cable","Keyboard layout"],a:1,e:"CMOS batteries keep RTC alive when powered off — dead coin cells lose time and BIOS settings.",react:"Ja! New batteries installed. Time is relative again — but should be consistent."},
+{msg:"Consistent time across the domain now requires what?",o:["Each user sets watch manually","Authoritative NTP source (port 123) for clients","Faster RAM","Dark mode"],a:1,e:"NTP synchronises clocks across hosts — essential for logs, Kerberos, and TLS.",react:"Wonderful. Logs align like a proper thought experiment."},
+{msg:"Ping shows 2 ms to gateway but 300 ms to a geostationary satellite link. Why?",o:["Bad WiFi password","Speed of light — enormous round-trip to orbit","Switch needs reboot","Cable too colorful"],a:1,e:"Satellite links suffer high latency from distance — bandwidth can be fine while latency kills real-time apps.",react:"Indeed! c is the boss. We plan around latency."},
+{msg:"Fibre vs copper for campus backbone at distance — which wins on attenuation?",o:["Copper Cat 3","Single-mode fibre","Flat Ethernet over barbed wire","HDMI"],a:1,e:"Single-mode fibre carries light with very low loss over kilometres — copper is distance-limited.",react:"Elegant! Photons win the race."},
+{msg:"Traceroute shows a loop between two routers. Most likely misconfiguration?",o:["Too much RAM","Routing loop / conflicting route advertisements","Monitor brightness","Expired SSL cert on printer"],a:1,e:"Routing loops bounce packets until TTL expires — check routing tables and redistribution.",react:"You have brought order to the network universe. E=mc² and E=excellent work!"}
+]},
+{id:"harry", emoji:"🎩", name:"Harry Hill", title:"Which Is Best? Helpdesk Edition", tagline:"You've got to have a bit of trouble. And a bit of Ethernet.",
+opening:"Right. I'm Harry. I've got five IT problems and only one of you. Actually I've got you on chat. Pick the right answers or I'll swap the cables for spaghetti.",
+steps:[
+{msg:"Which is best for finding whether RAM is faulty?",o:["A sausage roll","MemTest86 / memory diagnostic","Shouting at the PC","Turning it off and on forever without testing"],a:1,e:"Memory diagnostics stress-test RAM properly — random BSODs often start there.",react:"Which is best? Memory test. Obviously."},
+{msg:"User says WiFi is broken. Airplane mode is on. Which is best FIRST?",o:["Replace the motherboard","Toggle WiFi/Fn wireless back on","Buy a new house","Install Adobe Reader"],a:1,e:"Hardware/software radio toggles (airplane mode, Fn key) disable WiFi before drivers even matter.",react:"Which is best? The Fn key. Classic."},
+{msg:"Which is best: user opens attachment 'Invoice.exe' from unknown sender?",o:["Forward to everyone","Do not open; report as phishing; quarantine","Rename to .pdf","Run as administrator for speed"],a:1,e:"Executable attachments from unknown senders are phishing/malware — report and don't execute.",react:"Which is best? Not clicking. Stroking the chin."},
+{msg:"PC only fails during games, temps fine. Which is best suspect?",o:["The monitor's feelings","Insufficient or failing PSU under load","Wrong desktop wallpaper","Needs more RGB"],a:1,e:"Load-only shutdowns with normal temps point to PSU sag — GPUs spike wattage.",react:"Which is best? The power supply. It's always something."},
+{msg:"Which is best backup strategy for exam-critical notes?",o:["One USB stick in a puddle","3-2-1 rule: three copies, two media, one off-site","Hope","Print on rice paper"],a:1,e:"3-2-1 protects against device loss, corruption, and site disasters — operational procedures gold.",react:"Which is best? You! Tea?"}
+]},
+{id:"fieri", emoji:"🔥", name:"Guy Fieri", title:"Flavortown POS Meltdown", tagline:"The kitchen tickets stopped printing and the register's hotter than a turbo burner.",
+opening:"Welcome to Flavortown IT, baby! My point-of-sale is down, the kitchen printer's spewing nonsense, and we're slammin' lunch rush. Help me get this rig back on triple-D duty!",
+steps:[
+{msg:"Kitchen printer shows 'cannot connect' but ping works. FIRST check?",o:["Replace the deep fryer","Verify correct IP/port; restart print spooler/service","Delete all menu items","Unplug the freezer"],a:1,e:"Network printers need the right address/port and a healthy spooler — ping alone doesn't mean printing works.",react:"That's the flavor! Tickets are rollin' again."},
+{msg:"POS terminal has 169.254.x.x address. What's wrong?",o:["Too much awesome","DHCP failed — APIPA self-assigned address","Monitor too bright","Needs more donkey sauce"],a:1,e:"169.254.x.x means DHCP didn't assign an address — check DHCP server, scope, and cable.",react:"DHCP's back! We're servin' connectivity hot and fresh."},
+{msg:"Grease and steam killed a wall port. Best long-term fix?",o:["Duct tape and dreams","Sealed industrial jack / relocate port away from heat & moisture","Wireless everything with no password","Paint over it"],a:1,e:"Harsh environments need protected cabling and placement — moisture and heat destroy copper contacts.",react:"Out of this world! Ports are protected like a champion burger station."},
+{msg:"Credit card reader needs TLS but clock was wrong. Why did payments fail?",o:["Banks hate flavor","Certificate validation fails when system time is wrong","RAM too spicy","Wrong shirt"],a:1,e:"TLS certificates are time-sensitive — accurate NTP/time sync is required for payment systems.",react:"Time sync locked in! Money moves smoother than a molten cheese pull."},
+{msg:"Closing time backup for today's sales — which type runs fastest after a full weekend backup?",o:["Full only every night","Incremental since last backup of any type","Delete the database","Screenshot the screen"],a:1,e:"Incrementals capture only changes since the last backup — quick for nightly POS closes after a full.",react:"You saved Flavortown IT, baby! This rig's certified money!"}
+]}
+];
 const GAME_TOASTS = {
   good:["⚡ Patch perfect!","🔌 Connected!","✨ Nice run!","🎉 Nailed it!","💚 Solid match!"],
   bad:["💥 Spark! Wrong match","🔥 Not quite — try again!","⚠️ Crosstalk! Retry","🔌 Loose connection — retry"],
@@ -3810,6 +3870,7 @@ function gamePairCount(id, mode){
   const m = gameMeta(id);
   if(!m) return 6;
   if(id==="ports") return mode==="hard" ? (m.countHard||10) : m.count;
+  if(id==="storychat") return 5;
   return m.count || 6;
 }
 function gameScoreKey(id, mode){ return "game_"+id+(mode?"_"+mode:""); }
@@ -3848,6 +3909,45 @@ function buildStandardGame(id){
   const right = shuffle(pairs.map(p=>({id:p.id, text:p.right, match:p.id})));
   return gameShell({id, type:"match", matchType:"id", mode:"normal", pairs, left, right});
 }
+function buildStoryGame(storyId){
+  const story = STORY_DATA.find(s=>s.id===storyId);
+  if(!story) return null;
+  return {id:"storychat", type:"story", mode:storyId, story, step:0,
+    history:[{from:"them", who:story.name, text:story.opening},{from:"them", who:story.name, text:story.steps[0].msg}],
+    answered:false, picked:null, right:0, done:false, mistakes:0, phase:"play"};
+}
+function startStory(storyId){
+  game = buildStoryGame(storyId);
+  if(!game) return;
+  view = Object.assign(view, {name:"game", gameId:"storychat"});
+  render();
+  window.scrollTo({top:0});
+}
+function storyPick(idx){
+  if(!game || game.answered || game.done || game.type!=="story") return;
+  const step = game.story.steps[game.step];
+  game.answered = true;
+  game.picked = idx;
+  if(idx===step.a) game.right++;
+  else game.mistakes++;
+  game.history.push({from:"you", who:"You", text:step.o[idx]});
+  renderGame();
+}
+function storyNext(){
+  if(!game || !game.answered || game.done || game.type!=="story") return;
+  const step = game.story.steps[game.step];
+  if(step.react) game.history.push({from:"them", who:game.story.name, text:step.react});
+  game.step++;
+  game.answered = false;
+  game.picked = null;
+  if(game.step>=game.story.steps.length){
+    game.done = true;
+    recordScore(gameScoreKey("storychat", game.mode), game.right, game.story.steps.length);
+  } else {
+    game.history.push({from:"them", who:game.story.name, text:game.story.steps[game.step].msg});
+  }
+  renderGame();
+}
 function buildSequenceGame(){
   const scenario = shuffle([...SEQUENCE_DATA])[0];
   const items = shuffle(scenario.steps.map((text,i)=>({id:String(i), text, order:i})));
@@ -3856,6 +3956,13 @@ function buildSequenceGame(){
 function startGame(id, mode){
   const meta = gameMeta(id);
   if(!meta || !meta.ready) return;
+  if(meta.type==="story"){
+    game = {id:"storychat", type:"story", phase:"pick"};
+    view = Object.assign(view, {name:"game", gameId:id, mode:"normal"});
+    render();
+    window.scrollTo({top:0});
+    return;
+  }
   if(meta.type==="sequence") game = buildSequenceGame();
   else if(id==="ports") game = buildPortGame(mode||"normal");
   else if(id==="connectors") game = buildConnectorGame();
@@ -3875,7 +3982,7 @@ function pairOk(leftItem, rightItem){
   return game.matchType==="port" ? leftItem.match===rightItem.text : leftItem.match===rightItem.id;
 }
 function gameTap(side, itemId){
-  if(!game || game.done || game.phase!=="play" || game.type==="sequence") return;
+  if(!game || game.done || game.phase!=="play" || game.type==="sequence" || game.type==="story") return;
   const getRight = (id)=> game.right.find(x=>x.text===id || x.id===id);
   const getLeft = (id)=> game.left.find(x=>x.id===id);
   const isDone = (s,id)=>{
@@ -3958,7 +4065,10 @@ function drawGameCables(){
   }
 }
 function renderGameCard(g){
-  const score = gameScorePill(g.id, "normal");
+  if(!g.ready){
+    return `<div class="game-card locked"><div class="icon">${g.icon}</div><h3>${esc(g.name)}</h3><div class="meta">${esc(g.desc)}</div></div>`;
+  }
+  const score = g.type==="story" ? "" : gameScorePill(g.id, "normal");
   return `<button class="game-card clickable" onclick="go('game',{gameId:'${g.id}'})">
     <div class="icon">${g.icon}</div>
     <h3>${esc(g.name)} ${score}</h3>
@@ -4000,6 +4110,14 @@ function renderGamesGrouped(collapsible){
       html += `<div class="eyebrow" style="margin-top:18px">${c.name} · ${c.code}</div><p class="sub">${meta}</p>${coreHtml}`;
     }
   }
+  const locked = GAME_CATALOG.filter(g=>!g.ready);
+  if(locked.length){
+    html += `<div class="game-domain">
+      <div class="eyebrow">Coming soon</div>
+      <p class="sub">More games on the way</p>
+      <div class="grid">${locked.map(renderGameCard).join("")}</div>
+    </div>`;
+  }
   return html;
 }
 function renderGamesHub(limit){
@@ -4013,16 +4131,19 @@ function renderGame(){
   document.getElementById("crumbs").innerHTML = `<b>🎮 ${esc(meta.name)}</b>`;
   if(!game || game.id!==view.gameId){
     game = {id:view.gameId, phase:"intro", mode:view.mode||"normal"};
-  } else if(game.phase!=="play" && game.phase!=="intro"){
+  } else if(game.phase!=="play" && game.phase!=="intro" && game.phase!=="pick"){
     game = {id:view.gameId, phase:"intro", mode:view.mode||"normal"};
   }
-  const total = game.type==="sequence" ? (game.total||meta.count) : (game.pairs?.length || gamePairCount(view.gameId, game.mode));
+  const total = game.type==="story" ? (game.story?.steps.length || gamePairCount(view.gameId, game.mode))
+    : game.type==="sequence" ? (game.total||meta.count) : (game.pairs?.length || gamePairCount(view.gameId, game.mode));
   if(game.phase==="intro"){
     const modes = meta.modes ? `<div class="game-mode">
       <button class="mode-chip ${game.mode==="normal"?"active":""}" onclick="setGameMode('normal')">😊 Normal — names & numbers</button>
       <button class="mode-chip hard ${game.mode==="hard"?"active":""}" onclick="setGameMode('hard')">🔥 Hard — secure ports & traps</button>
     </div>` : "";
-    const hint = meta.type==="sequence"
+    const hint = meta.type==="story"
+      ? "Pick a legend — they'll chat you through a tech rescue. Answer from four options at each beat."
+      : meta.type==="sequence"
       ? "Steps are shuffled — tap them in the correct troubleshooting order."
       : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
       : "Tap left, then right — connect the match.";
@@ -4034,18 +4155,68 @@ function renderGame(){
       ${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode)) ? `<p class="sub" style="margin-top:14px">${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode))}</p>` : ""}`;
     return;
   }
+  if(game.type==="story" && game.phase==="pick"){
+    const picks = STORY_DATA.map(s=>`<button type="button" class="game-card clickable" onclick="startStory('${s.id}')">
+      <div class="icon">${s.emoji}</div>
+      <h3>${esc(s.name)}</h3>
+      <div class="meta">${esc(s.title)} — ${esc(s.tagline)}</div></button>`).join("");
+    app.innerHTML = `<div class="eyebrow">Fix-It Fables · pick your legend</div>
+      <h1 class="page">${meta.icon} Who's on chat?</h1>
+      <p class="sub">Five tech rescues, five personalities. Tap a character to start their story.</p>
+      <div class="grid">${picks}</div>
+      <div class="row" style="margin-top:14px"><button class="btn" onclick="game=null;go('games')">All games</button></div>`;
+    return;
+  }
   if(game.done){
-    const linked = game.type==="sequence" ? game.next : Object.keys(game.matched).length/2;
+    let linked, verdict;
+    if(game.type==="story"){
+      linked = game.right;
+      verdict = game.right===total ? "Perfect story run!" : game.right>=total-1 ? "Solid rescue!" : "Complete — try another legend!";
+    } else if(game.type==="sequence"){
+      linked = game.next;
+      verdict = game.mistakes===0 ? "Flawless run!" : "Complete — refine on the next pass!";
+    } else {
+      linked = Object.keys(game.matched).length/2;
+      verdict = game.mistakes===0 ? "Flawless run!" : "Complete — refine on the next pass!";
+    }
+    const storyNote = game.type==="story" ? `<p class="sub" style="margin-top:0">${esc(game.story.name)} · ${game.mistakes} wrong pick${game.mistakes===1?"":"s"}</p>` : "";
+    const modeNote = game.mode==="hard" && game.type!=="story" ? " · Hard mode" : "";
+    const replayId = game.type==="story" ? "storychat" : game.id;
     app.innerHTML = `<div class="result">
       <div class="game-done-emoji">${game.mistakes===0?"🏆":"🎉"}</div>
       <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
       <div class="big" style="color:var(--good)">${linked}/${total}</div>
-      <div class="verdict">${game.mistakes===0?"Flawless run!":"Complete — refine on the next pass!"}</div>
-      <p class="sub" style="margin-top:0">${game.mistakes} mistakes${game.mode==="hard"?" · Hard mode":""}</p>
+      <div class="verdict">${verdict}</div>
+      ${storyNote}
+      <p class="sub" style="margin-top:0">${game.type==="story" ? "" : game.mistakes+" mistakes"}${modeNote}</p>
       <div class="row">
-        <button class="btn primary" onclick="startGame('${game.id}','${game.mode}')">Play again</button>
+        <button class="btn primary" onclick="startGame('${replayId}','${game.mode||"normal"}')">Play again</button>
         <button class="btn" onclick="game=null;go('games')">All games</button>
       </div></div>`;
+    return;
+  }
+  if(game.type==="story" && game.phase==="play"){
+    const step = game.story.steps[game.step];
+    const bubbles = game.history.map(b=>`<div class="story-bubble ${b.from}">
+      <div class="who">${esc(b.who)}</div>${esc(b.text)}</div>`).join("");
+    let picksHtml = "";
+    if(!game.answered){
+      picksHtml = `<div class="story-narrator">Pick your answer…</div>
+        <div class="story-picks">${step.o.map((opt,i)=>`<button type="button" class="btn opt" onclick="storyPick(${i})">${esc(opt)}</button>`).join("")}</div>`;
+    } else {
+      const ok = game.picked===step.a;
+      picksHtml = `<div class="explain ${ok?"ok":"no"}" style="margin-top:12px">${ok?"✅":"❌"} ${esc(step.e)}</div>
+        <div class="row"><button class="btn primary" onclick="storyNext()">${game.step>=game.story.steps.length-1?"Finish story":"Continue story →"}</button></div>`;
+    }
+    app.innerHTML = `<div class="game-scorebar"><span>${game.story.emoji} ${esc(game.story.name)}</span><span>Beat ${game.step+1} of ${game.story.steps.length}</span></div>
+      <div class="story-chat">
+        <div class="story-history" id="storyHistory">${bubbles}</div>
+        ${picksHtml}
+      </div>`;
+    requestAnimationFrame(()=>{
+      const el = document.getElementById("storyHistory");
+      if(el) el.scrollTop = el.scrollHeight;
+    });
     return;
   }
   if(game.type==="sequence"){

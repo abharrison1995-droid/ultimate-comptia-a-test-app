@@ -40,13 +40,16 @@ async function goToGamesHub() {
 }
 async function openGame(name) {
   await goToGamesHub();
-  await page.locator('.game-card').filter({ hasText: name }).first().click();
+  const details = page.locator('details.game-core');
+  const n = await details.count();
+  for (let i = 0; i < n; i++) await details.nth(i).evaluate(el => { el.open = true; });
+  await page.locator('.game-card.clickable').filter({ hasText: name }).first().click();
   await page.locator('button.btn.primary').filter({ hasText: 'Let' }).click();
 }
 
 await page.goto(`http://127.0.0.1:${port}/`);
 const gameCount = await page.evaluate(() => GAME_CATALOG.length);
-assert('12 games in catalog', gameCount === 12);
+assert('14 games in catalog', gameCount === 14);
 
 await goToGamesHub();
 await openGame('Port Match');
@@ -64,6 +67,19 @@ for (let i = 0; i < 5; i++) {
   await page.waitForTimeout(200);
 }
 assert('Troubleshoot Trail completes', await page.isVisible('text=Play again'));
+
+await openGame('Fix-It Fables');
+await page.click('button.game-card:has-text("Harry Hill")');
+await page.waitForSelector('.story-picks');
+for (let i = 0; i < 5; i++) {
+  const idx = await page.evaluate(() => game.story.steps[game.step].a);
+  await page.locator('.story-picks .opt').nth(idx).click();
+  await page.waitForTimeout(120);
+  const btn = page.locator('button.btn.primary').filter({ hasText: /Continue story|Finish story/ });
+  await btn.click();
+  await page.waitForTimeout(120);
+}
+assert('Fix-It Fables completes', await page.isVisible('text=Play again'));
 
 await browser.close();
 server.close();
