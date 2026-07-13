@@ -31,6 +31,13 @@ assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count())
 assert('Core 1 games strip', await page.isVisible('.core1-games-strip'));
 await page.click('text=1.0 Mobile Devices');
 assert('Domain hero on topic list', await page.isVisible('.domain-hero'));
+await page.click('text=1.2 Compare');
+assert('1.2 display symptom table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Symptom')));
+assert('1.2 touch technologies section', await page.evaluate(() => !!document.getElementById('note-12-3') || document.querySelector('.notes')?.textContent.includes('Capacitive')));
+await page.click('button.sub-nav-btn:has-text("1.3")');
+assert('1.3 dock vs hub table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('KVM switch')));
+assert('1.3 scenario pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Contactless payment')));
+await page.click('button:has-text("All 1.0 topics")');
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
 assert('Revision sheet wraps notes', await page.isVisible('.notes-sheet'));

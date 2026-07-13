@@ -409,6 +409,22 @@ notes:`
 </table>
 <div class="callout"><b>Exam angle:</b> match the panel to the need — photographer/designer → IPS; competitive gamer on a budget → TN; deep contrast for media → VA.</div>
 
+<h2>Resolution and native resolution</h2>
+<ul>
+<li><b>Native resolution</b> is the panel's physical pixel grid (e.g. 1920×1080, 2560×1440, 3840×2160). LCDs are sharpest only at native — other resolutions are scaled and look soft.</li>
+<li><b>1080p (FHD)</b> — common on budget laptops; <b>1440p (QHD)</b> — sharper mid-range; <b>4K (UHD)</b> — premium, more GPU load and battery drain.</li>
+<li>Windows <b>ClearType</b> and macOS scaling improve text rendering but cannot fix running below native resolution on an LCD.</li>
+</ul>
+<div class="keyfact"><b>Symptom trap:</b> "Text looks blurry on a new laptop" → check display scaling and that output matches the panel's native resolution.</div>
+
+<h2>Touch technologies</h2>
+<table>
+<tr><th>Type</th><th>How it works</th><th>Where you'll see it</th></tr>
+<tr><td><b>Capacitive</b></td><td>Detects conductive objects (finger, passive stylus tip)</td><td>Modern phones, tablets, touch laptops</td></tr>
+<tr><td><b>Resistive</b></td><td>Pressure bends two layers together — works with gloves/stylus pressure</td><td>Legacy industrial/handheld devices; rare on consumer kit now</td></tr>
+<tr><td><b>Active stylus</b></td><td>Digitizer detects pen with battery/Bluetooth — pressure, tilt, palm rejection</td><td>Surface Pen, Apple Pencil, Wacom tablets</td></tr>
+</table>
+
 <h2>Backlighting: LED vs CCFL — and the inverter</h2>
 <ul>
 <li>All LCDs need a backlight. Modern panels use <b>LED</b> backlights: efficient, thin, low-voltage DC.</li>
@@ -420,7 +436,27 @@ notes:`
 <ul>
 <li><b>OLED</b> pixels emit their own light — <b>no backlight at all</b>. Result: perfect blacks (pixels switch fully off), superb contrast, thin and flexible panels.</li>
 <li>Drawbacks: cost, and risk of <b>burn-in</b> from static images. Common on premium phones and some high-end laptops.</li>
+<li><b>Mini-LED / QLED (marketing)</b> — LCD with many smaller backlight zones for better contrast; still needs a backlight unlike true OLED.</li>
 </ul>
+
+<h2>Display settings technicians should know</h2>
+<ul>
+<li><b>Brightness</b> — software slider or Fn keys; dim backlight saves battery on laptops.</li>
+<li><b>Auto-rotate</b> — tablet/2-in-1 uses accelerometer/gyroscope; if rotation stops, check lock rotation setting before replacing hardware.</li>
+<li><b>External display</b> — duplicate, extend, or second-screen-only via OS display settings or Fn + monitor key.</li>
+<li><b>Colour calibration</b> — important for design/photo work; IPS panels are the usual choice.</li>
+</ul>
+
+<h2>Symptom → component — quick diagnosis</h2>
+<table>
+<tr><th>What the user sees</th><th>Likely failed part</th></tr>
+<tr><td>Perfect image, no touch response</td><td>Digitizer / touch layer</td></tr>
+<tr><td>Touch registers, image black or corrupted</td><td>LCD panel or video cable</td></tr>
+<tr><td>Faint image visible with a torch, very dark screen</td><td>Backlight (LED) or inverter (CCFL)</td></tr>
+<tr><td>Lines, flicker, or colour bands at certain hinge angles</td><td>Display cable through the hinge — reseat or replace</td></tr>
+<tr><td>WiFi weak after screen repair</td><td>Antenna coax leads not reconnected to wireless card</td></tr>
+<tr><td>Webcam/mic dead after board swap</td><td>Hinge-routed camera/mic cables not plugged into motherboard</td></tr>
+</table>
 
 <h2>Everything else living in the lid</h2>
 <ul>
@@ -429,7 +465,8 @@ notes:`
 <li><b>Digitizer/touchscreen:</b> the glass layer that converts touch (finger or stylus) into input — a separate layer from the LCD itself. A cracked digitizer can leave the display image perfect while touch fails, and vice versa.</li>
 <li><b>Inverter:</b> only present on CCFL-era machines, mounted below the panel.</li>
 </ul>
-<div class="callout"><b>Exam angle:</b> "Display works but touch doesn't" → digitizer. "Touch works but image is corrupted/black" → LCD panel. "Image present but no illumination" → backlight/inverter.</div>
+<div class="callout"><b>Exam angle:</b> "Display works but touch doesn't" → digitizer. "Touch works but image is corrupted/black" → LCD panel. "Image present but no illumination" → backlight/inverter. "Fault only when lid is moved" → display cable.</div>
+<div class="keyfact"><b>Reassembly reminder:</b> after any lid/screen work, reconnect WiFi antenna leads, webcam/mic cables, and display cable before closing — three common post-repair misses.</div>
 `,
 quiz:[
 {q:"Which display panel type offers the widest viewing angles and best colour reproduction?", o:["TN","VA","IPS","CCFL"], a:2, e:"IPS (In-Plane Switching) leads on colour accuracy and viewing angles, which is why it's specified for design work. CCFL is a backlight technology, not a panel type."},
@@ -452,9 +489,21 @@ notes:`
 <table>
 <tr><th>Port/connector</th><th>Key facts</th></tr>
 <tr><td><b>USB-C</b></td><td>Reversible, universal. Can carry USB 3.x/USB4 data, DisplayPort video (alt mode), and Power Delivery for charging. The modern do-everything port.</td></tr>
+<tr><td><b>Thunderbolt 3/4</b></td><td>Uses USB-C shape; adds PCIe tunneling, higher bandwidth, daisy-chaining. Often marked with a lightning bolt. Docks and eGPU enclosures use TB.</td></tr>
 <tr><td><b>microUSB / miniUSB</b></td><td>Legacy small USB connectors — miniUSB (older cameras/peripherals) predates microUSB (pre-USB-C Android phones). Not reversible.</td></tr>
 <tr><td><b>Lightning</b></td><td>Apple's proprietary reversible connector (iPhone/older iPads). Being displaced by USB-C.</td></tr>
+<tr><td><b>MagSafe</b></td><td>Magnetic charging — original MagSafe on MacBooks (pre-USB-C); iPhone MagSafe adds magnetic wireless/Qi alignment for chargers and accessories.</td></tr>
 <tr><td><b>Serial (RS-232)</b></td><td>Legacy 9-pin interface — still used to console into switches/routers and industrial kit, often via a USB-to-serial adapter.</td></tr>
+</table>
+<div class="keyfact"><b>USB-C ≠ always Thunderbolt:</b> same port shape, but Thunderbolt adds PCIe and higher specs. A USB-C dock may not drive three monitors if the laptop port isn't Thunderbolt-capable.</div>
+
+<h2>USB generations — speed at a glance</h2>
+<table>
+<tr><th>Standard</th><th>Typical speed</th><th>Exam note</th></tr>
+<tr><td>USB 2.0</td><td>480 Mbps</td><td>Black/internal header ports on older boards; fine for keyboard/mouse</td></tr>
+<tr><td>USB 3.0 / 3.1 Gen 1</td><td>5 Gbps</td><td>Often blue port or SS logo</td></tr>
+<tr><td>USB 3.1 Gen 2 / 3.2</td><td>10 Gbps</td><td>External SSDs, fast docks</td></tr>
+<tr><td>USB4 / Thunderbolt 4</td><td>40 Gbps</td><td>Single-cable multi-monitor + charge scenarios</td></tr>
 </table>
 
 <h2>Connection types — wireless</h2>
@@ -462,6 +511,14 @@ notes:`
 <li><b>NFC (near-field communication):</b> very short range (~4 cm). Contactless payments (Google/Apple Pay), badge taps, quick Bluetooth pairing handoffs.</li>
 <li><b>Bluetooth:</b> short-range PAN (~10 m class 2) for headsets, keyboards, mice. Devices must be paired (see 1.4 for the procedure).</li>
 <li><b>Hotspot/tethering:</b> the phone shares its cellular data — over WiFi (hotspot), USB, or Bluetooth.</li>
+<li><b>WiFi Direct / Miracast</b> — device-to-device wireless without a router (screen casting, direct file transfer on some devices).</li>
+</ul>
+
+<h2>Audio jacks — TRS vs TRRS</h2>
+<ul>
+<li><b>TRS (3.5 mm)</b> — stereo audio only (tip-ring-sleeve), no mic channel.</li>
+<li><b>TRRS</b> — adds a mic contact on the same plug; standard for phone/laptop combo headset jacks.</li>
+<li><b>USB / Bluetooth headsets</b> — bypass the analogue jack; often preferred for noise cancellation and unified mic control.</li>
 </ul>
 
 <h2>Accessories</h2>
@@ -470,14 +527,29 @@ notes:`
 <li><b>Headsets:</b> wired 3.5 mm TRRS (audio + mic on one plug), USB, or Bluetooth.</li>
 <li><b>Speakers, webcams:</b> USB or Bluetooth; webcams are USB and may include their own mic.</li>
 <li><b>Trackpad / drawing pad:</b> external input devices, typically USB or Bluetooth; drawing pads pair with active pens for graphics work.</li>
+<li><b>Card readers / adapters:</b> USB-C dongles for HDMI, Ethernet, SD cards — know when a simple adapter vs a full dock is needed.</li>
 </ul>
 
-<h2>Docking station vs port replicator</h2>
-<ul>
-<li><b>Port replicator:</b> simply extends the laptop's existing ports (USB, video, network) through one cable — no added brains.</li>
-<li><b>Docking station:</b> does everything a replicator does but <b>adds capability</b> the laptop doesn't have on its own — extra monitor outputs via its own graphics hardware, more/faster ports, sometimes drive bays — plus charging. Modern ones connect via USB-C/Thunderbolt.</li>
-</ul>
+<h2>Docking station vs port replicator vs USB hub</h2>
+<table>
+<tr><th>Device</th><th>What it does</th><th>Typical exam scenario</th></tr>
+<tr><td><b>USB hub</b></td><td>Splits one USB port into several — data/power only, no new video outputs beyond passthrough alt mode limits</td><td>"Need more USB ports" — hub</td></tr>
+<tr><td><b>Port replicator</b></td><td>One cable to existing laptop ports — convenience pass-through</td><td>"One cable instead of four" — replicator</td></tr>
+<tr><td><b>Docking station</b></td><td>Adds capability the laptop lacks — multiple monitors, Ethernet, charging, sometimes drive bays</td><td>"Two monitors + Ethernet + charge on one USB-C" — dock</td></tr>
+<tr><td><b>KVM switch</b></td><td>One keyboard/monitor/mouse shared between multiple PCs — not a laptop dock</td><td>"Switch one monitor between two desktops" — KVM, not dock</td></tr>
+</table>
 <div class="callout"><b>Exam angle:</b> if the scenario needs functionality the laptop lacks (e.g. driving three external monitors), it's a docking station. If it's just "plug one cable instead of six", either works but a port replicator is the minimal answer.</div>
+
+<h2>Scenario pick-list — match need to accessory</h2>
+<ul>
+<li><b>Contactless payment at a terminal</b> → NFC on the phone.</li>
+<li><b>Console into a network switch</b> → USB-to-serial adapter + rollover/console cable.</li>
+<li><b>Sketching with pressure sensitivity</b> → active stylus + compatible digitizer.</li>
+<li><b>Laptop online via phone with no WiFi</b> → hotspot/tethering (WiFi, USB, or Bluetooth).</li>
+<li><b>One USB-C port, dual monitors + charge</b> → Thunderbolt/USB-C docking station (not a basic hub).</li>
+<li><b>Wireless headphones in the office</b> → Bluetooth pairing (see 1.4 for pairing steps).</li>
+</ul>
+<div class="keyfact"><b>Legacy connectors:</b> microUSB = pre-USB-C Android; Lightning = Apple (pre-USB-C iPhone); miniUSB = older cameras/peripherals. Exam loves "which came before USB-C on Android?" → microUSB.</div>
 `,
 quiz:[
 {q:"Which connector is reversible, and can simultaneously carry data, DisplayPort video, and charging power?", o:["microUSB","USB-A","USB-C","eSATA"], a:2, e:"USB-C supports high-speed data, DisplayPort alt mode for video, and USB Power Delivery for charging — all through one reversible connector."},
