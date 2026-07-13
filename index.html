@@ -3634,18 +3634,18 @@ if("serviceWorker" in navigator){
    Revision Games — tap-to-connect matching drills
    ============================================================ */
 const GAME_CATALOG = [
-  {id:"ports", icon:"🔌", name:"Port Match", desc:"Plug services into the right port numbers", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌"},
-  {id:"connectors", icon:"🔗", name:"Connector Snap", desc:"Match cable shapes to their names & uses", ready:true, type:"match", matchType:"id", shapes:true, count:6, hub:"🔗"},
-  {id:"tools", icon:"🧰", name:"Tool Toss", desc:"Match symptoms to the first diagnostic tool or step", ready:true, type:"match", matchType:"id", count:6, hub:"🧰"},
-  {id:"raid", icon:"💾", name:"RAID Stack", desc:"Pair RAID levels with drives & fault tolerance", ready:true, type:"match", matchType:"id", count:5, hub:"💾"},
-  {id:"wifi", icon:"📶", name:"WiFi Wire", desc:"Match 802.11 standards to speed & band", ready:true, type:"match", matchType:"id", count:6, hub:"📶"},
-  {id:"cable", icon:"🧵", name:"Cable Run", desc:"Match cable types to speed, distance & use", ready:true, type:"match", matchType:"id", count:6, hub:"🧵"},
-  {id:"boot", icon:"🔔", name:"Boot Beep", desc:"Match POST beep patterns to likely causes", ready:true, type:"match", matchType:"id", count:5, hub:"🔔"},
-  {id:"osshort", icon:"⌨️", name:"OS Shortcut", desc:"Match tasks to Windows / Linux / macOS commands", ready:true, type:"match", matchType:"id", count:6, hub:"⌨️"},
-  {id:"threat", icon:"🎭", name:"Threat Tag", desc:"Tag scenarios with the attack or threat type", ready:true, type:"match", matchType:"id", count:6, hub:"🎭"},
-  {id:"backup", icon:"💿", name:"Backup Chain", desc:"Match backup types to how they work", ready:true, type:"match", matchType:"id", count:6, hub:"💿"},
-  {id:"subnet", icon:"🔢", name:"Subnet Snap", desc:"Match IP + mask to the network address", ready:true, type:"match", matchType:"id", count:5, hub:"🔢"},
-  {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️"}
+  {id:"ports", icon:"🔌", name:"Port Match", desc:"Plug services into the right port numbers", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]},
+  {id:"connectors", icon:"🔗", name:"Connector Snap", desc:"Match cable shapes to their names & uses", ready:true, type:"match", matchType:"id", shapes:true, count:6, hub:"🔗", domains:[{core:"core1",num:"1.0"},{core:"core1",num:"3.0"}]},
+  {id:"tools", icon:"🧰", name:"Tool Toss", desc:"Match symptoms to the first diagnostic tool or step", ready:true, type:"match", matchType:"id", count:6, hub:"🧰", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]},
+  {id:"raid", icon:"💾", name:"RAID Stack", desc:"Pair RAID levels with drives & fault tolerance", ready:true, type:"match", matchType:"id", count:5, hub:"💾", domains:[{core:"core1",num:"3.0"}]},
+  {id:"wifi", icon:"📶", name:"WiFi Wire", desc:"Match 802.11 standards to speed & band", ready:true, type:"match", matchType:"id", count:6, hub:"📶", domains:[{core:"core1",num:"2.0"}]},
+  {id:"cable", icon:"🧵", name:"Cable Run", desc:"Match cable types to speed, distance & use", ready:true, type:"match", matchType:"id", count:6, hub:"🧵", domains:[{core:"core1",num:"2.0"}]},
+  {id:"boot", icon:"🔔", name:"Boot Beep", desc:"Match POST beep patterns to likely causes", ready:true, type:"match", matchType:"id", count:5, hub:"🔔", domains:[{core:"core1",num:"3.0"},{core:"core2",num:"1.0"}]},
+  {id:"osshort", icon:"⌨️", name:"OS Shortcut", desc:"Match tasks to Windows / Linux / macOS commands", ready:true, type:"match", matchType:"id", count:6, hub:"⌨️", domains:[{core:"core2",num:"1.0"}]},
+  {id:"threat", icon:"🎭", name:"Threat Tag", desc:"Tag scenarios with the attack or threat type", ready:true, type:"match", matchType:"id", count:6, hub:"🎭", domains:[{core:"core2",num:"2.0"}]},
+  {id:"backup", icon:"💿", name:"Backup Chain", desc:"Match backup types to how they work", ready:true, type:"match", matchType:"id", count:6, hub:"💿", domains:[{core:"core2",num:"4.0"}]},
+  {id:"subnet", icon:"🔢", name:"Subnet Snap", desc:"Match IP + mask to the network address", ready:true, type:"match", matchType:"id", count:5, hub:"🔢", domains:[{core:"core1",num:"2.0"}]},
+  {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]}
 ];
 const PORT_DATA = {
   normal:[
@@ -3944,15 +3944,35 @@ function drawGameCables(){
     svg.appendChild(path);
   }
 }
+function renderGameCard(g){
+  const score = gameScorePill(g.id, "normal");
+  return `<button class="game-card clickable" onclick="go('game',{gameId:'${g.id}'})">
+    <div class="icon">${g.icon}</div>
+    <h3>${esc(g.name)} ${score}</h3>
+    <div class="meta">${esc(g.desc)}</div></button>`;
+}
+function gamesForDomain(core, num){
+  return GAME_CATALOG.filter(g=>g.domains?.some(d=>d.core===core && d.num===num));
+}
+function renderGamesGrouped(){
+  let html = "";
+  for(const coreKey of ["core1","core2"]){
+    const c = ROSTER[coreKey];
+    let coreHtml = "";
+    for(const d of c.domains){
+      const games = gamesForDomain(coreKey, d.num);
+      if(!games.length) continue;
+      coreHtml += `<div class="eyebrow">${c.name} · ${c.code} — Domain ${d.num}</div>
+        <p class="sub" style="margin-top:-14px;margin-bottom:10px">${esc(d.name)}</p>
+        <div class="grid" style="margin-bottom:24px">${games.map(renderGameCard).join("")}</div>`;
+    }
+    if(coreHtml) html += coreHtml;
+  }
+  return html;
+}
 function renderGamesHub(limit){
-  const cards = GAME_CATALOG.map(g=>{
-    const score = gameScorePill(g.id, "normal");
-    return `<button class="game-card clickable" onclick="go('game',{gameId:'${g.id}'})">
-      <div class="icon">${g.icon}</div>
-      <h3>${esc(g.name)} ${score}</h3>
-      <div class="meta">${esc(g.desc)}</div></button>`;
-  });
-  return (limit ? cards.slice(0, limit) : cards).join("");
+  if(limit) return GAME_CATALOG.slice(0, limit).map(renderGameCard).join("");
+  return renderGamesGrouped();
 }
 function renderGame(){
   const app = document.getElementById("app");
@@ -4120,8 +4140,8 @@ function render(){
     crumbs.innerHTML = "<b>🎮 Revision Games</b>";
     app.innerHTML = `<div class="eyebrow">Quick drills</div>
       <h1 class="page">Revision Games</h1>
-      <p class="sub">${GAME_CATALOG.length} games · tap-to-connect & troubleshooting trails. Bones edition — full whimsy pass coming next.</p>
-      <div class="grid">${renderGamesHub()}</div>`;
+      <p class="sub">${GAME_CATALOG.length} games grouped by exam domain — tap-to-connect & troubleshooting trails.</p>
+      ${renderGamesGrouped()}`;
     return;
   }
 

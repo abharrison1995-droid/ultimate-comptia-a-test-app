@@ -40,7 +40,7 @@ async function goToGamesHub() {
 }
 async function openGame(name) {
   await goToGamesHub();
-  await page.locator('.game-card').filter({ hasText: name }).click();
+  await page.locator('.game-card').filter({ hasText: name }).first().click();
   await page.locator('button.btn.primary').filter({ hasText: 'Let' }).click();
 }
 
