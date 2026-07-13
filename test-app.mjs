@@ -28,6 +28,9 @@ function assert(name, cond) {
 await page.goto(`http://127.0.0.1:${port}/`);
 await page.click('text=1.0 Mobile Devices');
 await page.click('text=1.1 Install');
+assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
+assert('Revision sheet wraps notes', await page.isVisible('.notes-sheet'));
+assert('Revision sheet table of contents', await page.isVisible('.notes-toc'));
 await page.click('text=Start mini mock');
 await page.waitForSelector('.qtext');
 await page.click('.opt >> nth=0');

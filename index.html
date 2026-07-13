@@ -65,15 +65,31 @@ p.sub{color:var(--muted);margin-bottom:22px}
 .pill.score.low{background:var(--amber-soft);color:var(--amber)}
 .notes h2{font-family:var(--display);font-size:1.15rem;font-weight:700;margin:26px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
 .notes h2:first-child{border-top:0;margin-top:8px;padding-top:0}
-.notes p{margin:0 0 12px}
+.notes h2[id]{scroll-margin-top:64px}
+.notes p{margin:0 0 12px;line-height:1.55}
 .notes ul{margin:0 0 14px 20px}
-.notes li{margin-bottom:5px}
-.notes table{width:100%;border-collapse:collapse;margin:4px 0 16px;font-size:.92rem}
-.notes th{text-align:left;font-weight:700;border-bottom:2px solid var(--ink);padding:6px 8px}
+.notes li{margin-bottom:5px;line-height:1.45}
+.notes table{width:100%;border-collapse:collapse;margin:0;font-size:.92rem}
+.notes th{text-align:left;font-weight:700;border-bottom:2px solid var(--ink);padding:6px 8px;white-space:nowrap}
 .notes td{border-bottom:1px solid var(--line);padding:6px 8px;vertical-align:top}
-.notes .callout{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;font-size:.94rem}
+.notes .callout{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;font-size:.94rem;line-height:1.5}
 .notes .callout b:first-child{color:var(--accent)}
 .notes code{background:var(--code-bg);border-radius:5px;padding:1px 6px;font-size:.88em}
+.notes-sheet{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:4px 16px 10px;margin:0 0 8px}
+.notes-meta{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.84rem;color:var(--muted);font-weight:600;margin:6px 0 14px}
+.notes-toc{background:var(--accent-soft);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:0 0 16px}
+.notes-toc h3{font-family:var(--display);font-size:.88rem;font-weight:800;margin:0 0 8px;color:var(--accent)}
+.notes-toc ul{margin:0;padding-left:18px;font-size:.86rem;line-height:1.6}
+.notes-toc a{color:var(--ink);text-decoration:none;font-weight:600}
+.notes-toc a:hover{color:var(--accent);text-decoration:underline}
+.notes-exam-strip{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.notes-exam-chip{font-size:.74rem;font-weight:700;background:var(--amber-soft);color:var(--amber);padding:5px 10px;border-radius:99px;cursor:help;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.notes-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0 16px;border-radius:8px;border:1px solid var(--line)}
+.notes-table-wrap table{margin:0;min-width:280px}
+.sub-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:16px 0 8px;flex-wrap:wrap}
+.sub-nav .sub-nav-btn{font-size:.88rem;padding:8px 12px}
+footer.domfoot.notes-mock-footer{position:sticky;bottom:0;background:color-mix(in srgb, var(--bg) 90%, transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);margin-top:20px;padding:14px 0 12px;z-index:5}
+footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 /* quiz */
 .qhead{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px;font-size:.85rem;color:var(--muted);font-weight:600}
 .qbar{height:6px;background:var(--line);border-radius:3px;margin-bottom:18px;overflow:hidden}
@@ -3583,6 +3599,56 @@ window.addEventListener("beforeunload", (e)=>{
 });
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function findDomain(core,num){ return DOMAINS.find(d=>d.core===core && d.num===num); }
+function noteReadMeta(notes){
+  const text = notes.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const words = text ? text.split(" ").length : 0;
+  const sections = (notes.match(/<h2>/gi) || []).length;
+  return {words, min:Math.max(1, Math.ceil(words / 200)), sections};
+}
+function prepNotesSheet(notes, subId){
+  let section = 0;
+  const toc = [];
+  let html = notes.replace(/<h2>([^<]+)<\/h2>/g, (_, title) => {
+    section++;
+    const id = `note-${subId.replace(/\./g, "")}-${section}`;
+    const label = title.trim();
+    toc.push({id, label});
+    return `<h2 id="${id}">${label}</h2>`;
+  });
+  html = html.replace(/<table>/g, '<div class="notes-table-wrap"><table>').replace(/<\/table>/g, "</table></div>");
+  const examTips = [];
+  const calloutRe = /<div class="callout"><b>([^<]+)<\/b>\s*([\s\S]*?)<\/div>/gi;
+  let m;
+  while((m = calloutRe.exec(notes))){
+    const label = m[1].replace(/:$/, "").trim();
+    const body = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if(/exam|memorise|memorize|trap|discriminator|angle/i.test(label + " " + body.slice(0, 80)))
+      examTips.push({label, text:body.slice(0, 140) + (body.length > 140 ? "…" : "")});
+  }
+  const meta = noteReadMeta(notes);
+  const tocHtml = toc.length >= 3
+    ? `<nav class="notes-toc" aria-label="Section menu"><h3>On this sheet</h3><ul>${toc.map(t =>
+        `<li><a href="#" onclick="scrollNoteSection('${t.id}');return false">${esc(t.label)}</a></li>`
+      ).join("")}</ul></nav>` : "";
+  const examStrip = examTips.length
+    ? `<div class="notes-exam-strip" aria-label="Exam tips">${examTips.slice(0, 4).map(t =>
+        `<span class="notes-exam-chip" title="${esc(t.text)}">${esc(t.label)}</span>`
+      ).join("")}</div>` : "";
+  return {html, tocHtml, examStrip, meta};
+}
+function scrollNoteSection(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+}
+function renderSubNav(core, num, d, subId){
+  const idx = d.subs.findIndex(s => s.id === subId);
+  const prev = idx > 0 ? d.subs[idx - 1] : null;
+  const next = idx < d.subs.length - 1 ? d.subs[idx + 1] : null;
+  const mk = (s, dir) => s
+    ? `<button class="btn sub-nav-btn" onclick="go('sub',{core:'${core}',num:'${num}',sub:'${s.id}'})">${dir === "prev" ? "← " : ""}${s.id}${dir === "next" ? " →" : ""}</button>`
+    : "<span></span>";
+  return `<div class="sub-nav">${mk(prev, "prev")}<button class="btn" onclick="go('domain',{core:'${core}',num:'${num}'})">All ${d.num} topics</button>${mk(next, "next")}</div>`;
+}
 function scoreKey(id){ return "score_"+id; }
 function scorePill(id, total){
   const s = store.get(scoreKey(id));
@@ -4885,9 +4951,10 @@ function render(){
       <h1 class="page">${d.num} ${esc(d.name)}</h1>
       <p class="sub">${esc(d.blurb)}</p><div class="grid">`;
     for(const s of d.subs){
+      const rm = noteReadMeta(s.notes);
       html += `<button class="card clickable" onclick="go('sub',{core:'${view.core}',num:'${d.num}',sub:'${s.id}'})">
         <h3>${s.id} ${esc(s.name)} ${scorePill(d.id+"_"+s.id, s.quiz.length)}</h3>
-        <div class="meta">Revision notes + ${s.quiz.length}-question mini mock</div></button>`;
+        <div class="meta">~${rm.min} min read · ${rm.sections} section${rm.sections===1?"":"s"} · ${s.quiz.length}-question mini mock</div></button>`;
     }
     html += `</div><footer class="domfoot">
       <h1 class="page" style="font-size:1.25rem">Domain mock ${scorePill(d.id+"_mock", d.mock.length)}</h1>
@@ -4901,11 +4968,20 @@ function render(){
   if(view.name==="sub"){
     const d = findDomain(view.core, view.num);
     const s = d.subs.find(x=>x.id===view.sub);
+    const sheet = prepNotesSheet(s.notes, s.id);
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
-    app.innerHTML = `<div class="eyebrow">Domain ${d.num} ${esc(d.name)}</div>
+    app.innerHTML = `<div class="eyebrow">Revision sheet · Domain ${d.num}</div>
       <h1 class="page">${s.id} ${esc(s.name)}</h1>
-      <div class="notes">${s.notes}</div>
-      <footer class="domfoot">
+      <div class="notes-meta">
+        <span>~${sheet.meta.min} min read</span>
+        <span>${sheet.meta.sections} section${sheet.meta.sections===1?"":"s"}</span>
+        <span>${s.quiz.length} mini-mock questions after</span>
+      </div>
+      ${sheet.examStrip}
+      ${sheet.tocHtml}
+      <div class="notes-sheet"><div class="notes">${sheet.html}</div></div>
+      ${renderSubNav(view.core, view.num, d, s.id)}
+      <footer class="domfoot notes-mock-footer">
         <h1 class="page" style="font-size:1.25rem">Mini mock ${scorePill(d.id+"_"+s.id, s.quiz.length)}</h1>
         <p class="sub">${s.quiz.length} questions on ${s.id} only. Answers explained as you go.</p>
         <button class="btn primary" onclick="startQuiz('${view.core}','${d.num}','${s.id}')">Start mini mock (${s.quiz.length} questions)</button>
@@ -4981,6 +5057,9 @@ function renderQuiz(){
         <div style="margin-top:6px;color:var(--muted)">${esc(w.ex)}</div>
       </div>`).join("")}
     </div>` : "";
+    const notesBtn = quiz.subId
+      ? `<button class="btn" onclick="go('sub',{core:'${quiz.core}',num:'${quiz.num}',sub:'${quiz.subId}'})">Revision notes</button>`
+      : "";
     app.innerHTML = `<div class="result">
       <div class="eyebrow">${quiz.label}</div>
       <div class="big" style="color:${col}">${quiz.right}/${total}</div>
@@ -4988,6 +5067,7 @@ function renderQuiz(){
       <p class="sub" style="margin-top:0">Best: ${bestPct}% · Attempt ${recorded.attempts}</p>
       <div class="row">
         <button class="btn primary" onclick="startQuiz('${quiz.core}','${quiz.num}',${quiz.subId?`'${quiz.subId}'`:"null"})">Retake</button>
+        ${notesBtn}
         <button class="btn" onclick="abandonQuiz();goBack()">Back</button>
       </div>${review}</div>`;
     return;
