@@ -138,7 +138,10 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .game-hint{text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:14px}
 .game-cols{display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:start}
 .game-col{display:flex;flex-direction:column;gap:8px}
-.game-hub{display:flex;justify-content:center;font-size:1.4rem;opacity:.35;padding:8px 0}
+.game-seq{display:grid;gap:8px;max-width:480px;margin:0 auto}
+.game-seq .game-item{text-align:left;justify-content:flex-start;padding:14px}
+.game-seq .game-item .step-n{font-size:.72rem;color:var(--muted);margin-right:8px}
+.game-hub-icon{font-size:1.4rem;opacity:.35;padding:8px 0;text-align:center}
 .game-item{border:2px solid var(--line);border-radius:12px;padding:12px 10px;font-weight:600;font-size:.9rem;text-align:center;background:var(--bg);cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s;min-height:48px;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
 .game-item:active{transform:scale(.96)}
 .game-item.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);animation:pulse-sel .8s ease infinite}
@@ -3631,10 +3634,18 @@ if("serviceWorker" in navigator){
    Revision Games — tap-to-connect matching drills
    ============================================================ */
 const GAME_CATALOG = [
-  {id:"ports", icon:"🔌", name:"Port Match", desc:"Plug services into the right port numbers", ready:true, modes:true},
-  {id:"connectors", icon:"🔗", name:"Connector Snap", desc:"Match cable shapes to their names & uses", ready:true, modes:false},
-  {id:"tools", icon:"🧰", name:"Tool Toss", desc:"Match symptoms to the first diagnostic tool", ready:false},
-  {id:"raid", icon:"💾", name:"RAID Stack", desc:"Stack drive counts to RAID levels", ready:false}
+  {id:"ports", icon:"🔌", name:"Port Match", desc:"Plug services into the right port numbers", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌"},
+  {id:"connectors", icon:"🔗", name:"Connector Snap", desc:"Match cable shapes to their names & uses", ready:true, type:"match", matchType:"id", shapes:true, count:6, hub:"🔗"},
+  {id:"tools", icon:"🧰", name:"Tool Toss", desc:"Match symptoms to the first diagnostic tool or step", ready:true, type:"match", matchType:"id", count:6, hub:"🧰"},
+  {id:"raid", icon:"💾", name:"RAID Stack", desc:"Pair RAID levels with drives & fault tolerance", ready:true, type:"match", matchType:"id", count:5, hub:"💾"},
+  {id:"wifi", icon:"📶", name:"WiFi Wire", desc:"Match 802.11 standards to speed & band", ready:true, type:"match", matchType:"id", count:6, hub:"📶"},
+  {id:"cable", icon:"🧵", name:"Cable Run", desc:"Match cable types to speed, distance & use", ready:true, type:"match", matchType:"id", count:6, hub:"🧵"},
+  {id:"boot", icon:"🔔", name:"Boot Beep", desc:"Match POST beep patterns to likely causes", ready:true, type:"match", matchType:"id", count:5, hub:"🔔"},
+  {id:"osshort", icon:"⌨️", name:"OS Shortcut", desc:"Match tasks to Windows / Linux / macOS commands", ready:true, type:"match", matchType:"id", count:6, hub:"⌨️"},
+  {id:"threat", icon:"🎭", name:"Threat Tag", desc:"Tag scenarios with the attack or threat type", ready:true, type:"match", matchType:"id", count:6, hub:"🎭"},
+  {id:"backup", icon:"💿", name:"Backup Chain", desc:"Match backup types to how they work", ready:true, type:"match", matchType:"id", count:6, hub:"💿"},
+  {id:"subnet", icon:"🔢", name:"Subnet Snap", desc:"Match IP + mask to the network address", ready:true, type:"match", matchType:"id", count:5, hub:"🔢"},
+  {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️"}
 ];
 const PORT_DATA = {
   normal:[
@@ -3665,40 +3676,177 @@ const CONNECTOR_DATA = [
   {id:"m2", label:"M.2", match:"NVMe/SATA SSD card slot", svg:`<svg viewBox="0 0 48 48" fill="none"><rect x="16" y="12" width="16" height="28" rx="2" stroke="currentColor" stroke-width="2"/><rect x="20" y="16" width="8" height="20" fill="currentColor" opacity=".25"/></svg>`},
   {id:"coax", label:"Coax / F-type", match:"Cable TV & broadband modem", svg:`<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="12" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="24" r="5" fill="currentColor"/></svg>`}
 ];
-const GAME_TOASTS = {
-  good:["⚡ Patch perfect!","🔌 Connected!","✨ Nice cable run!","🎉 Link established!","💚 Solid connection!"],
-  bad:["💥 Spark! Wrong socket","🔥 That'll blow the fuse!","⚠️ Crosstalk! Try again","🔌 Loose connection — retry"]
+const GAME_DATA = {
+  tools:[
+    {id:"t1", left:"Random BSODs with varying error codes", right:"Run a memory diagnostic (MemTest86)"},
+    {id:"t2", left:"No link lights on NIC — no connectivity", right:"Check/reseat cable & switch port"},
+    {id:"t3", left:"Can ping gateway but not domain names", right:"Test DNS (nslookup / dig)"},
+    {id:"t4", left:"PC shuts down only under heavy load, temps OK", right:"Suspect PSU — test wattage/load"},
+    {id:"t5", left:"Weak WiFi after laptop screen replacement", right:"Reconnect wireless antenna leads"},
+    {id:"t6", left:"Suspected failing hard drive", right:"Listen for clicks / check SMART"},
+    {id:"t7", left:"Intermittent USB device dropouts", right:"Try different port / update chipset drivers"},
+    {id:"t8", left:"Suspected malware, won't remove while booted", right:"Scan from Safe Mode or offline AV"}
+  ],
+  raid:[
+    {id:"r0", left:"RAID 0", right:"2+ drives · striping · no redundancy"},
+    {id:"r1", left:"RAID 1", right:"2 drives · mirroring"},
+    {id:"r5", left:"RAID 5", right:"3+ drives · parity · survives 1 disk loss"},
+    {id:"r6", left:"RAID 6", right:"4+ drives · dual parity · survives 2 disk loss"},
+    {id:"r10", left:"RAID 10", right:"4+ drives · mirror + stripe"},
+    {id:"rj", left:"JBOD", right:"Spans volumes · no redundancy"}
+  ],
+  wifi:[
+    {id:"w1", left:"802.11b", right:"2.4 GHz · up to 11 Mbps"},
+    {id:"w2", left:"802.11g", right:"2.4 GHz · up to 54 Mbps"},
+    {id:"w3", left:"802.11n", right:"2.4/5 GHz · MIMO · up to 600 Mbps"},
+    {id:"w4", left:"802.11ac (WiFi 5)", right:"5 GHz focus · gigabit class"},
+    {id:"w5", left:"802.11ax (WiFi 6)", right:"2.4/5 GHz · OFDMA efficiency"},
+    {id:"w6", left:"802.11be (WiFi 7)", right:"Multi-link · latest generation"},
+    {id:"w7", left:"2.4 GHz band", right:"Longer range · more congestion"},
+    {id:"w8", left:"5 GHz band", right:"Shorter range · faster throughput"}
+  ],
+  cable:[
+    {id:"c1", left:"Cat 5e UTP", right:"1 Gbps · 100 m · typical office"},
+    {id:"c2", left:"Cat 6 UTP", right:"1 Gbps · 55 m · reduced crosstalk"},
+    {id:"c3", left:"Cat 6a", right:"10 Gbps · 100 m"},
+    {id:"c4", left:"Single-mode fibre", right:"Long distance · laser · km range"},
+    {id:"c5", left:"Multimode fibre", right:"Campus runs · LED/laser · shorter"},
+    {id:"c6", left:"Coax RG-6", right:"Cable modem / TV broadband"},
+    {id:"c7", left:"STP", right:"Shielded copper · noisy EMI environments"},
+    {id:"c8", left:"Plenum-rated cable", right:"Fire-code safe for air-handling spaces"}
+  ],
+  boot:[
+    {id:"b1", left:"One short beep, system boots", right:"POST passed — normal startup"},
+    {id:"b2", left:"Continuous/repeating long beeps", right:"RAM not detected / faulty"},
+    {id:"b3", left:"No beep, no video, fans spin", right:"PSU, board, or CPU failure"},
+    {id:"b4", left:"Beep pattern varies by vendor", right:"Check motherboard manual"},
+    {id:"b5", left:"Five short beeps (typical AMI)", right:"CPU failure indicated"},
+    {id:"b6", left:"Time resets every cold boot", right:"Replace CMOS battery (CR2032)"}
+  ],
+  osshort:[
+    {id:"o1", left:"Open Task Manager (Windows)", right:"Ctrl + Shift + Esc"},
+    {id:"o2", left:"Open Run dialog (Windows)", right:"Win + R"},
+    {id:"o3", left:"Show IP configuration (Windows)", right:"ipconfig"},
+    {id:"o4", left:"List files (Linux/macOS terminal)", right:"ls"},
+    {id:"o5", left:"Force-quit app (macOS)", right:"Cmd + Option + Esc"},
+    {id:"o6", left:"Open Task Manager alt (Windows)", right:"Ctrl + Alt + Del"},
+    {id:"o7", left:"Show route table (Windows)", right:"route print"},
+    {id:"o8", left:"Sync filesystems (Linux)", right:"sync"}
+  ],
+  threat:[
+    {id:"s1", left:"Caller claims to be IT, wants remote access", right:"Vishing / impersonation"},
+    {id:"s2", left:"Urgent email from 'CEO' to wire funds", right:"Whaling"},
+    {id:"s3", left:"Attacker on café WiFi reads your traffic", right:"Man-in-the-middle"},
+    {id:"s4", left:"USB drive left in the car park", right:"Baiting"},
+    {id:"s5", left:"Pop-up: 'Call Microsoft now!'", right:"Scareware"},
+    {id:"s6", left:"Fake login page harvests credentials", right:"Phishing"},
+    {id:"s7", left:"Following staff through a secure door", right:"Tailgating"},
+    {id:"s8", left:"Encrypted files + ransom note", right:"Ransomware"}
+  ],
+  backup:[
+    {id:"k1", left:"Full backup", right:"Complete copy at a point in time"},
+    {id:"k2", left:"Incremental", right:"Only changes since last backup of any type"},
+    {id:"k3", left:"Differential", right:"Changes since last full backup"},
+    {id:"k4", left:"Synthetic full", right:"Built from full + increments without new full"},
+    {id:"k5", left:"3-2-1 rule", right:"3 copies · 2 media types · 1 off-site"},
+    {id:"k6", left:"GFS rotation", right:"Grandfather-father-son (month/week/day)"},
+    {id:"k7", left:"Snapshot", right:"Point-in-time copy, often instant on storage"},
+    {id:"k8", left:"Image backup", right:"Full disk/volume including OS state"}
+  ],
+  subnet:[
+    {id:"n1", left:"192.168.1.10 /24", right:"Network 192.168.1.0"},
+    {id:"n2", left:"10.0.0.50 /8", right:"Network 10.0.0.0"},
+    {id:"n3", left:"172.16.5.100 /16", right:"Network 172.16.0.0"},
+    {id:"n4", left:"192.168.10.200 /26", right:"Network 192.168.10.192"},
+    {id:"n5", left:"10.10.10.2 /30", right:"Network 10.10.10.0 (P2P)"},
+    {id:"n6", left:"192.168.0.1 /25", right:"Network 192.168.0.0"},
+    {id:"n7", left:"172.31.255.1 /16", right:"Network 172.31.0.0"}
+  ]
 };
+const SEQUENCE_DATA = [
+  {id:"net", name:"No internet — wired PC", steps:[
+    "Check link lights & cable seated",
+    "Run ipconfig — verify IP not 169.254.x.x",
+    "Ping the default gateway",
+    "Ping a remote IP (8.8.8.8)",
+    "Ping a domain name (test DNS)"
+  ]},
+  {id:"post", name:"PC won't POST", steps:[
+    "Disconnect power, discharge, reseat RAM",
+    "Remove non-essential peripherals",
+    "Listen for beep codes / check debug LEDs",
+    "Test with known-good PSU or RAM",
+    "Consult vendor POST code documentation"
+  ]},
+  {id:"mal", name:"Suspected malware infection", steps:[
+    "Disconnect from network if spreading",
+    "Boot to Safe Mode or offline environment",
+    "Run full AV/anti-malware scan",
+    "Remove suspicious startup entries",
+    "Patch OS/apps & create clean restore point"
+  ]}
+];
+const GAME_TOASTS = {
+  good:["⚡ Patch perfect!","🔌 Connected!","✨ Nice run!","🎉 Nailed it!","💚 Solid match!"],
+  bad:["💥 Spark! Wrong match","🔥 Not quite — try again!","⚠️ Crosstalk! Retry","🔌 Loose connection — retry"],
+  seqGood:["👣 Good step!","➡️ Trail blazing!","✅ Correct order!"],
+  seqBad:["🚧 Wrong turn on the trail!","↩️ That step comes later!"]
+};
+function gameMeta(id){ return GAME_CATALOG.find(g=>g.id===id); }
+function gamePairCount(id, mode){
+  const m = gameMeta(id);
+  if(!m) return 6;
+  if(id==="ports") return mode==="hard" ? (m.countHard||10) : m.count;
+  return m.count || 6;
+}
 function gameScoreKey(id, mode){ return "game_"+id+(mode?"_"+mode:""); }
 function gameScorePill(id, mode, total){
-  const s = store.get(scoreKey(gameScoreKey(id, mode)));
+  total = total || gamePairCount(id, mode||"normal");
+  const s = store.get(scoreKey(gameScoreKey(id, mode||"normal")));
   if(!s) return "";
   const best = typeof s === "number" ? s : s.best;
   if(best == null) return "";
-  const pct = Math.round(100 * best / total);
-  return `<span class="pill score ${pct<100?"low":""}">Best: ${best}/${total}</span>`;
+  return `<span class="pill score ${best<total?"low":""}">Best: ${best}/${total}</span>`;
 }
 function pickToast(kind){ const a = GAME_TOASTS[kind]; return a[Math.floor(Math.random()*a.length)]; }
+function gameShell(extra){
+  return {matched:{}, selected:null, toast:"", toastKind:"", done:false, mistakes:0, lines:[], phase:"play", ...extra};
+}
 function buildPortGame(mode){
   const pool = shuffle([...PORT_DATA[mode]]);
   const seen = new Set();
   const unique = pool.filter(p=>{ const k=p.name+"|"+p.port; if(seen.has(k)) return false; seen.add(k); return true; });
-  const count = mode==="hard" ? 10 : 8;
+  const count = gamePairCount("ports", mode);
   const pairs = unique.slice(0, count);
   const left = shuffle(pairs.map(p=>({id:p.name, text:p.name, match:p.port})));
   const right = shuffle(pairs.map(p=>({id:p.port, text:p.port, match:p.name})));
-  return {id:"ports", mode, pairs, left, right, matched:{}, selected:null, toast:"", toastKind:"", done:false, mistakes:0, lines:[]};
+  return gameShell({id:"ports", type:"match", matchType:"port", mode, pairs, left, right});
 }
 function buildConnectorGame(){
-  const pairs = shuffle([...CONNECTOR_DATA]).slice(0, 6);
+  const pairs = shuffle([...CONNECTOR_DATA]).slice(0, gamePairCount("connectors"));
   const left = shuffle(pairs.map(p=>({id:p.id, text:p.label, match:p.id, svg:p.svg})));
   const right = shuffle(pairs.map(p=>({id:p.id, text:p.match, match:p.id})));
-  return {id:"connectors", mode:"normal", pairs, left, right, matched:{}, selected:null, toast:"", toastKind:"", done:false, mistakes:0, lines:[]};
+  return gameShell({id:"connectors", type:"match", matchType:"id", mode:"normal", shapes:true, pairs, left, right});
+}
+function buildStandardGame(id){
+  const meta = gameMeta(id);
+  const pairs = shuffle([...GAME_DATA[id]]).slice(0, meta.count);
+  const left = shuffle(pairs.map(p=>({id:p.id, text:p.left, match:p.id})));
+  const right = shuffle(pairs.map(p=>({id:p.id, text:p.right, match:p.id})));
+  return gameShell({id, type:"match", matchType:"id", mode:"normal", pairs, left, right});
+}
+function buildSequenceGame(){
+  const scenario = shuffle([...SEQUENCE_DATA])[0];
+  const items = shuffle(scenario.steps.map((text,i)=>({id:String(i), text, order:i})));
+  return gameShell({id:"troubleshoot", type:"sequence", mode:"normal", scenario, items, next:0, total:scenario.steps.length});
 }
 function startGame(id, mode){
-  if(id==="ports") game = buildPortGame(mode||"normal");
+  const meta = gameMeta(id);
+  if(!meta || !meta.ready) return;
+  if(meta.type==="sequence") game = buildSequenceGame();
+  else if(id==="ports") game = buildPortGame(mode||"normal");
   else if(id==="connectors") game = buildConnectorGame();
-  else return;
+  else game = buildStandardGame(id);
   game.phase = "play";
   view = Object.assign(view, {name:"game", gameId:id, mode:game.mode});
   render();
@@ -3709,41 +3857,34 @@ function setGameMode(mode){
   game.mode = mode;
   render();
 }
+function rightKey(item){ return game.matchType==="port" ? item.text : item.id; }
+function pairOk(leftItem, rightItem){
+  return game.matchType==="port" ? leftItem.match===rightItem.text : leftItem.match===rightItem.id;
+}
 function gameTap(side, itemId){
-  if(!game || game.done || game.phase!=="play") return;
+  if(!game || game.done || game.phase!=="play" || game.type==="sequence") return;
   const getRight = (id)=> game.right.find(x=>x.text===id || x.id===id);
   const getLeft = (id)=> game.left.find(x=>x.id===id);
-  const rKey = (item)=> "R:"+(game.id==="ports"?item.text:item.id);
   const isDone = (s,id)=>{
     if(s==="left") return game.matched["L:"+id];
-    const it = getRight(id); return it && game.matched[rKey(it)];
+    const it = getRight(id); return it && game.matched["R:"+rightKey(it)];
   };
   if(isDone(side, itemId)) return;
-
   if(!game.selected){
     game.selected = {side, id:itemId};
-    game.toast = "👆 Now tap the matching socket…";
+    game.toast = "👆 Now tap the match…";
     game.toastKind = "";
-    renderGame();
-    return;
+    renderGame(); return;
   }
-  if(game.selected.side===side){
-    game.selected = {side, id:itemId};
-    renderGame();
-    return;
-  }
+  if(game.selected.side===side){ game.selected = {side, id:itemId}; renderGame(); return; }
   const leftId = game.selected.side==="left" ? game.selected.id : itemId;
   const rightId = game.selected.side==="right" ? game.selected.id : itemId;
   const leftItem = getLeft(leftId);
   const rightItem = getRight(rightId);
-  const ok = game.id==="ports"
-    ? leftItem && rightItem && leftItem.match===rightItem.text
-    : leftItem && rightItem && leftItem.match===rightItem.id;
-
-  if(ok){
+  if(pairOk(leftItem, rightItem)){
     game.matched["L:"+leftItem.id] = true;
-    game.matched[rKey(rightItem)] = true;
-    game.lines.push({left:leftItem.id, right:game.id==="ports"?rightItem.text:rightItem.id});
+    game.matched["R:"+rightKey(rightItem)] = true;
+    game.lines.push({left:leftItem.id, right:rightKey(rightItem)});
     game.toast = pickToast("good");
     game.toastKind = "good";
     if(Object.keys(game.matched).length/2 >= game.pairs.length){
@@ -3760,17 +3901,36 @@ function gameTap(side, itemId){
   game.selected = null;
   renderGame();
 }
+function gameSeqTap(itemId){
+  if(!game || game.done || game.type!=="sequence") return;
+  if(game.matched[itemId]) return;
+  if(itemId === String(game.next)){
+    game.matched[itemId] = true;
+    game.next++;
+    game.toast = pickToast("seqGood");
+    game.toastKind = "good";
+    if(game.next >= game.total){
+      game.done = true;
+      recordScore(gameScoreKey(game.id, game.mode), game.total, game.total);
+    }
+  } else {
+    game.mistakes++;
+    game.toast = pickToast("seqBad");
+    game.toastKind = "bad";
+    game.flashSeq = itemId;
+    setTimeout(()=>{ if(game && !game.done){ game.flashSeq=null; renderGame(); } }, 450);
+  }
+  renderGame();
+}
 function drawGameCables(){
   const svg = document.getElementById("gameCables");
   const board = document.getElementById("gameBoard");
-  if(!svg || !board || !game) return;
+  if(!svg || !board || !game || game.type!=="match") return;
   svg.innerHTML = "";
   const br = board.getBoundingClientRect();
   for(const ln of game.lines){
     const le = document.querySelector(`[data-game-id="L:${ln.left}"]`);
-    const re = game.id==="ports"
-      ? document.querySelector(`[data-game-id="R:${ln.right}"]`)
-      : document.querySelector(`[data-game-id="R:${ln.right}"]`);
+    const re = document.querySelector(`[data-game-id="R:${ln.right}"]`);
     if(!le || !re) continue;
     const lr = le.getBoundingClientRect(), rr = re.getBoundingClientRect();
     const x1 = lr.right - br.left, y1 = lr.top + lr.height/2 - br.top;
@@ -3779,7 +3939,6 @@ function drawGameCables(){
     const path = document.createElementNS("http://www.w3.org/2000/svg","path");
     path.setAttribute("d", `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
     path.setAttribute("fill","none");
-    path.setAttribute("class","good");
     path.setAttribute("stroke","var(--good)");
     path.setAttribute("stroke-width","4");
     svg.appendChild(path);
@@ -3787,83 +3946,94 @@ function drawGameCables(){
 }
 function renderGamesHub(limit){
   const cards = GAME_CATALOG.map(g=>{
-    if(g.ready){
-      return `<button class="game-card clickable" onclick="go('game',{gameId:'${g.id}'})">
-        <div class="icon">${g.icon}</div>
-        <h3>${esc(g.name)} ${gameScorePill(g.id,"normal",g.id==="ports"?8:6)}</h3>
-        <div class="meta">${esc(g.desc)}</div></button>`;
-    }
-    return `<div class="game-card locked"><div class="icon">${g.icon}</div>
-      <h3>${esc(g.name)}</h3><div class="meta">${esc(g.desc)} · coming soon</div></div>`;
+    const score = gameScorePill(g.id, "normal");
+    return `<button class="game-card clickable" onclick="go('game',{gameId:'${g.id}'})">
+      <div class="icon">${g.icon}</div>
+      <h3>${esc(g.name)} ${score}</h3>
+      <div class="meta">${esc(g.desc)}</div></button>`;
   });
   return (limit ? cards.slice(0, limit) : cards).join("");
 }
 function renderGame(){
   const app = document.getElementById("app");
-  const meta = GAME_CATALOG.find(g=>g.id===view.gameId);
+  const meta = gameMeta(view.gameId);
   if(!meta) return;
   document.getElementById("crumbs").innerHTML = `<b>🎮 ${esc(meta.name)}</b>`;
-
   if(!game || game.id!==view.gameId){
     game = {id:view.gameId, phase:"intro", mode:view.mode||"normal"};
   } else if(game.phase!=="play" && game.phase!=="intro"){
     game = {id:view.gameId, phase:"intro", mode:view.mode||"normal"};
   }
+  const total = game.type==="sequence" ? (game.total||meta.count) : (game.pairs?.length || gamePairCount(view.gameId, game.mode));
   if(game.phase==="intro"){
     const modes = meta.modes ? `<div class="game-mode">
       <button class="mode-chip ${game.mode==="normal"?"active":""}" onclick="setGameMode('normal')">😊 Normal — names & numbers</button>
       <button class="mode-chip hard ${game.mode==="hard"?"active":""}" onclick="setGameMode('hard')">🔥 Hard — secure ports & traps</button>
     </div>` : "";
-    app.innerHTML = `<div class="eyebrow">Revision Games</div>
+    const hint = meta.type==="sequence"
+      ? "Steps are shuffled — tap them in the correct troubleshooting order."
+      : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
+      : "Tap left, then right — connect the match.";
+    app.innerHTML = `<div class="eyebrow">Revision Games · bones edition</div>
       <h1 class="page">${meta.icon} ${esc(meta.name)}</h1>
-      <p class="sub">${esc(meta.desc)}</p>
-      ${modes}
-      <p class="sub" style="margin-top:0">Tap a service or shape, then tap its match. Cables draw automatically. ${meta.modes&&game.mode==="hard"?"Hard mode throws in POP3S, IMAPS, SMTPS and friends.":""}</p>
+      <p class="sub">${esc(meta.desc)}</p>${modes}
+      <p class="sub" style="margin-top:0">${hint}</p>
       <div class="row"><button class="btn primary" onclick="startGame('${view.gameId}','${game.mode}')">Let's play! ⚡</button></div>
-      ${gameScorePill(view.gameId, game.mode, view.gameId==="ports"?(game.mode==="hard"?10:8):6) ? `<p class="sub" style="margin-top:14px">${gameScorePill(view.gameId, game.mode, view.gameId==="ports"?(game.mode==="hard"?10:8):6)}</p>` : ""}`;
+      ${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode)) ? `<p class="sub" style="margin-top:14px">${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode))}</p>` : ""}`;
     return;
   }
   if(game.done){
-    const total = game.pairs.length;
-    const linked = Object.keys(game.matched).length/2;
+    const linked = game.type==="sequence" ? game.next : Object.keys(game.matched).length/2;
     app.innerHTML = `<div class="result">
       <div class="game-done-emoji">${game.mistakes===0?"🏆":"🎉"}</div>
       <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
       <div class="big" style="color:var(--good)">${linked}/${total}</div>
-      <div class="verdict">${game.mistakes===0?"Flawless patching!":"All ports linked — nice work!"}</div>
-      <p class="sub" style="margin-top:0">${game.mistakes} misplugs · ${game.mode==="hard"?"Hard":"Normal"} mode</p>
+      <div class="verdict">${game.mistakes===0?"Flawless run!":"Complete — refine on the next pass!"}</div>
+      <p class="sub" style="margin-top:0">${game.mistakes} mistakes${game.mode==="hard"?" · Hard mode":""}</p>
       <div class="row">
         <button class="btn primary" onclick="startGame('${game.id}','${game.mode}')">Play again</button>
         <button class="btn" onclick="game=null;go('games')">All games</button>
       </div></div>`;
     return;
   }
-
-  const matched = game.matched;
-  const flash = game.flash || {};
+  if(game.type==="sequence"){
+    const items = game.items.map(item=>{
+      let cls = "game-item";
+      if(game.matched[item.id]) cls += " matched";
+      else if(game.flashSeq===item.id) cls += " wrong-shake";
+      const n = game.matched[item.id] ? `<span class="step-n">#${+item.id+1}</span>` : "";
+      return `<button type="button" class="${cls}" onclick="gameSeqTap('${item.id}')" ${game.matched[item.id]?"disabled":""}>${n}${esc(item.text)}</button>`;
+    }).join("");
+    app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} ${esc(game.scenario.name)}</span><span>Step ${game.next+1} of ${game.total}</span></div>
+      <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap the FIRST step you would take…")}</div>
+      <div class="game-board"><div class="game-seq">${items}</div></div>`;
+    return;
+  }
+  const matched = game.matched, flash = game.flash||{};
   const leftHtml = game.left.map(item=>{
-    const id = item.id;
-    let cls = "game-item";
-    if(game.id==="connectors") cls += " shape-item";
-    if(matched["L:"+id]) cls += " matched";
-    else if(game.selected && game.selected.side==="left" && game.selected.id===id) cls += " selected";
-    else if(flash.left===id) cls += " wrong-shake";
-    const inner = game.id==="connectors" ? item.svg : esc(item.text);
-    return `<button type="button" class="${cls}" data-game-id="L:${id}" onclick="gameTap('left','${id}')" ${matched["L:"+id]?"disabled":""}>${inner}</button>`;
+    let cls = "game-item"+(game.shapes?" shape-item":"");
+    if(matched["L:"+item.id]) cls += " matched";
+    else if(game.selected?.side==="left" && game.selected.id===item.id) cls += " selected";
+    else if(flash.left===item.id) cls += " wrong-shake";
+    const inner = item.svg || esc(item.text);
+    return `<button type="button" class="${cls}" data-game-id="L:${item.id}" onclick="gameTap('left','${item.id}')" ${matched["L:"+item.id]?"disabled":""}>${inner}</button>`;
   }).join("");
   const rightHtml = game.right.map(item=>{
-    const rid = game.id==="ports" ? item.text : item.id;
-    const cls = "game-item"+(game.id==="ports"?" port-num":"")+(matched["R:"+rid]?" matched":"")+(game.selected && game.selected.side==="right" && game.selected.id===rid?" selected":"")+(flash.right===rid?" wrong-shake":"");
+    const rid = rightKey(item);
+    let cls = "game-item"+(game.matchType==="port"?" port-num":"");
+    if(matched["R:"+rid]) cls += " matched";
+    else if(game.selected?.side==="right" && game.selected.id===rid) cls += " selected";
+    else if(flash.right===rid) cls += " wrong-shake";
     return `<button type="button" class="${cls}" data-game-id="R:${rid}" onclick="gameTap('right','${rid}')" ${matched["R:"+rid]?"disabled":""}>${esc(item.text)}</button>`;
   }).join("");
   const done = Object.keys(matched).length/2;
   app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} ${esc(meta.name)}${game.mode==="hard"?" · Hard":""}</span><span>${done}/${game.pairs.length} linked</span></div>
-    <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap left, then right — connect the cables!")}</div>
+    <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap left, then right — connect the match!")}</div>
     <div class="game-board" id="gameBoard">
       <svg class="game-cables" id="gameCables" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="game-cols">
         <div class="game-col">${leftHtml}</div>
-        <div class="game-hub">🔌</div>
+        <div class="game-hub-icon">${meta.hub||"🔌"}</div>
         <div class="game-col">${rightHtml}</div>
       </div>
     </div>`;
@@ -3950,7 +4120,7 @@ function render(){
     crumbs.innerHTML = "<b>🎮 Revision Games</b>";
     app.innerHTML = `<div class="eyebrow">Quick drills</div>
       <h1 class="page">Revision Games</h1>
-      <p class="sub">Tap-to-connect matching games for ports, cables, and more. Perfect for a 5-minute burst on the bus.</p>
+      <p class="sub">${GAME_CATALOG.length} games · tap-to-connect & troubleshooting trails. Bones edition — full whimsy pass coming next.</p>
       <div class="grid">${renderGamesHub()}</div>`;
     return;
   }

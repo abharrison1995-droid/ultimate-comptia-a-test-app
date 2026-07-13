@@ -19,32 +19,51 @@ const page = await browser.newPage();
 let failed = 0;
 function assert(n, c) { if (!c) { console.log('FAIL:', n); failed++; } else console.log('PASS:', n); }
 
-await page.goto(`http://127.0.0.1:${port}/`);
-await page.click('text=See all games');
-await page.waitForSelector('text=Port Match');
-await page.click('text=Port Match');
-await page.waitForSelector('text=Normal — names & numbers');
-await page.click('button.btn.primary');
-await page.waitForSelector('.game-board');
-
-// Play port match by reading board and matching
-const pairs = await page.evaluate(() => {
-  const out = [];
-  for (const l of game.left) {
-    const r = game.right.find(x => x.text === l.match);
-    if (r) out.push({ left: l.id, right: r.text });
+async function playCurrentMatch() {
+  await page.waitForSelector('.game-board');
+  const pairs = await page.evaluate(() => game.left.map(l => ({ left: l.id, match: l.match })));
+  for (const p of pairs) {
+    await page.click(`[data-game-id="L:${p.left}"]`);
+    await page.waitForTimeout(80);
+    const rid = await page.evaluate((id) => game.left.find(x => x.id === id).match, p.left);
+    await page.click(`[data-game-id="R:${rid}"]`);
+    await page.waitForTimeout(250);
   }
-  return out;
-});
-for (const p of pairs) {
-  await page.click(`[data-game-id="L:${p.left}"]`);
-  await page.waitForTimeout(80);
-  await page.click(`[data-game-id="R:${p.right}"]`);
-  await page.waitForTimeout(300);
+  await page.waitForSelector('text=Play again', { timeout: 15000 });
 }
-await page.waitForSelector('text=Play again', { timeout: 15000 });
-const done = await page.isVisible('text=Play again');
-assert('Port match completes', done);
+
+async function goToGamesHub() {
+  if (await page.locator('h1.page').filter({ hasText: 'Revision Games' }).isVisible()) return;
+  if (await page.isVisible('text=All games')) await page.click('text=All games');
+  else await page.click('text=See all games');
+  await page.waitForSelector('h1.page >> text=Revision Games');
+}
+async function openGame(name) {
+  await goToGamesHub();
+  await page.locator('.game-card').filter({ hasText: name }).click();
+  await page.locator('button.btn.primary').filter({ hasText: 'Let' }).click();
+}
+
+await page.goto(`http://127.0.0.1:${port}/`);
+const gameCount = await page.evaluate(() => GAME_CATALOG.length);
+assert('12 games in catalog', gameCount === 12);
+
+await goToGamesHub();
+await openGame('Port Match');
+await playCurrentMatch();
+assert('Port Match completes', await page.isVisible('text=Play again'));
+
+await openGame('Tool Toss');
+await playCurrentMatch();
+assert('Tool Toss completes', await page.isVisible('text=Play again'));
+
+await openGame('Troubleshoot Trail');
+await page.waitForSelector('.game-seq');
+for (let i = 0; i < 5; i++) {
+  await page.click(`[onclick="gameSeqTap('${i}')"]`);
+  await page.waitForTimeout(200);
+}
+assert('Troubleshoot Trail completes', await page.isVisible('text=Play again'));
 
 await browser.close();
 server.close();
