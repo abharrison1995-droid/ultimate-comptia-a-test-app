@@ -90,13 +90,24 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .modal p{color:var(--muted);font-size:.93rem;margin-bottom:18px}
 .modal .row{justify-content:flex-end}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
-@media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}}
+.save-status{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.save-status i{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.save-status.saved i{background:var(--good)}
+.save-status.unsaved i{background:var(--amber)}
+.save-status.error i{background:var(--bad)}
+.resume-banner{background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 16px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.resume-banner p{margin:0;font-size:.92rem}
+.resume-banner b{color:var(--accent)}
+.storage-warn{background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;font-size:.82rem;color:var(--amber);margin-bottom:16px}
+.score-meta{font-size:.72rem;font-weight:600;color:var(--muted);margin-left:4px}
+@media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}.save-status{display:none}}
 </style>
 </head>
 <body>
 <header class="app"><div class="inner">
   <div class="brand" tabindex="0" role="button" onclick="go('home')" onkeydown="if(event.key==='Enter')go('home')">A+ <span>Revision Guide</span></div>
   <div class="crumbs" id="crumbs">220-1101 · 220-1102</div>
+  <div class="save-status" id="saveStatus" aria-live="polite"><i></i><span>Ready</span></div>
   <button class="btn" id="backbtn" style="display:none" onclick="goBack()">&larr; Back</button>
 </div></header>
 <main class="wrap" id="app"></main>
@@ -3312,22 +3323,47 @@ quiz:[
 /* ============================================================
    State, storage (safe — degrades if storage unavailable)
    ============================================================ */
+const PROGRESS_KEY = "quiz_progress";
+let storageOk = true;
 const store = {
-  get(k){ try{ return JSON.parse(localStorage.getItem("aplus_"+k)); }catch(e){ return null; } },
-  set(k,v){ try{ localStorage.setItem("aplus_"+k, JSON.stringify(v)); }catch(e){} }
+  get(k){ if(!storageOk) return null; try{ return JSON.parse(localStorage.getItem("aplus_"+k)); }catch(e){ storageOk=false; return null; } },
+  set(k,v){
+    if(!storageOk) return false;
+    try{ localStorage.setItem("aplus_"+k, JSON.stringify(v)); setSaveStatus("saved"); return true; }
+    catch(e){ storageOk=false; setSaveStatus("error"); return false; }
+  },
+  remove(k){ if(!storageOk) return; try{ localStorage.removeItem("aplus_"+k); }catch(e){ storageOk=false; } }
 };
 let view = {name:"home"};
 let stack = [];
 let quiz = null;
+let pendingNav = null;
 
-function go(name, params={}, push=true){
+function setSaveStatus(state, detail){
+  const el = document.getElementById("saveStatus");
+  if(!el) return;
+  el.className = "save-status " + (state||"");
+  const labels = {saved:"Saved locally", unsaved:"Unsaved changes", error:"Storage unavailable", ready:"Ready"};
+  el.querySelector("span").textContent = detail || labels[state] || labels.ready;
+}
+function hasActiveQuiz(){ return quiz && !quiz.done; }
+function abandonQuiz(){ clearQuizProgress(); quiz = null; }
+function navigateTo(name, params={}, push=true){
   if(push) stack.push(view);
   view = Object.assign({name}, params);
   render();
   window.scrollTo({top:0});
 }
+function go(name, params={}, push=true){
+  if(hasActiveQuiz() && !(name==="quiz" && !push)){
+    pendingNav = {type:"go", name, params, push};
+    showLeaveModal();
+    return;
+  }
+  navigateTo(name, params, push);
+}
 function goBack(){
-  if(quiz && !quiz.done){ showLeaveModal(); return; }
+  if(hasActiveQuiz()){ pendingNav = {type:"back"}; showLeaveModal(); return; }
   quiz = null;
   view = stack.pop() || {name:"home"};
   render();
@@ -3339,21 +3375,29 @@ function showLeaveModal(){
   ov.className = "modal-overlay";
   ov.id = "leaveModal";
   ov.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="lmTitle">
-    <h3 id="lmTitle">Leave this mock?</h3>
-    <p>Your progress in this quiz will be lost.</p>
+    <h3 id="lmTitle">Leave in-progress quiz?</h3>
+    <p>Your answers are auto-saved locally. You can resume later, or leave and discard this attempt.</p>
     <div class="row">
-      <button class="btn" id="lmNo">No</button>
-      <button class="btn primary" id="lmYes">Yes, leave</button>
+      <button class="btn" id="lmNo">Keep studying</button>
+      <button class="btn primary" id="lmYes">Leave quiz</button>
     </div></div>`;
   document.body.appendChild(ov);
-  document.getElementById("lmNo").onclick = closeLeaveModal;
-  ov.onclick = (e)=>{ if(e.target===ov) closeLeaveModal(); };
+  document.getElementById("lmNo").onclick = ()=>{ pendingNav = null; closeLeaveModal(); };
+  ov.onclick = (e)=>{ if(e.target===ov){ pendingNav = null; closeLeaveModal(); } };
   document.getElementById("lmYes").onclick = ()=>{
+    const nav = pendingNav;
+    pendingNav = null;
     closeLeaveModal();
-    quiz = null;
-    view = stack.pop() || {name:"home"};
-    render();
-    window.scrollTo({top:0});
+    abandonQuiz();
+    if(!nav || nav.type==="back"){
+      view = stack.pop() || {name:"home"};
+      render();
+      window.scrollTo({top:0});
+    } else if(nav.type==="startQuiz"){
+      beginQuiz(nav.core, nav.num, nav.subId);
+    } else {
+      navigateTo(nav.name, nav.params, nav.push);
+    }
   };
   document.getElementById("lmNo").focus();
 }
@@ -3361,14 +3405,73 @@ function closeLeaveModal(){
   const ov = document.getElementById("leaveModal");
   if(ov) ov.remove();
 }
+function saveQuizProgress(){
+  if(!quiz || quiz.done) return;
+  const ok = store.set(PROGRESS_KEY, {
+    core:quiz.core, num:quiz.num, subId:quiz.subId,
+    qs:quiz.qs, i:quiz.i, right:quiz.right,
+    answered:quiz.answered, picked:quiz.picked,
+    label:quiz.label, key:quiz.key, savedAt:Date.now()
+  });
+  if(ok) setSaveStatus("saved", `Q ${quiz.i+1}/${quiz.qs.length} saved`);
+}
+function clearQuizProgress(){ store.remove(PROGRESS_KEY); }
+function getSavedProgress(){ return store.get(PROGRESS_KEY); }
+function resumeQuiz(){
+  const p = getSavedProgress();
+  if(!p || !p.qs) return false;
+  quiz = {
+    core:p.core, num:p.num, subId:p.subId||null,
+    qs:p.qs, i:p.i||0, right:p.right||0,
+    answered:!!p.answered, picked:p.picked??null,
+    done:false, label:p.label, key:p.key
+  };
+  navigateTo("quiz", {}, false);
+  setSaveStatus("saved", "Session restored");
+  return true;
+}
+function recordScore(key, right, total){
+  const prev = store.get(scoreKey(key));
+  const prevBest = typeof prev === "number" ? prev : (prev?.best ?? 0);
+  const prevAttempts = typeof prev === "object" && prev ? (prev.attempts || 0) : (prev != null ? 1 : 0);
+  const pct = Math.round(100*right/total);
+  const next = {
+    best: Math.max(prevBest, right),
+    attempts: prevAttempts + 1,
+    lastAt: Date.now(),
+    lastPct: pct
+  };
+  store.set(scoreKey(key), next);
+  return next;
+}
+window.addEventListener("beforeunload", (e)=>{
+  if(hasActiveQuiz()){ saveQuizProgress(); e.preventDefault(); e.returnValue = ""; }
+});
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function findDomain(core,num){ return DOMAINS.find(d=>d.core===core && d.num===num); }
 function scoreKey(id){ return "score_"+id; }
 function scorePill(id, total){
   const s = store.get(scoreKey(id));
-  if(s==null) return "";
-  const pct = Math.round(100*s/total);
-  return `<span class="pill score ${pct<75?"low":""}">Best: ${pct}%</span>`;
+  if(!s) return "";
+  const best = typeof s === "number" ? s : s.best;
+  if(best==null) return "";
+  const pct = Math.round(100*best/total);
+  const attempts = typeof s === "object" && s.attempts ? s.attempts : null;
+  const meta = attempts ? `<span class="score-meta">· ${attempts} attempt${attempts===1?"":"s"}</span>` : "";
+  return `<span class="pill score ${pct<75?"low":""}">Best: ${pct}%</span>${meta}`;
+}
+function resumeBanner(){
+  const p = getSavedProgress();
+  if(!p || !p.qs) return "";
+  const when = p.savedAt ? new Date(p.savedAt).toLocaleString() : "recently";
+  return `<div class="resume-banner" role="status">
+    <p><b>Resume:</b> ${esc(p.label)} — question ${p.i+1} of ${p.qs.length} (${p.right} correct) · saved ${esc(when)}</p>
+    <button class="btn primary" onclick="resumeQuiz()">Continue quiz</button>
+  </div>`;
+}
+function storageWarning(){
+  if(storageOk) return "";
+  return `<div class="storage-warn" role="alert">Local storage is unavailable — scores and quiz progress cannot be saved in this browser session.</div>`;
 }
 
 /* ============================================================
@@ -3382,7 +3485,8 @@ function render(){
 
   if(view.name==="home"){
     crumbs.innerHTML = "220-1101 · 220-1102";
-    let html = `<h1 class="page">CompTIA A+ Revision Guide</h1>
+    let html = storageWarning() + resumeBanner() +
+      `<h1 class="page">CompTIA A+ Revision Guide</h1>
       <p class="sub">Pick a domain. Read the notes, sit the mini mocks, then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>`;
     for(const key of ["core1","core2"]){
       const c = ROSTER[key];
@@ -3450,6 +3554,14 @@ function render(){
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
 function startQuiz(core, num, subId){
+  if(hasActiveQuiz()){
+    pendingNav = {type:"startQuiz", core, num, subId};
+    showLeaveModal();
+    return;
+  }
+  beginQuiz(core, num, subId);
+}
+function beginQuiz(core, num, subId){
   const d = findDomain(core, num);
   const src = subId ? d.subs.find(x=>x.id===subId).quiz : d.mock;
   const qs = shuffle(src).map(q=>{
@@ -3459,7 +3571,10 @@ function startQuiz(core, num, subId){
   quiz = {core, num, subId, qs, i:0, right:0, answered:false, done:false,
     label: subId ? `${subId} mini mock` : `Domain ${num} mock`,
     key: subId ? d.id+"_"+subId : d.id+"_mock"};
-  go("quiz");
+  clearQuizProgress();
+  const push = view.name !== "quiz";
+  navigateTo("quiz", {}, push);
+  saveQuizProgress();
 }
 
 function renderQuiz(){
@@ -3469,26 +3584,31 @@ function renderQuiz(){
 
   if(quiz.done){
     const total = quiz.qs.length, pct = Math.round(100*quiz.right/total);
-    const best = store.get(scoreKey(quiz.key));
-    if(best==null || quiz.right>best) store.set(scoreKey(quiz.key), quiz.right);
+    const recorded = recordScore(quiz.key, quiz.right, total);
+    clearQuizProgress();
+    const bestPct = Math.round(100*recorded.best/total);
     let verdict, col;
     if(pct>=85){verdict="Exam ready on this material."; col="var(--good)";}
     else if(pct>=75){verdict="Pass territory — tighten the weak spots."; col="var(--amber)";}
     else {verdict="Below pass line — re-read the notes and go again."; col="var(--bad)";}
+    setSaveStatus("saved", `Best score: ${bestPct}%`);
     app.innerHTML = `<div class="result">
       <div class="eyebrow">${quiz.label}</div>
       <div class="big" style="color:${col}">${quiz.right}/${total}</div>
       <div class="verdict" style="color:${col}">${pct}% — ${verdict}</div>
+      <p class="sub" style="margin-top:0">Best: ${bestPct}% · Attempt ${recorded.attempts}</p>
       <div class="row">
         <button class="btn primary" onclick="startQuiz('${quiz.core}','${quiz.num}',${quiz.subId?`'${quiz.subId}'`:"null"})">Retake</button>
-        <button class="btn" onclick="quiz=null;goBack()">Back</button>
+        <button class="btn" onclick="abandonQuiz();goBack()">Back</button>
       </div></div>`;
     return;
   }
 
+  setSaveStatus("saved", `Q ${quiz.i+1}/${quiz.qs.length} · auto-saved`);
+
   const q = quiz.qs[quiz.i];
   let html = `<div class="qhead"><span>${quiz.label}</span><span>Question ${quiz.i+1} of ${quiz.qs.length} · ${quiz.right} correct</span></div>
-    <div class="qbar"><i style="width:${(quiz.i)/quiz.qs.length*100}%"></i></div>
+    <div class="qbar"><i style="width:${Math.round((quiz.i+(quiz.answered?1:0))/quiz.qs.length*100)}%"></i></div>
     <div class="qtext">${esc(q.q)}</div>`;
   q.opts.forEach((o,idx)=>{
     let cls = "opt";
@@ -3511,6 +3631,7 @@ function pick(idx){
   quiz.answered = true;
   quiz.picked = idx;
   if(quiz.qs[quiz.i].opts[idx].correct) quiz.right++;
+  saveQuizProgress();
   renderQuiz();
 }
 function nextQ(){
@@ -3518,9 +3639,11 @@ function nextQ(){
   quiz.answered = false;
   quiz.picked = null;
   if(quiz.i>=quiz.qs.length) quiz.done = true;
+  else saveQuizProgress();
   renderQuiz();
 }
 
+setSaveStatus("ready");
 render();
 </script>
 </body>
