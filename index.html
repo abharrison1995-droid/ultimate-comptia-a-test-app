@@ -112,6 +112,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,var(--panel) 50%,#EFF6FF 100%)}
 .domain-hero-hardware{border-color:#FCD34D;background:linear-gradient(135deg,var(--panel) 50%,#FFFBEB 100%)}
 .domain-hero-troubleshoot{border-color:#99F6E4;background:linear-gradient(135deg,var(--panel) 50%,#F0FDFA 100%)}
+.domain-hero-cloud{border-color:#7DD3FC;background:linear-gradient(135deg,var(--panel) 50%,#ECFEFF 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -122,6 +123,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,#EFF6FF,var(--panel))}
 .sheet-hero-hardware{border-color:#FCD34D;background:linear-gradient(135deg,#FFFBEB,var(--panel))}
 .sheet-hero-troubleshoot{border-color:#99F6E4;background:linear-gradient(135deg,#F0FDFA,var(--panel))}
+.sheet-hero-cloud{border-color:#7DD3FC;background:linear-gradient(135deg,#ECFEFF,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -1996,13 +1998,43 @@ notes:`
 </ul>
 <div class="keyfact"><b>Exam trap:</b> "The cloud provider handles all security" is false for IaaS/PaaS — customer responsibility always remains for something.</div>
 
+<h2>Shared responsibility — detail view</h2>
+<table>
+<tr><th>Layer</th><th>IaaS</th><th>PaaS</th><th>SaaS</th></tr>
+<tr><td>Physical datacentre / hardware</td><td>Provider</td><td>Provider</td><td>Provider</td></tr>
+<tr><td>Hypervisor / host OS</td><td>Provider</td><td>Provider</td><td>Provider</td></tr>
+<tr><td>Guest OS / patching</td><td><b>You</b></td><td>Provider</td><td>Provider</td></tr>
+<tr><td>Runtime / middleware</td><td><b>You</b></td><td>Provider</td><td>Provider</td></tr>
+<tr><td>Application code</td><td><b>You</b></td><td><b>You</b></td><td>Provider</td></tr>
+<tr><td>Data + identity/access</td><td><b>You</b></td><td><b>You</b></td><td><b>You</b></td></tr>
+</table>
+
+<h2>Characteristic → scenario match</h2>
+<table>
+<tr><th>Characteristic</th><th>Exam tell</th></tr>
+<tr><td><b>Shared resources / pooling</b></td><td>Many tenants on the same underlying hardware</td></tr>
+<tr><td><b>Rapid elasticity</b></td><td>Auto scale up for peak AND down afterwards</td></tr>
+<tr><td><b>Metered utilization</b></td><td>Bill rises/falls with hours/GB consumed</td></tr>
+<tr><td><b>High availability</b></td><td>Uptime nines, multi-zone redundancy</td></tr>
+<tr><td><b>File synchronization</b></td><td>Edit on laptop, appears on phone (OneDrive/Drive)</td></tr>
+</table>
+
 <h2>Deployment pick-list — match scenario to model</h2>
-<ul>
-<li><b>Startup web app, no datacentre staff</b> → public cloud PaaS/SaaS.</li>
-<li><b>Hospital records must stay on dedicated infrastructure</b> → private or hybrid cloud.</li>
-<li><b>Universities sharing a research platform</b> → community cloud.</li>
-<li><b>Retail site bursts at Christmas, quiet in January</b> → public cloud + rapid elasticity.</li>
-</ul>
+<table>
+<tr><th>Scenario</th><th>Best model</th></tr>
+<tr><td>Startup web app, no datacentre staff — push own code</td><td>Public cloud <b>PaaS</b></td></tr>
+<tr><td>Use finished CRM through a browser</td><td><b>SaaS</b></td></tr>
+<tr><td>Rent VMs and install your own OS/apps</td><td>Public <b>IaaS</b></td></tr>
+<tr><td>Hospital records must stay on dedicated infrastructure</td><td><b>Private</b> (or hybrid for mixed)</td></tr>
+<tr><td>Universities / NHS trusts sharing a compliant platform</td><td><b>Community</b> cloud</td></tr>
+<tr><td>Sensitive on-prem + Christmas overflow to Azure</td><td><b>Hybrid</b></td></tr>
+<tr><td>Retail site bursts then goes quiet</td><td>Public + <b>rapid elasticity</b> + metering</td></tr>
+<tr><td>Central desktops in Microsoft's cloud, thin clients</td><td>Cloud VDI / <b>DaaS</b></td></tr>
+<tr><td>Central desktops in your own datacentre</td><td>On-prem <b>VDI</b></td></tr>
+</table>
+
+<div class="keyfact"><b>IaaS → PaaS → SaaS:</b> you manage less each step. Exam wording: "own OS" = IaaS · "own code, not OS" = PaaS · "finished app in browser" = SaaS.</div>
+<div class="keyfact"><b>VDI risk:</b> data stays safe (nothing on lost thin clients) but <b>everything depends on connectivity</b> — if the link or farm is down, nobody works.</div>
 `,
 quiz:[
 {q:"A company rents virtual machines and storage from a provider but installs and manages its own operating systems and applications. Which service model is this?", o:["SaaS","PaaS","IaaS","DaaS"], a:2, e:"Infrastructure as a Service supplies the raw compute/storage/network; everything from the OS upward is the customer's responsibility."},
@@ -2058,6 +2090,45 @@ notes:`
 <li><b>VM sprawl</b> — unmanaged proliferation of forgotten VMs, each an unpatched attack surface. Inventory and lifecycle discipline.</li>
 <li>Isolate risky guests: no shared folders/clipboard, and host-only or no networking when detonating malware in a sandbox.</li>
 </ul>
+
+<h2>Purpose pick-list — match scenario</h2>
+<table>
+<tr><th>Scenario</th><th>Purpose</th></tr>
+<tr><td>Open a suspicious attachment safely, then discard</td><td><b>Sandbox</b> (+ snapshot revert)</td></tr>
+<tr><td>Test a Windows patch on a copy of the standard image</td><td><b>Test / development</b></td></tr>
+<tr><td>Critical app only runs on Windows XP; hardware dying</td><td><b>Legacy OS / app support</b></td></tr>
+<tr><td>Mac user must run one Windows-only program</td><td><b>Cross-platform</b> application virtualization</td></tr>
+<tr><td>QA needs Win10, Win11, and three Linux distros on one PC</td><td><b>Test / development</b> (client hypervisor)</td></tr>
+</table>
+
+<h2>Virtual network modes</h2>
+<table>
+<tr><th>Mode</th><th>What the VM gets</th><th>When to use</th></tr>
+<tr><td><b>Bridged</b></td><td>Own LAN IP via DHCP — peer on the physical network</td><td>VM needs to be reachable like a real PC</td></tr>
+<tr><td><b>NAT</b></td><td>Shares the host's IP; outbound easy, inbound harder</td><td>Default workstation VMs; good everyday isolation</td></tr>
+<tr><td><b>Host-only</b></td><td>Talks only to the host (private virtual switch)</td><td>Labs, malware analysis without internet</td></tr>
+<tr><td><b>No networking</b></td><td>Fully air-gapped guest</td><td>Highest isolation for detonation / unpatched legacy OS</td></tr>
+</table>
+
+<h2>Snapshots and virtual disks</h2>
+<ul>
+<li>A guest's "hard drive" is a <b>file</b> on the host (VDI/VMDK/VHDX) — easy to copy, move, and back up.</li>
+<li>A <b>snapshot</b> freezes VM state (disk + often memory). Revert = discard every change since the snapshot — why sandboxes are disposable.</li>
+<li>Take a clean snapshot <b>before</b> risky tests; revert after. Do not treat snapshots as a full backup strategy for production data.</li>
+</ul>
+
+<h2>Client VM prep checklist</h2>
+<ol>
+<li>Confirm CPU supports <b>VT-x / AMD-V</b> and enable it in BIOS/UEFI.</li>
+<li>Size <b>RAM</b> so host + all concurrent guests fit (RAM is usually the first bottleneck).</li>
+<li>Allocate fast <b>SSD</b> space for virtual disks.</li>
+<li>Choose network mode for the purpose (bridged / NAT / host-only / none).</li>
+<li>Install guest OS → patches, AV, firewall like a real PC.</li>
+<li>For malware/legacy: disable shared folders/clipboard; isolate networking.</li>
+</ol>
+
+<div class="keyfact"><b>Type 1 vs Type 2:</b> technician laptop VirtualBox/Workstation = Type 2 (hosted). ESXi / bare-metal Hyper-V farm = Type 1. Client-side exam scenarios almost always mean Type 2.</div>
+<div class="keyfact"><b>Sprawl vs escape:</b> forgotten unpatched VMs everywhere = <b>sprawl</b> (governance/inventory). Malware breaks out of guest into host = <b>escape</b> (patch the hypervisor).</div>
 `,
 quiz:[
 {q:"A security analyst wants to open a suspicious email attachment somewhere it can do no harm, then discard the environment. What should they use?", o:["A Docker registry","A sandboxed virtual machine restored from a snapshot afterwards","Safe Mode on their main PC","A second user account"], a:1, e:"An isolated VM sandbox contains any damage; reverting to a clean snapshot erases it. This is the canonical sandbox scenario."},
@@ -4475,6 +4546,7 @@ function renderDomainHero(coreKey, d){
   const icon = DOMAIN_ICONS[coreKey]?.[d.num] || "📘";
   const topicMins = d.subs.reduce((n,s)=>n+noteReadMeta(s.notes).min,0);
   const domainTheme = coreKey==="core1" && d.num==="3.0" ? " domain-hero-hardware"
+    : coreKey==="core1" && d.num==="4.0" ? " domain-hero-cloud"
     : coreKey==="core1" && d.num==="5.0" ? " domain-hero-troubleshoot"
     : ` domain-hero-${coreKey}`;
   return `<div class="domain-hero${domainTheme}">
@@ -5816,6 +5888,7 @@ function render(){
     const sheet = prepNotesSheet(s.notes, s.id);
     const icon = DOMAIN_ICONS[view.core]?.[d.num] || "📘";
     const sheetHeroCls = view.core==="core1" && view.num==="3.0" ? " sheet-hero-hardware"
+      : view.core==="core1" && view.num==="4.0" ? " sheet-hero-cloud"
       : view.core==="core1" && view.num==="5.0" ? " sheet-hero-troubleshoot"
       : view.core==="core1" ? " sheet-hero-core1" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
