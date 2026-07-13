@@ -35,7 +35,7 @@ async function playCurrentMatch() {
 async function goToGamesHub() {
   if (await page.locator('h1.page').filter({ hasText: 'Revision Games' }).isVisible()) return;
   if (await page.isVisible('text=All games')) await page.click('text=All games');
-  else await page.click('text=See all games');
+  else await page.locator('button').filter({ hasText: /See all \d+ games/ }).click();
   await page.waitForSelector('h1.page >> text=Revision Games');
 }
 async function openGame(name) {

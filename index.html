@@ -118,6 +118,9 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .dash-stats b{color:var(--ink)}
 .dash-weak{margin-top:10px;font-size:.84rem;color:var(--muted)}
 .dash-weak b{color:var(--amber)}
+.dash-games{margin-top:4px}
+.dash-games b{color:var(--ink)}
+.game-card.featured{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft)}
 .install-banner{background:var(--panel);border:1px dashed var(--accent);border-radius:var(--radius);padding:14px 16px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .install-banner p{margin:0;font-size:.9rem}
 .review{margin-top:20px;text-align:left}
@@ -3623,6 +3626,49 @@ function coreProgress(coreKey){
   const readiness = weightTotal && attempted ? Math.round(weighted / weightTotal) : 0;
   return {domains: c.domains.length, attempted, passing, readiness, weak, lastAt};
 }
+function gamesProgressSummary(){
+  const ready = GAME_CATALOG.filter(g=>g.ready);
+  const played = new Set();
+  for(const g of ready){
+    if(g.type==="story") continue;
+    if(store.get(scoreKey(gameScoreKey(g.id,"normal"))) || store.get(scoreKey(gameScoreKey(g.id)))) played.add(g.id);
+    if(g.modes && store.get(scoreKey(gameScoreKey(g.id,"hard")))) played.add(g.id);
+  }
+  let fablesPlayed = 0;
+  for(const s of STORY_DATA){
+    if(store.get(scoreKey(gameScoreKey("storychat", s.id)))){
+      fablesPlayed++;
+      played.add("storychat");
+    }
+  }
+  let milBest = null, milQ = 0;
+  const mil = store.get(scoreKey("game_millionaire"));
+  if(mil){
+    const best = typeof mil === "number" ? mil : mil.best;
+    if(best != null){
+      milQ = best;
+      played.add("millionaire");
+      milBest = formatMillionairePrize(best >= 15 ? MILLIONAIRE_LADDER[14] : (best > 0 ? MILLIONAIRE_LADDER[best-1] : 0));
+    }
+  }
+  return {playedCount: played.size, total: ready.length, fablesPlayed, fablesTotal: STORY_DATA.length, milBest, milQ};
+}
+function gamesProgressCard(){
+  const g = gamesProgressSummary();
+  const milLine = g.milBest
+    ? `<b>${esc(g.milBest)}</b> best on A+ Millionaire`
+  : `A+ Millionaire — <b>not played yet</b>`;
+  const fablesLine = g.fablesPlayed
+    ? `<b>${g.fablesPlayed}/${g.fablesTotal}</b> Fix-It Fables legends completed`
+    : `Fix-It Fables — <b>${g.fablesTotal} legends</b> to try`;
+  const playedLine = g.playedCount
+    ? `<b>${g.playedCount}/${g.total}</b> game types played`
+    : `<b>${g.total}</b> games ready — pick one below`;
+  return `<div class="dash-card dash-games" aria-label="Games progress">
+    <h2>🎮 Revision Games</h2>
+    <div class="dash-stats">${playedLine}<br>${fablesLine}<br>${milLine}</div>
+  </div>`;
+}
 function progressDashboard(){
   const c1 = coreProgress("core1"), c2 = coreProgress("core2");
   let totalAttempts = 0;
@@ -3645,11 +3691,12 @@ function progressDashboard(){
       </div>${weak}
     </div>`;
   }
-  if(!c1.attempted && !c2.attempted) return "";
+  if(!c1.attempted && !c2.attempted) return gamesProgressCard();
   return `<div class="dashboard" aria-label="Study progress">
     ${coreCard("core1", c1)}
     ${coreCard("core2", c2)}
     <div class="dash-card"><div class="dash-stats">Saved quiz scores: <b>${totalAttempts}</b> · Pass targets: Core 1 <b>675/900</b> · Core 2 <b>700/900</b></div></div>
+    ${gamesProgressCard()}
   </div>`;
 }
 let deferredInstall = null;
@@ -4393,12 +4440,19 @@ function drawGameCables(){
     svg.appendChild(path);
   }
 }
-function renderGameCard(g){
+function storyProgressPill(){
+  let n = 0;
+  for(const s of STORY_DATA) if(store.get(scoreKey(gameScoreKey("storychat", s.id)))) n++;
+  if(!n) return "";
+  return `<span class="pill score ${n<STORY_DATA.length?"low":""}">${n}/${STORY_DATA.length} legends</span>`;
+}
+function renderGameCard(g, featured){
   if(!g.ready){
     return `<div class="game-card locked"><div class="icon">${g.icon}</div><h3>${esc(g.name)}</h3><div class="meta">${esc(g.desc)}</div></div>`;
   }
-  const score = g.type==="story" ? "" : gameScorePill(g.id, "normal");
-  return `<button class="game-card clickable" onclick="go('game',{gameId:'${g.id}'})">
+  const score = g.type==="story" ? storyProgressPill() : gameScorePill(g.id, "normal");
+  const feat = featured ? " featured" : "";
+  return `<button class="game-card clickable${feat}" onclick="go('game',{gameId:'${g.id}'})">
     <div class="icon">${g.icon}</div>
     <h3>${esc(g.name)} ${score}</h3>
     <div class="meta">${esc(g.desc)}</div></button>`;
@@ -4449,9 +4503,22 @@ function renderGamesGrouped(collapsible){
   }
   return html;
 }
+function renderGamesHomePreview(){
+  const ids = ["storychat","millionaire","ports"];
+  return ids.map(id=>renderGameCard(gameMeta(id), true)).join("");
+}
 function renderGamesHub(limit){
-  if(limit) return GAME_CATALOG.slice(0, limit).map(renderGameCard).join("");
+  if(limit==="home") return renderGamesHomePreview();
+  if(limit) return GAME_CATALOG.slice(0, limit).map(g=>renderGameCard(g)).join("");
   return renderGamesGrouped(true);
+}
+function renderGamesFeatured(){
+  const ids = ["storychat","millionaire"];
+  return `<div class="game-domain">
+    <div class="eyebrow">Featured</div>
+    <p class="sub">Story chat &amp; ladder quiz — great for mixed revision sessions</p>
+    <div class="grid">${ids.map(id=>renderGameCard(gameMeta(id), true)).join("")}</div>
+  </div>`;
 }
 function renderGame(){
   const app = document.getElementById("app");
@@ -4479,7 +4546,7 @@ function renderGame(){
       ? "Steps are shuffled — tap them in the correct troubleshooting order."
       : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
       : "Tap left, then right — connect the match.";
-    app.innerHTML = `<div class="eyebrow">Revision Games · bones edition</div>
+    app.innerHTML = `<div class="eyebrow">Revision Games</div>
       <h1 class="page">${meta.icon} ${esc(meta.name)}</h1>
       <p class="sub">${esc(meta.desc)}</p>${modes}
       <p class="sub" style="margin-top:0">${hint}</p>
@@ -4709,8 +4776,9 @@ function render(){
       html += `</div>`;
     }
     html += `<div class="eyebrow">🎮 Revision Games</div>
-      <div class="grid" style="margin-bottom:12px">${renderGamesHub(2)}</div>
-      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all games →</button></p>`;
+      <p class="sub" style="margin-top:0;margin-bottom:10px">Featured picks — story chat, Millionaire ladder, and port drill.</p>
+      <div class="grid" style="margin-bottom:12px">${renderGamesHub("home")}</div>
+      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all ${GAME_CATALOG.filter(g=>g.ready).length} games →</button></p>`;
     app.innerHTML = html;
     return;
   }
@@ -4756,7 +4824,8 @@ function render(){
     crumbs.innerHTML = "<b>🎮 Revision Games</b>";
     app.innerHTML = `<div class="eyebrow">Quick drills</div>
       <h1 class="page">Revision Games</h1>
-      <p class="sub">${GAME_CATALOG.length} games grouped by exam domain — expand Core 1 or Core 2 to browse.</p>
+      <p class="sub">${GAME_CATALOG.filter(g=>g.ready).length} games grouped by exam domain — expand Core 1 or Core 2 to browse.</p>
+      ${renderGamesFeatured()}
       ${renderGamesGrouped(true)}`;
     return;
   }
