@@ -90,6 +90,39 @@ p.sub{color:var(--muted);margin-bottom:22px}
 .sub-nav .sub-nav-btn{font-size:.88rem;padding:8px 12px}
 footer.domfoot.notes-mock-footer{position:sticky;bottom:0;background:color-mix(in srgb, var(--bg) 90%, transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);margin-top:20px;padding:14px 0 12px;z-index:5}
 footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
+.core-hero{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;margin:0 0 16px;color:#fff;position:relative;overflow:hidden}
+.core-hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(255,255,255,.18),transparent 55%);pointer-events:none}
+.core-hero-icon{font-size:2.4rem;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.2))}
+.core-hero-label{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
+.core-hero-sub{font-size:.88rem;opacity:.92;margin-top:2px}
+.core-hero-core1{background:linear-gradient(135deg,#1D4ED8 0%,#0E7490 55%,#0891B2 100%)}
+.core-hero-core2{background:linear-gradient(135deg,#0E7490 0%,#15803D 100%)}
+.domain-card{position:relative;border-width:2px;overflow:hidden;padding-top:14px}
+.domain-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px}
+.domain-card-core1::before{background:linear-gradient(90deg,#2563EB,#0E7490)}
+.domain-card-core2::before{background:linear-gradient(90deg,#0E7490,#15803D)}
+.domain-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.domain-icon{font-size:1.6rem;line-height:1}
+.domain-weight{font-family:var(--display);font-weight:800;font-size:.78rem;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.domain-card-core1 .domain-weight{background:#DBEAFE;color:#1D4ED8}
+.domain-card-core2 .domain-weight{background:var(--accent-soft);color:var(--accent)}
+.domain-card:hover{box-shadow:0 8px 24px rgba(14,116,144,.12)}
+.domain-card-core1:hover{border-color:#2563EB}
+.domain-hero{border-radius:16px;padding:20px;margin:0 0 18px;border:2px solid var(--line);background:linear-gradient(135deg,var(--panel) 60%,var(--accent-soft))}
+.domain-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,var(--panel) 50%,#EFF6FF 100%)}
+.domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
+.domain-hero-head .domain-icon{font-size:2.2rem}
+.domain-hero h1.page{margin:0;font-size:1.5rem}
+.domain-stat-pills{display:flex;flex-wrap:wrap;gap:8px}
+.domain-stat-pill{font-size:.76rem;font-weight:700;padding:5px 11px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.domain-stat-pill strong{color:var(--ink)}
+.sheet-hero{border-radius:14px;padding:14px 16px;margin:0 0 14px;border:1px solid var(--line);background:var(--panel)}
+.sheet-hero-core1{border-color:#BFDBFE;background:linear-gradient(135deg,#EFF6FF,var(--panel))}
+.core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
+.core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
+.core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
+.notes .keyfact{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;font-size:.94rem;line-height:1.5}
+.notes .keyfact b:first-child{color:var(--amber)}
 /* quiz */
 .qhead{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px;font-size:.85rem;color:var(--muted);font-weight:600}
 .qbar{height:6px;background:var(--line);border-radius:3px;margin-bottom:18px;overflow:hidden}
@@ -280,6 +313,15 @@ const ROSTER = {
     {num:"3.0", name:"Software Troubleshooting", weight:22},
     {num:"4.0", name:"Operational Procedures", weight:22}
   ]}
+};
+
+const CORE_THEME = {
+  core1:{icon:"🖥️", tagline:"Hardware, networking & troubleshooting"},
+  core2:{icon:"🔐", tagline:"Operating systems, security & procedures"}
+};
+const DOMAIN_ICONS = {
+  core1:{"1.0":"📱","2.0":"🌐","3.0":"🔧","4.0":"☁️","5.0":"🛠️"},
+  core2:{"1.0":"🪟","2.0":"🛡️","3.0":"🐛","4.0":"📋"}
 };
 
 const DOMAINS = [
@@ -550,6 +592,36 @@ notes:`
 <ul>
 <li><b>TCP</b> — connection-oriented: three-way handshake (SYN → SYN/ACK → ACK), guaranteed ordered delivery, retransmission. Used where accuracy matters (web, mail, file transfer, remote desktop).</li>
 <li><b>UDP</b> — connectionless: no handshake, no delivery guarantee, minimal overhead. Used where speed matters and losses are tolerable (streaming, DNS queries, DHCP, VoIP).</li>
+</ul>
+<div class="keyfact"><b>TCP vs UDP on the exam:</b> file transfer, web pages, email, RDP → TCP. Live voice/video, DNS lookups, DHCP, SNMP traps → UDP. If the question says "guaranteed delivery" or "three-way handshake", it's TCP.</div>
+
+<h2>ICMP, ARP, and what is NOT a port question</h2>
+<ul>
+<li><b>ICMP</b> (ping, traceroute) — network diagnostics at layer 3, not TCP/UDP application ports. "Ping uses port 443" is always wrong.</li>
+<li><b>ARP</b> — resolves IP addresses to MAC addresses on the local subnet. No well-known TCP/UDP port.</li>
+<li>Exam traps pair protocols correctly: DHCP is UDP 67/68, DNS is mostly UDP 53, LDAP is TCP 389.</li>
+</ul>
+
+<h2>Secure variants — the mail and directory traps</h2>
+<table>
+<tr><th>Plain</th><th>Port</th><th>Secure</th><th>Port</th></tr>
+<tr><td>HTTP</td><td>80</td><td>HTTPS</td><td>443</td></tr>
+<tr><td>Telnet</td><td>23</td><td>SSH</td><td>22</td></tr>
+<tr><td>SMTP</td><td>25</td><td>SMTP submit (STARTTLS)</td><td>587</td></tr>
+<tr><td>SMTP (legacy SSL)</td><td>—</td><td>SMTPS</td><td>465</td></tr>
+<tr><td>POP3</td><td>110</td><td>POP3S</td><td>995</td></tr>
+<tr><td>IMAP</td><td>143</td><td>IMAPS</td><td>993</td></tr>
+<tr><td>LDAP</td><td>389</td><td>LDAPS</td><td>636</td></tr>
+<tr><td>FTP</td><td>21</td><td>FTPS</td><td>990</td></tr>
+</table>
+
+<h2>Firewall scenarios — which ports to open</h2>
+<ul>
+<li><b>Web server only</b> — inbound TCP 80 and/or 443.</li>
+<li><b>Remote admin (secure)</b> — SSH 22 (Linux) or RDP 3389 (Windows) — never Telnet 23 externally.</li>
+<li><b>Mail server receiving internet mail</b> — SMTP 25 (often restricted to known relays).</li>
+<li><b>Internal file share</b> — SMB 445 within the LAN; block from the internet.</li>
+<li><b>Monitoring</b> — SNMP 161 from the manager to devices; traps outbound on 162.</li>
 </ul>
 
 <h2>The port table — memorise cold</h2>
@@ -846,6 +918,29 @@ notes:`
 </table>
 <div class="callout"><b>Exam angle:</b> remote farm, no cables, needs internet → satellite or WISP. Latency-sensitive (gaming/VoIP) → satellite is the WRONG answer. "Speed depends on distance from exchange" → DSL. "Shared with neighbours" → cable.</div>
 
+<h2>Symmetric vs asymmetric — and why it matters</h2>
+<ul>
+<li><b>Asymmetric</b> — faster download than upload (typical home cable/DSL). Fine for browsing and streaming.</li>
+<li><b>Symmetric</b> — equal up/down (common on fibre and business leased lines). Needed for hosting, video conferencing uplink, VPN-heavy work.</li>
+<li>Satellite may advertise high download Mbps but still fails real-time apps due to <b>latency</b>, not bandwidth alone.</li>
+</ul>
+
+<h2>Fibre delivery methods</h2>
+<table>
+<tr><th>Type</th><th>What it means</th><th>Speed note</th></tr>
+<tr><td><b>FTTP / FTTH</b></td><td>Fibre all the way to the premises</td><td>Fastest, most consistent</td></tr>
+<tr><td><b>FTTC</b></td><td>Fibre to the cabinet, copper last mile</td><td>Good; speed drops with copper length</td></tr>
+<tr><td><b>FTTN</b></td><td>Fibre to the node/neighbourhood</td><td>More variable than FTTP</td></tr>
+</table>
+
+<h2>Pick the connection — scenario cheat sheet</h2>
+<ul>
+<li><b>Rural property, no wires</b> — WISP antenna or satellite; WISP if a local mast exists.</li>
+<li><b>Temporary shop / event</b> — cellular 4G/5G router (fastest deploy).</li>
+<li><b>Business needs symmetric 1 Gbps</b> — fibre leased line / FTTP business circuit.</li>
+<li><b>Home user far from exchange, copper phone line only</b> — DSL (speed limited by distance).</li>
+</ul>
+
 <h2>Network types</h2>
 <ul>
 <li><b>PAN</b> — personal area network: Bluetooth-scale, around one person.</li>
@@ -886,6 +981,25 @@ notes:`
 <tr><td><b>WiFi analyzer</b></td><td>Surveying wireless: signal strength, channel usage/overlap, finding interference and dead spots</td></tr>
 </table>
 <div class="callout"><b>Exam angle:</b> the scenario wording maps directly: "which cable in the bundle is it?" → toner probe. "Is this cable wired correctly?" → cable tester. "Is the NIC faulty?" → loopback plug. "Terminate into the patch panel" → punchdown. "Make a patch lead" → stripper + crimper. "Neighbouring WiFi interfering?" → WiFi analyzer. "Capture traffic for analysis" → tap.</div>
+
+<h2>Software diagnostics — the command-line toolkit</h2>
+<table>
+<tr><th>Tool</th><th>Platform</th><th>Use it when…</th></tr>
+<tr><td><b>ping</b></td><td>All</td><td>Test basic IP reachability to a host (ICMP)</td></tr>
+<tr><td><b>tracert / traceroute</b></td><td>Win / Linux</td><td>See each hop a packet takes — locate where routing breaks</td></tr>
+<tr><td><b>ipconfig / ifconfig / ip a</b></td><td>Win / Linux</td><td>View IP address, mask, gateway, DNS — spot APIPA 169.254.x.x</td></tr>
+<tr><td><b>nslookup / dig</b></td><td>Win / Linux</td><td>Test DNS resolution directly — ping IP works but names fail</td></tr>
+<tr><td><b>netstat</b></td><td>All</td><td>List open ports and active connections on the local machine</td></tr>
+<tr><td><b>arp -a</b></td><td>All</td><td>View the ARP cache — IP-to-MAC mappings on the LAN</td></tr>
+</table>
+<div class="keyfact"><b>Classic pattern:</b> ping 8.8.8.8 works, ping google.com fails → DNS problem (nslookup), not the gateway or NIC.</div>
+
+<h2>Cable tester vs certifier</h2>
+<ul>
+<li><b>Basic cable tester</b> — continuity, wire map, opens/shorts. Enough for most field work.</li>
+<li><b>Cable certifier</b> — measures performance to Cat 5e/6/6a standards (length, crosstalk, attenuation). Required for warranty installs and datacentre work.</li>
+</ul>
+
 <h2>Termination standards</h2>
 <ul>
 <li><b>T568A and T568B</b> wiring orders — use the same standard at both ends for a straight-through cable. Mixed A/B ends make a (legacy) crossover cable. B is the common commercial default.</li>
@@ -1190,6 +1304,24 @@ notes:`
 <li><b>Redundant PSUs</b> — servers run two hot-swappable supplies; one fails, the other carries the load with zero downtime.</li>
 <li>Efficiency ratings (80 Plus Bronze→Titanium) indicate how little power is wasted as heat.</li>
 </ul>
+
+<h2>Form factors — will it fit the case?</h2>
+<ul>
+<li><b>ATX</b> — standard desktop PSU (most common).</li>
+<li><b>Micro-ATX / SFX</b> — compact cases and small-form-factor builds.</li>
+<li><b>TFX</b> — slim desktops (Dell/HP office towers).</li>
+<li><b>Redundant / hot-swap</b> — server chassis only; supplies slide out without powering down the server.</li>
+</ul>
+
+<h2>Sizing wattage — quick example</h2>
+<p>A build with a 65 W CPU, a 250 W GPU, 30 W for drives/fans/RAM, plus ~20% headroom → target at least <b>~400 W</b> (many builders choose 550–650 W for upgrade room). GPU TDP dominates gaming rigs.</p>
+
+<h2>Testing a suspected PSU</h2>
+<ul>
+<li><b>Paperclip test</b> — jumper the green wire to any black on the 24-pin while unplugged from the board; fan should spin (basic "PSU turns on" check only).</li>
+<li><b>PSU tester</b> — reads each rail voltage under load; safer and more informative.</li>
+<li><b>Swap test</b> — substitute a known-good PSU of adequate wattage; if crashes stop, the original is suspect.</li>
+</ul>
 <div class="callout"><b>Exam angle:</b> "PC restarts only when gaming/rendering" → insufficient PSU wattage (or overheating — check both). "Server must survive a PSU failure" → redundant supplies. "Traveller's old PSU released smoke abroad" → manual voltage switch set wrong.</div>
 `,
 quiz:[
@@ -1378,6 +1510,22 @@ notes:`
 <li><b>VDI on premises</b> — hosted in your own datacentre. <b>VDI in the cloud / DaaS</b> — hosted by a provider (e.g. Azure Virtual Desktop, Windows 365).</li>
 <li>Benefits: central management/patching, data never leaves the datacentre, any-device access. Trade-off: everything depends on connectivity.</li>
 </ul>
+
+<h2>Shared responsibility — who secures what</h2>
+<ul>
+<li><b>IaaS</b> — provider secures the physical datacentre and hypervisor; <b>you</b> patch the guest OS, apps, and data.</li>
+<li><b>PaaS</b> — provider secures platform/runtime; <b>you</b> secure your code and data.</li>
+<li><b>SaaS</b> — provider secures the application stack; <b>you</b> manage identities, access, and the data you upload.</li>
+</ul>
+<div class="keyfact"><b>Exam trap:</b> "The cloud provider handles all security" is false for IaaS/PaaS — customer responsibility always remains for something.</div>
+
+<h2>Deployment pick-list — match scenario to model</h2>
+<ul>
+<li><b>Startup web app, no datacentre staff</b> → public cloud PaaS/SaaS.</li>
+<li><b>Hospital records must stay on dedicated infrastructure</b> → private or hybrid cloud.</li>
+<li><b>Universities sharing a research platform</b> → community cloud.</li>
+<li><b>Retail site bursts at Christmas, quiet in January</b> → public cloud + rapid elasticity.</li>
+</ul>
 `,
 quiz:[
 {q:"A company rents virtual machines and storage from a provider but installs and manages its own operating systems and applications. Which service model is this?", o:["SaaS","PaaS","IaaS","DaaS"], a:2, e:"Infrastructure as a Service supplies the raw compute/storage/network; everything from the OS upward is the customer's responsibility."},
@@ -1401,6 +1549,14 @@ notes:`
 <li>A <b>hypervisor</b> runs <b>virtual machines</b> — complete guest operating systems — on one physical host. Client-side means on a workstation (e.g. VirtualBox, VMware Workstation, Hyper-V) rather than a server farm.</li>
 <li>Each VM has virtual CPU, RAM, disk (a file on the host), and network adapters.</li>
 </ul>
+
+<h2>Type 1 vs Type 2 hypervisors</h2>
+<table>
+<tr><th>Type</th><th>Runs on</th><th>Examples</th><th>Typical use</th></tr>
+<tr><td><b>Type 1</b> (bare metal)</td><td>Hardware directly</td><td>VMware ESXi, Microsoft Hyper-V (role), Citrix XenServer</td><td>Servers, datacentres, enterprise</td></tr>
+<tr><td><b>Type 2</b> (hosted)</td><td>Installed as an app on a host OS</td><td>VirtualBox, VMware Workstation, Parallels</td><td>Desktops, labs, client-side sandboxing</td></tr>
+</table>
+<div class="callout"><b>Exam angle:</b> client-side virtualization on a technician's laptop = Type 2. Enterprise server farm running many VMs = Type 1.</div>
 
 <h2>Purposes — the exam's favourite scenarios</h2>
 <ul>
@@ -1487,6 +1643,31 @@ notes:`
 <tr><td>6</td><td><b>Document</b> findings, actions, and outcomes</td><td>Lessons learned, knowledge base</td></tr>
 </table>
 <div class="callout"><b>Exam angles:</b> the questions test the seams. "User reports X — what do you do FIRST?" → identify/gather info, ask what changed. "You suspect Y — what NEXT?" → test the theory. "Theory disproved and you're out of ideas" → escalate (that's still step 3). "Fix applied — what before closing?" → verify functionality + preventive measures, THEN document. Also: <b>always consider corporate policies and procedures before implementing changes</b>.</div>
+
+<h2>FIRST vs NEXT — how CompTIA words it</h2>
+<table>
+<tr><th>Question wording</th><th>Methodology step</th><th>Typical action</th></tr>
+<tr><td>"What should you do <b>FIRST</b>?"</td><td>1 — Identify</td><td>Question the user, ask what changed, gather symptoms, back up data</td></tr>
+<tr><td>"What is the <b>MOST likely cause</b>?"</td><td>2 — Theory</td><td>Form probable cause — question the obvious (cable, power, Fn key)</td></tr>
+<tr><td>"What should you do <b>NEXT</b>?"</td><td>3 — Test theory</td><td>Swap cable, ping gateway, run diagnostic — least invasive test</td></tr>
+<tr><td>"Theory failed — now what?"</td><td>3 — Escalate or new theory</td><td>Try another theory or hand off to senior/vendor</td></tr>
+<tr><td>"Before closing the ticket?"</td><td>5 then 6</td><td>Verify full functionality, preventive measures, then document</td></tr>
+</table>
+
+<h2>Escalation — when to stop guessing</h2>
+<ul>
+<li>Escalation is <b>not failure</b> — it's step 3 when you've exhausted your theories or need access you don't have.</li>
+<li>Escalate with <b>full progress notes</b>: symptoms, what's been tried, results. The next tier should not start from zero.</li>
+<li>Vendor support, security team, or a specialist engineer are all valid escalation paths.</li>
+</ul>
+
+<h2>Change control and corporate policy</h2>
+<ul>
+<li>Even a correct technical fix can be wrong if it bypasses <b>change management</b> — maintenance windows, approvals, rollback plans.</li>
+<li>Read the <b>vendor documentation</b> before applying firmware, BIOS, or driver updates (step 4).</li>
+<li><b>Document</b> every ticket with description → progress → resolution so the knowledge base grows.</li>
+</ul>
+<div class="keyfact"><b>28% of Core 1</b> is troubleshooting — nearly every scenario question maps to this methodology. Learn the six steps in order, then drill FIRST vs NEXT wording.</div>
 `,
 quiz:[
 {q:"A user reports their PC 'stopped working'. According to the methodology, what should the technician do FIRST?", o:["Reimage the machine","Identify the problem — question the user and ask what has changed","Establish a plan of action","Document the issue"], a:1, e:"Step 1 is identifying the problem: gather information, ask about recent changes, review symptoms. Everything else follows from that."},
@@ -3649,6 +3830,42 @@ function renderSubNav(core, num, d, subId){
     : "<span></span>";
   return `<div class="sub-nav">${mk(prev, "prev")}<button class="btn" onclick="go('domain',{core:'${core}',num:'${num}'})">All ${d.num} topics</button>${mk(next, "next")}</div>`;
 }
+function renderCoreHero(coreKey){
+  const c = ROSTER[coreKey], t = CORE_THEME[coreKey];
+  return `<div class="core-hero core-hero-${coreKey}"><div class="core-hero-icon">${t.icon}</div><div><div class="core-hero-label">${c.name} · ${c.code}</div><div class="core-hero-sub">${t.tagline}</div></div></div>`;
+}
+function renderDomainCard(coreKey, d, built){
+  const icon = DOMAIN_ICONS[coreKey]?.[d.num] || "📘";
+  return `<button class="card clickable domain-card domain-card-${coreKey}" onclick="go('domain',{core:'${coreKey}',num:'${d.num}'})">
+    <div class="domain-card-top"><span class="domain-icon">${icon}</span><span class="domain-weight">${d.weight}% of exam</span></div>
+    <h3>${d.num} ${esc(d.name)} ${scorePill(built.id+"_mock", built.mock.length)}</h3>
+    <div class="meta">${built.subs.length} topics · ${built.subs.length} mini mocks · 25-question domain mock</div>
+    <div class="weightbar"><i style="width:${d.weight*2.5}%"></i></div></button>`;
+}
+function renderDomainHero(coreKey, d){
+  const icon = DOMAIN_ICONS[coreKey]?.[d.num] || "📘";
+  const topicMins = d.subs.reduce((n,s)=>n+noteReadMeta(s.notes).min,0);
+  return `<div class="domain-hero domain-hero-${coreKey}">
+    <div class="domain-hero-head"><span class="domain-icon">${icon}</span><div>
+      <div class="eyebrow">${ROSTER[coreKey].name} · ${d.weight}% of exam</div>
+      <h1 class="page">${d.num} ${esc(d.name)}</h1></div></div>
+    <p class="sub" style="margin-bottom:12px">${esc(d.blurb)}</p>
+    <div class="domain-stat-pills">
+      <span class="domain-stat-pill"><strong>${d.subs.length}</strong> revision sheets</span>
+      <span class="domain-stat-pill"><strong>~${topicMins} min</strong> total read</span>
+      <span class="domain-stat-pill"><strong>25</strong> domain mock Qs</span>
+    </div></div>`;
+}
+function renderCore1GamesStrip(){
+  const ids = ["ports","connectors","wifi","troubleshoot"];
+  const cards = ids.map(id=>{
+    const g = gameMeta(id);
+    return g ? `<button class="game-card clickable" onclick="go('game',{gameId:'${id}'})"><div class="icon">${g.icon}</div><h3>${esc(g.name)}</h3><div class="meta">${esc(g.desc)}</div></button>` : "";
+  }).join("");
+  return `<div class="core1-games-strip"><h2>⚡ Core 1 quick drills</h2>
+    <p>Match games mapped to Core 1 domains — great warm-ups before mocks.</p>
+    <div class="grid">${cards}</div></div>`;
+}
 function scoreKey(id){ return "score_"+id; }
 function scorePill(id, total){
   const s = store.get(scoreKey(id));
@@ -4920,21 +5137,19 @@ function render(){
       <p class="sub">V15 exams · Pick a domain, read the notes, sit the mini mocks, then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>`;
     for(const key of ["core1","core2"]){
       const c = ROSTER[key];
-      html += `<div class="eyebrow">${c.name} · ${c.code}</div><div class="grid" style="margin-bottom:26px">`;
+      html += renderCoreHero(key) + `<div class="grid" style="margin-bottom:26px">`;
       for(const d of c.domains){
         const built = findDomain(key,d.num);
-        if(built){
-          html += `<button class="card clickable" onclick="go('domain',{core:'${key}',num:'${d.num}'})">
-            <h3>${d.num} ${esc(d.name)} ${scorePill(built.id+"_mock", built.mock.length)}</h3>
-            <div class="meta">${d.weight}% of exam · ${built.subs.length} subdomains · notes, ${built.subs.length} mini mocks, 25-question domain mock</div>
-            <div class="weightbar"><i style="width:${d.weight*2.5}%"></i></div></button>`;
-        } else {
-          html += `<div class="card locked"><h3>${d.num} ${esc(d.name)}</h3>
+        if(built) html += renderDomainCard(key, d, built);
+        else {
+          html += `<div class="card locked domain-card domain-card-${key}"><div class="domain-card-top"><span class="domain-icon">📘</span><span class="domain-weight">${d.weight}%</span></div>
+            <h3>${d.num} ${esc(d.name)}</h3>
             <div class="meta">${d.weight}% of exam</div>
             <div class="weightbar"><i style="width:${d.weight*2.5}%"></i></div></div>`;
         }
       }
       html += `</div>`;
+      if(key==="core1") html += renderCore1GamesStrip();
     }
     html += `<div class="eyebrow">🎮 Revision Games</div>
       <p class="sub" style="margin-top:0;margin-bottom:10px">Featured picks — story chat, Millionaire ladder, and port drill.</p>
@@ -4947,9 +5162,7 @@ function render(){
   if(view.name==="domain"){
     const d = findDomain(view.core, view.num);
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · Domain ${d.num}`;
-    let html = `<div class="eyebrow">${ROSTER[view.core].name} · ${d.weight}% of exam</div>
-      <h1 class="page">${d.num} ${esc(d.name)}</h1>
-      <p class="sub">${esc(d.blurb)}</p><div class="grid">`;
+    let html = renderDomainHero(view.core, d) + `<div class="grid">`;
     for(const s of d.subs){
       const rm = noteReadMeta(s.notes);
       html += `<button class="card clickable" onclick="go('sub',{core:'${view.core}',num:'${d.num}',sub:'${s.id}'})">
@@ -4969,14 +5182,17 @@ function render(){
     const d = findDomain(view.core, view.num);
     const s = d.subs.find(x=>x.id===view.sub);
     const sheet = prepNotesSheet(s.notes, s.id);
+    const icon = DOMAIN_ICONS[view.core]?.[d.num] || "📘";
+    const sheetHeroCls = view.core==="core1" ? " sheet-hero-core1" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
-    app.innerHTML = `<div class="eyebrow">Revision sheet · Domain ${d.num}</div>
-      <h1 class="page">${s.id} ${esc(s.name)}</h1>
-      <div class="notes-meta">
+    app.innerHTML = `<div class="sheet-hero${sheetHeroCls}">
+      <div class="eyebrow">Revision sheet · Domain ${d.num}</div>
+      <h1 class="page" style="margin-top:4px">${icon} ${s.id} ${esc(s.name)}</h1>
+      <div class="notes-meta" style="margin-bottom:0">
         <span>~${sheet.meta.min} min read</span>
         <span>${sheet.meta.sections} section${sheet.meta.sections===1?"":"s"}</span>
         <span>${s.quiz.length} mini-mock questions after</span>
-      </div>
+      </div></div>
       ${sheet.examStrip}
       ${sheet.tocHtml}
       <div class="notes-sheet"><div class="notes">${sheet.html}</div></div>

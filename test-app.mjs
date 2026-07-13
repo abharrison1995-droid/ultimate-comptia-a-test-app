@@ -26,7 +26,11 @@ function assert(name, cond) {
 }
 
 await page.goto(`http://127.0.0.1:${port}/`);
+assert('Core 1 hero banner', await page.isVisible('.core-hero-core1'));
+assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count()) >= 5);
+assert('Core 1 games strip', await page.isVisible('.core1-games-strip'));
 await page.click('text=1.0 Mobile Devices');
+assert('Domain hero on topic list', await page.isVisible('.domain-hero'));
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
 assert('Revision sheet wraps notes', await page.isVisible('.notes-sheet'));
