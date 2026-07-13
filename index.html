@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A+ Revision Guide — 220-1101 / 220-1102</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="CompTIA A+ Core 1 & Core 2 (220-1201 / 220-1202) revision notes, mini mocks, and domain exams.">
+<meta name="theme-color" content="#0E7490">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="A+ Study">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>A+ Revision Guide — 220-1201 / 220-1202</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -100,13 +108,35 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .resume-banner b{color:var(--accent)}
 .storage-warn{background:var(--amber-soft);border:1px solid var(--amber);border-radius:8px;padding:8px 12px;font-size:.82rem;color:var(--amber);margin-bottom:16px}
 .score-meta{font-size:.72rem;font-weight:600;color:var(--muted);margin-left:4px}
+.dashboard{display:grid;gap:12px;margin:0 0 24px}
+.dash-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.dash-card h2{font-family:var(--display);font-size:1rem;font-weight:700;margin-bottom:10px}
+.dash-row{display:flex;align-items:center;gap:14px}
+.dash-ring{--p:0;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;flex-shrink:0}
+.dash-ring span{width:48px;height:48px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:.95rem}
+.dash-stats{font-size:.88rem;color:var(--muted);line-height:1.5}
+.dash-stats b{color:var(--ink)}
+.dash-weak{margin-top:10px;font-size:.84rem;color:var(--muted)}
+.dash-weak b{color:var(--amber)}
+.install-banner{background:var(--panel);border:1px dashed var(--accent);border-radius:var(--radius);padding:14px 16px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.install-banner p{margin:0;font-size:.9rem}
+.review{margin-top:20px;text-align:left}
+.review h3{font-family:var(--display);font-size:1rem;font-weight:700;margin:18px 0 10px;text-align:center}
+.review-item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:.9rem;text-align:left}
+.review-item .q{font-weight:600;margin-bottom:6px}
+.review-item .bad{color:var(--bad);font-size:.85rem}
+.review-item .good{color:var(--good);font-size:.85rem}
+@supports(padding:max(0px)){
+  header.app{padding-top:max(12px,env(safe-area-inset-top))}
+  .wrap{padding-bottom:max(80px,env(safe-area-inset-bottom))}
+}
 @media (max-width:520px){h1.page{font-size:1.4rem}.wrap{padding:16px 12px 70px}.save-status{display:none}}
 </style>
 </head>
 <body>
 <header class="app"><div class="inner">
   <div class="brand" tabindex="0" role="button" onclick="go('home')" onkeydown="if(event.key==='Enter')go('home')">A+ <span>Revision Guide</span></div>
-  <div class="crumbs" id="crumbs">220-1101 · 220-1102</div>
+  <div class="crumbs" id="crumbs">220-1201 · 220-1202</div>
   <div class="save-status" id="saveStatus" aria-live="polite"><i></i><span>Ready</span></div>
   <button class="btn" id="backbtn" style="display:none" onclick="goBack()">&larr; Back</button>
 </div></header>
@@ -119,14 +149,14 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
    objects before the __MORE_DOMAINS__ marker.
    ============================================================ */
 const ROSTER = {
-  core1:{code:"220-1101", name:"Core 1", domains:[
+  core1:{code:"220-1201", name:"Core 1", domains:[
     {num:"1.0", name:"Mobile Devices", weight:13},
     {num:"2.0", name:"Networking", weight:23},
     {num:"3.0", name:"Hardware", weight:25},
     {num:"4.0", name:"Virtualization & Cloud Computing", weight:11},
     {num:"5.0", name:"Hardware & Network Troubleshooting", weight:28}
   ]},
-  core2:{code:"220-1102", name:"Core 2", domains:[
+  core2:{code:"220-1202", name:"Core 2", domains:[
     {num:"1.0", name:"Operating Systems", weight:31},
     {num:"2.0", name:"Security", weight:25},
     {num:"3.0", name:"Software Troubleshooting", weight:22},
@@ -3409,7 +3439,7 @@ function saveQuizProgress(){
   if(!quiz || quiz.done) return;
   const ok = store.set(PROGRESS_KEY, {
     core:quiz.core, num:quiz.num, subId:quiz.subId,
-    qs:quiz.qs, i:quiz.i, right:quiz.right,
+    qs:quiz.qs, i:quiz.i, right:quiz.right, wrong:quiz.wrong||[],
     answered:quiz.answered, picked:quiz.picked,
     label:quiz.label, key:quiz.key, savedAt:Date.now()
   });
@@ -3422,7 +3452,7 @@ function resumeQuiz(){
   if(!p || !p.qs) return false;
   quiz = {
     core:p.core, num:p.num, subId:p.subId||null,
-    qs:p.qs, i:p.i||0, right:p.right||0,
+    qs:p.qs, i:p.i||0, right:p.right||0, wrong:p.wrong||[],
     answered:!!p.answered, picked:p.picked??null,
     done:false, label:p.label, key:p.key
   };
@@ -3473,6 +3503,89 @@ function storageWarning(){
   if(storageOk) return "";
   return `<div class="storage-warn" role="alert">Local storage is unavailable — scores and quiz progress cannot be saved in this browser session.</div>`;
 }
+function readBest(key, total){
+  const s = store.get(scoreKey(key));
+  if(s == null) return null;
+  const best = typeof s === "number" ? s : s.best;
+  return best == null ? null : Math.round(100 * best / total);
+}
+function coreProgress(coreKey){
+  const c = ROSTER[coreKey];
+  let attempted = 0, passing = 0, weighted = 0, weightTotal = 0, lastAt = 0;
+  const weak = [];
+  for(const rd of c.domains){
+    const d = findDomain(coreKey, rd.num);
+    if(!d) continue;
+    const pct = readBest(d.id + "_mock", d.mock.length);
+    weightTotal += rd.weight;
+    if(pct != null){
+      attempted++;
+      weighted += pct * rd.weight;
+      if(pct >= 75) passing++;
+      else weak.push({num: rd.num, name: d.name, pct});
+      const rec = store.get(scoreKey(d.id + "_mock"));
+      const ts = typeof rec === "object" && rec?.lastAt ? rec.lastAt : 0;
+      if(ts > lastAt) lastAt = ts;
+    }
+  }
+  const readiness = weightTotal && attempted ? Math.round(weighted / weightTotal) : 0;
+  return {domains: c.domains.length, attempted, passing, readiness, weak, lastAt};
+}
+function progressDashboard(){
+  const c1 = coreProgress("core1"), c2 = coreProgress("core2");
+  let totalAttempts = 0;
+  try{ totalAttempts = Object.keys(localStorage).filter(k => k.startsWith("aplus_score_")).length; }catch(e){}
+  function coreCard(key, p){
+    const c = ROSTER[key];
+    const last = p.lastAt ? new Date(p.lastAt).toLocaleDateString() : "Not started";
+    const weak = p.weak.length
+      ? `<div class="dash-weak"><b>Focus:</b> ${p.weak.slice(0,2).map(w => `${w.num} (${w.pct}%)`).join(" · ")}</div>`
+      : (p.attempted ? `<div class="dash-weak"><b>All domain mocks at pass level.</b></div>` : "");
+    return `<div class="dash-card">
+      <h2>${c.name} · ${c.code}</h2>
+      <div class="dash-row">
+        <div class="dash-ring" style="--p:${p.readiness}"><span>${p.readiness || "—"}</span></div>
+        <div class="dash-stats">
+          <b>${p.attempted}/${p.domains}</b> domain mocks attempted<br>
+          <b>${p.passing}/${p.domains}</b> at pass level (75%+)<br>
+          Last studied: <b>${esc(last)}</b>
+        </div>
+      </div>${weak}
+    </div>`;
+  }
+  if(!c1.attempted && !c2.attempted) return "";
+  return `<div class="dashboard" aria-label="Study progress">
+    ${coreCard("core1", c1)}
+    ${coreCard("core2", c2)}
+    <div class="dash-card"><div class="dash-stats">Saved quiz scores: <b>${totalAttempts}</b> · Pass targets: Core 1 <b>675/900</b> · Core 2 <b>700/900</b></div></div>
+  </div>`;
+}
+let deferredInstall = null;
+function installBanner(){
+  if(localStorage.getItem("aplus_install_dismissed")) return "";
+  if(window.matchMedia("(display-mode: standalone)").matches) return "";
+  return `<div class="install-banner" id="installBanner">
+    <p><b>Install on your phone</b> — works offline after first load. Add to Home Screen for a full-screen study app.</p>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn" onclick="dismissInstall()">Not now</button>
+      <button class="btn primary" id="installBtn" onclick="promptInstall()">Install app</button>
+    </div>
+  </div>`;
+}
+function dismissInstall(){ localStorage.setItem("aplus_install_dismissed","1"); const b=document.getElementById("installBanner"); if(b) b.remove(); }
+function promptInstall(){
+  if(deferredInstall){ deferredInstall.prompt(); deferredInstall.userChoice.then(()=>{ deferredInstall=null; dismissInstall(); }); return; }
+  alert("On iPhone: tap Share → Add to Home Screen.\n\nOn Android: tap Install, or use the browser menu → Install app / Add to Home screen.");
+}
+window.addEventListener("beforeinstallprompt", (e)=>{
+  e.preventDefault();
+  deferredInstall = e;
+  const btn = document.getElementById("installBtn");
+  if(btn) btn.textContent = "Install app";
+});
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
 
 /* ============================================================
    Views
@@ -3484,10 +3597,10 @@ function render(){
   back.style.display = view.name==="home" ? "none":"inline-block";
 
   if(view.name==="home"){
-    crumbs.innerHTML = "220-1101 · 220-1102";
-    let html = storageWarning() + resumeBanner() +
+    crumbs.innerHTML = "220-1201 · 220-1202";
+    let html = storageWarning() + installBanner() + resumeBanner() + progressDashboard() +
       `<h1 class="page">CompTIA A+ Revision Guide</h1>
-      <p class="sub">Pick a domain. Read the notes, sit the mini mocks, then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>`;
+      <p class="sub">V15 exams · Pick a domain, read the notes, sit the mini mocks, then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>`;
     for(const key of ["core1","core2"]){
       const c = ROSTER[key];
       html += `<div class="eyebrow">${c.name} · ${c.code}</div><div class="grid" style="margin-bottom:26px">`;
@@ -3568,7 +3681,7 @@ function beginQuiz(core, num, subId){
     const opts = q.o.map((t,i)=>({t, correct:i===q.a}));
     return {q:q.q, opts:shuffle(opts), ex:q.e};
   });
-  quiz = {core, num, subId, qs, i:0, right:0, answered:false, done:false,
+  quiz = {core, num, subId, qs, i:0, right:0, answered:false, done:false, wrong:[],
     label: subId ? `${subId} mini mock` : `Domain ${num} mock`,
     key: subId ? d.id+"_"+subId : d.id+"_mock"};
   clearQuizProgress();
@@ -3592,6 +3705,15 @@ function renderQuiz(){
     else if(pct>=75){verdict="Pass territory — tighten the weak spots."; col="var(--amber)";}
     else {verdict="Below pass line — re-read the notes and go again."; col="var(--bad)";}
     setSaveStatus("saved", `Best score: ${bestPct}%`);
+    const review = (quiz.wrong && quiz.wrong.length) ? `<div class="review">
+      <h3>Review ${quiz.wrong.length} missed question${quiz.wrong.length===1?"":"s"}</h3>
+      ${quiz.wrong.map(w=>`<div class="review-item">
+        <div class="q">${esc(w.q)}</div>
+        <div class="bad">Your answer: ${esc(w.picked)}</div>
+        <div class="good">Correct: ${esc(w.correct)}</div>
+        <div style="margin-top:6px;color:var(--muted)">${esc(w.ex)}</div>
+      </div>`).join("")}
+    </div>` : "";
     app.innerHTML = `<div class="result">
       <div class="eyebrow">${quiz.label}</div>
       <div class="big" style="color:${col}">${quiz.right}/${total}</div>
@@ -3600,7 +3722,7 @@ function renderQuiz(){
       <div class="row">
         <button class="btn primary" onclick="startQuiz('${quiz.core}','${quiz.num}',${quiz.subId?`'${quiz.subId}'`:"null"})">Retake</button>
         <button class="btn" onclick="abandonQuiz();goBack()">Back</button>
-      </div></div>`;
+      </div>${review}</div>`;
     return;
   }
 
@@ -3630,7 +3752,13 @@ function pick(idx){
   if(quiz.answered) return;
   quiz.answered = true;
   quiz.picked = idx;
-  if(quiz.qs[quiz.i].opts[idx].correct) quiz.right++;
+  const q = quiz.qs[quiz.i];
+  const correct = q.opts[idx].correct;
+  if(correct) quiz.right++;
+  else {
+    const ans = q.opts.find(o=>o.correct);
+    quiz.wrong.push({q:q.q, picked:q.opts[idx].t, correct:ans.t, ex:q.ex});
+  }
   saveQuizProgress();
   renderQuiz();
 }
