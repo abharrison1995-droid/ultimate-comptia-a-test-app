@@ -160,6 +160,25 @@ await page.click('text=3.5 Troubleshoot common mobile OS and application securit
 assert('3.5 compromise triad', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Sideloading')));
 await page.click('button:has-text("All 3.0 topics")');
 await page.click('.brand');
+await page.locator('.domain-card-core2').filter({ hasText: '4.0' }).click();
+assert('Ops domain hero', await page.isVisible('.domain-hero-ops'));
+await page.click('text=4.1 Implement best practices');
+assert('4.1 document pick-list', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('Knowledge base') && t.includes('termination checklist');
+}));
+await page.click('button.sub-nav-btn:has-text("4.2")');
+assert('4.2 change lifecycle cues', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Rollback plan')));
+await page.click('button.sub-nav-btn:has-text("4.3")');
+assert('4.3 backup decision map', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('3-2-1') && t.includes('Incremental');
+}));
+await page.click('button:has-text("All 4.0 topics")');
+await page.click('text=4.9 Use remote access');
+assert('4.9 remote tool pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Quick Assist')));
+await page.click('button:has-text("All 4.0 topics")');
+await page.click('.brand');
 await page.locator('.domain-card-core1').filter({ hasText: '1.0' }).click();
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));

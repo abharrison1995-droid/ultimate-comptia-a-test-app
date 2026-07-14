@@ -117,6 +117,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,var(--panel) 50%,#F0FDF4 100%)}
 .domain-hero-os{border-color:#7DD3FC;background:linear-gradient(135deg,var(--panel) 50%,#F0F9FF 100%)}
 .domain-hero-softts{border-color:#FDBA74;background:linear-gradient(135deg,var(--panel) 50%,#FFF7ED 100%)}
+.domain-hero-ops{border-color:#94A3B8;background:linear-gradient(135deg,var(--panel) 50%,#F8FAFC 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -132,6 +133,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,#F0FDF4,var(--panel))}
 .sheet-hero-os{border-color:#7DD3FC;background:linear-gradient(135deg,#F0F9FF,var(--panel))}
 .sheet-hero-softts{border-color:#FDBA74;background:linear-gradient(135deg,#FFF7ED,var(--panel))}
+.sheet-hero-ops{border-color:#94A3B8;background:linear-gradient(135deg,#F8FAFC,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -4382,6 +4384,20 @@ notes:`
 <tr><td><b>End-user termination checklist</b></td><td>Offboarding: disable accounts, recover assets, revoke access — promptly</td></tr>
 <tr><td><b>Knowledge base/articles</b></td><td>Searchable solutions from past tickets — resolution notes become articles</td></tr>
 </table>
+
+<h2>Document pick-list</h2>
+<table>
+<tr><th>Need</th><th>Document</th></tr>
+<tr><td>What staff may/may not do with IT</td><td>AUP</td></tr>
+<tr><td>How devices interconnect</td><td>Network topology diagram</td></tr>
+<tr><td>14 identical ERP install steps</td><td>SOP</td></tr>
+<tr><td>Monday new starter complete onboarding</td><td>New-user setup checklist</td></tr>
+<tr><td>Resignee: disable accounts, recover gear</td><td>End-user termination checklist</td></tr>
+<tr><td>Security/safety event formal record</td><td>Incident report</td></tr>
+<tr><td>Reuse a hard-won fix next time</td><td>Knowledge base article</td></tr>
+<tr><td>Link laptop to warranty/licence/user</td><td>Asset tag + inventory DB</td></tr>
+</table>
+<div class="keyfact"><b>Good ticket = three parts:</b> problem description → progress notes → resolution. "PC broken, fixed it" teaches nothing.</div>
 `,
 quiz:[
 {q:"A ticket reads 'PC broken, fixed it'. Why does this fail best practice, and what should it contain?", o:["Too short for billing","No usable problem description, progress notes, or resolution — nobody can learn from it or pick it up; it should record symptoms, steps tried, and the actual fix","Missing the user's birthday","It should be verbal"], a:1, e:"Tickets are organisational memory: description → progress → resolution. 'Fixed it' leaves the next technician (and the knowledge base) with nothing."},
@@ -4423,6 +4439,19 @@ notes:`
 <li><b>Responsible staff member</b> — one named owner accountable for the change end to end.</li>
 </ul>
 <div class="callout"><b>Exam angles:</b> "what must exist before implementing, in case it fails?" → rollback plan. "where is the change tested?" → sandbox. "who approves?" → change board/CAB. "the update broke payroll — which step was skipped?" → usually sandbox testing, risk analysis, or scope/impact assessment.</div>
+
+<h2>Change lifecycle cue → element</h2>
+<table>
+<tr><th>Exam cue</th><th>Element</th></tr>
+<tr><td>Formal proposal starts the process</td><td>Request form</td></tr>
+<tr><td>Exact systems/users in or out</td><td>Scope</td></tr>
+<tr><td>Must undo if it fails</td><td>Rollback plan (before go-live)</td></tr>
+<tr><td>Prove it without touching production</td><td>Sandbox testing</td></tr>
+<tr><td>Who approves significant changes?</td><td>Change board / CAB</td></tr>
+<tr><td>Users confirm it works</td><td>End-user acceptance</td></tr>
+<tr><td>One named owner end-to-end</td><td>Responsible staff member</td></tr>
+</table>
+<div class="keyfact"><b>No rollback plan → no approval.</b> Unapproved Friday "quick tweaks" are how weekends die.</div>
 `,
 quiz:[
 {q:"A proposed server update is scheduled, tested, and approved. What must ALSO be documented before implementation, in case the update fails?", o:["The next update","A rollback plan returning systems to their prior state","A press release","The AUP"], a:1, e:"Rollback plans are the mandatory escape hatch — defined in advance, when heads are cool and the prior state is intact."},
@@ -4450,6 +4479,19 @@ notes:`
 <tr><td><b>Synthetic full</b></td><td>Server combines the last full + subsequent increments into a new full — without re-reading the workstation</td><td>Full-backup benefits without the client/network load</td><td>As a full</td></tr>
 </table>
 <div class="callout"><b>The classic question:</b> full on Sunday, incrementals Mon–Fri, failure Thursday → restore Sunday's full + Mon, Tue, Wed incrementals in order. Same scheme with differentials → Sunday's full + Wednesday's differential only.</div>
+
+<h2>Backup decision map</h2>
+<table>
+<tr><th>Scenario</th><th>Answer</th></tr>
+<tr><td>Fastest nightly create</td><td>Incremental</td></tr>
+<tr><td>Fastest restore</td><td>Full (one set)</td></tr>
+<tr><td>Full Sun + incr Mon–Wed; fail Thu</td><td>Full + Mon + Tue + Wed in order</td></tr>
+<tr><td>Full Sun + diff daily; fail Thu</td><td>Full + latest (Wed) differential</td></tr>
+<tr><td>Survive fire destroying the server room</td><td>Off-site / cloud copy (3-2-1)</td></tr>
+<tr><td>Green jobs for years; first restore fails</td><td>Missing test restores</td></tr>
+<tr><td>Ransomware-proof copy</td><td>Offline / immutable off-site</td></tr>
+</table>
+<div class="keyfact"><b>3-2-1:</b> 3 copies · 2 media types · 1 off-site. Untested backup = hope, not a backup.</div>
 
 <h2>Backup testing</h2>
 <ul>
@@ -4497,6 +4539,19 @@ notes:`
 <li><b>Safety goggles</b> — chemicals, debris, drilling. <b>Air filtration mask</b> — dust-heavy cleanouts, toner spills.</li>
 <li><b>Compliance with government regulations</b> — health-and-safety law, electrical codes, disposal law (4.5): not optional.</li>
 </ul>
+
+<h2>Safety pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Action</th></tr>
+<tr><td>About to open a PC</td><td>Disconnect power first (unplug)</td></tr>
+<tr><td>Handling RAM/GPU at the bench</td><td>Wrist strap + mat + antistatic bags</td></tr>
+<tr><td>No strap available</td><td>Touch earthed unpainted chassis; re-touch</td></tr>
+<tr><td>Failed PSU</td><td>Replace sealed unit — never open (caps hold charge)</td></tr>
+<tr><td>Electrical fire in a rack</td><td>CO₂ / dry powder (Class C); never water</td></tr>
+<tr><td>30 kg UPS move</td><td>Team-lift / trolley; knees bend, back straight</td></tr>
+<tr><td>Dust blowout with compressed air</td><td>Mask + goggles; hold fans still</td></tr>
+</table>
+<div class="keyfact"><b>ESD you can't feel still kills chips.</b> Damage threshold ≪ perception threshold. Bags for storage/transit; edges only.</div>
 `,
 quiz:[
 {q:"Why is ESD dangerous even when the technician feels nothing?", o:["It isn't","Component damage occurs at voltages far below human perception (~tens of volts vs ~3,000 V to feel) — including latent damage that fails later","Only CRTs carry static","Feeling it discharges it safely"], a:1, e:"The perception threshold is orders of magnitude above the damage threshold — invisible zaps cause immediate or latent component death."},
@@ -4539,6 +4594,20 @@ notes:`
 <tr><td><b>Power failure</b> (blackout)</td><td>Complete loss</td><td><b>Battery backup (UPS)</b> — minutes of runtime for graceful shutdown or generator handover</td></tr>
 </table>
 <div class="callout"><b>Exam tells:</b> "lights dim, PCs reboot when the lift runs" → under-voltage → UPS. "protect against spikes only, cheaply" → surge suppressor. "server must shut down cleanly in an outage" → UPS with shutdown software. Surge strips ≠ UPS: strips don't help when power DROPS.</div>
+
+<h2>Environment / power pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Control</th></tr>
+<tr><td>Unknown solvent spill — hazards / disposal</td><td>MSDS / SDS</td></tr>
+<tr><td>Humidity 20%</td><td>ESD risk — raise toward 40–60%</td></tr>
+<tr><td>Humidity 85%</td><td>Condensation/corrosion — lower to mid-band</td></tr>
+<tr><td>Lights dim; PCs reboot when HVAC kicks in</td><td>Under-voltage → UPS</td></tr>
+<tr><td>Lightning spikes only (cheap)</td><td>Surge suppressor</td></tr>
+<tr><td>Server needs clean shutdown in blackout</td><td>UPS + shutdown agent</td></tr>
+<tr><td>Old PCs leaving the building</td><td>Sanitize (2.8) then e-waste recycle</td></tr>
+<tr><td>Toner spill</td><td>Toner-safe vacuum + mask</td></tr>
+</table>
+<div class="keyfact"><b>Surge strip ≠ UPS.</b> Suppressors clamp spikes; they do nothing when voltage sags or power fails.</div>
 `,
 quiz:[
 {q:"A cleaner splashes an unknown solvent; the technician needs its hazards, first aid, and disposal requirements. Which document?", o:["The AUP","The MSDS/SDS for that product","The topology diagram","The EULA"], a:1, e:"Material safety data sheets exist for exactly this — hazards, handling, exposure response, and disposal for chemical products."},
@@ -4584,6 +4653,20 @@ notes:`
 <ul>
 <li><b>Data retention requirements</b> — laws/policies dictate how long data must be kept AND when it must be destroyed; retention schedules drive both storage and 2.8's destruction.</li>
 </ul>
+
+<h2>Policy / incident pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Action / concept</th></tr>
+<tr><td>Illegal content found on a PC</td><td>Stop, preserve, report — don't browse/delete/confront</td></tr>
+<tr><td>Evidence must stay admissible</td><td>Chain of custody</td></tr>
+<tr><td>Analyse without altering original</td><td>Forensic image + hash verify; work on copy</td></tr>
+<tr><td>Home edition on office PCs</td><td>Personal vs corporate licence violation</td></tr>
+<tr><td>Card payments</td><td>PCI DSS</td></tr>
+<tr><td>Patient records</td><td>Healthcare / special-category data</td></tr>
+<tr><td>Name + DOB + address</td><td>PII</td></tr>
+<tr><td>Wipe before retention ends</td><td>Retention schedule violation</td></tr>
+</table>
+<div class="keyfact"><b>First response:</b> identify → report through channels → preserve evidence. Deleting "to help" destroys the case.</div>
 `,
 quiz:[
 {q:"A technician repairing a PC discovers apparent illegal content. What is the correct FIRST action?", o:["Delete it immediately","Stop, preserve the evidence, and report through proper channels (management/law enforcement per policy) — do not browse further or confront the user","Copy it to USB for proof and show colleagues","Confront the user"], a:1, e:"First response = identify, report through the chain, preserve. Deleting destroys evidence; browsing or DIY investigation compromises it (and you)."},
@@ -4626,6 +4709,20 @@ notes:`
 <li><b>Provide documentation</b> of services rendered; <b>follow up later to verify satisfaction</b>.</li>
 <li><b>Confidential materials:</b> if private information (documents on screens/desktops/printers) appears during work — don't read, share, or comment; look away, minimise, hand printouts back. Treat customer data as untouchable.</li>
 </ul>
+
+<h2>Professionalism pick-list</h2>
+<table>
+<tr><th>Situation</th><th>Do this</th></tr>
+<tr><td>Angry customer ranting</td><td>Listen, don't argue; restate problem; solve it</td></tr>
+<tr><td>Vague "internet broken"</td><td>Open-ended questions + restatement</td></tr>
+<tr><td>Explaining to a non-tech user</td><td>No jargon / acronyms</td></tr>
+<tr><td>Running late</td><td>Contact before the appointment time</td></tr>
+<tr><td>Salary sheet open on screen</td><td>Look away / minimise — don't read or discuss</td></tr>
+<tr><td>Repair ≈ 80% of new PC cost</td><td>Offer repair vs replace options honestly</td></tr>
+<tr><td>Tempted to post about a job</td><td>Never — no social media about customers</td></tr>
+<tr><td>Job finished</td><td>Document services + follow up for satisfaction</td></tr>
+</table>
+<div class="keyfact"><b>Expectations:</b> set honestly, communicate changes immediately, then meet what you promised.</div>
 `,
 quiz:[
 {q:"A furious customer rants about their 'useless computer and useless IT'. What is the professional response?", o:["Match their energy","Listen without interrupting, don't take it personally or argue, then restate the actual problem and focus on solving it","Explain why they're wrong","End the call"], a:1, e:"De-escalation: absorb, don't argue or get defensive; clarify with restatement; redirect energy at the problem, not the person."},
@@ -4655,6 +4752,18 @@ notes:`
 <tr><td><b>.py</b></td><td><b>Python</b> — cross-platform general scripting</td></tr>
 </table>
 <div class="callout"><b>The mapping questions:</b> "modern Windows admin script" → .ps1. "Linux automation" → .sh. "cross-platform data-gathering script" → .py. "ancient login script in cmd" → .bat.</div>
+
+<h2>Script extension map</h2>
+<table>
+<tr><th>Need</th><th>Extension</th></tr>
+<tr><td>Modern Windows admin / automation</td><td><code>.ps1</code> (PowerShell)</td></tr>
+<tr><td>Linux / macOS bash</td><td><code>.sh</code></td></tr>
+<tr><td>Cross-platform general scripting</td><td><code>.py</code> (Python)</td></tr>
+<tr><td>Legacy Windows logon / cmd</td><td><code>.bat</code></td></tr>
+<tr><td>Legacy Windows VBScript</td><td><code>.vbs</code></td></tr>
+<tr><td>Browser / Node</td><td><code>.js</code></td></tr>
+</table>
+<div class="keyfact"><b>Three script risks:</b> untrusted malware · mass misconfiguration · runaway resources. Mitigate: read code, sandbox, least privilege, version control.</div>
 
 <h2>Use cases for scripting</h2>
 <ul>
@@ -4699,6 +4808,19 @@ notes:`
 <tr><td><b>Third-party tools</b></td><td><b>Screen-sharing</b>, <b>video-conferencing</b>, <b>file transfer</b>, <b>desktop management</b> software (TeamViewer-alikes)</td><td>Vet the vendor, MFA the accounts, uninstall when not needed — scam callers LOVE these tools</td></tr>
 </table>
 <div class="callout"><b>Exam discriminators:</b> "help a user WHILE THEY WATCH and share the session" → MSRA/Quick Assist. "full control of an unattended Windows box" → RDP (over VPN). "command line on a Linux server" → SSH. "MSP managing 500 endpoints' patching and monitoring" → RMM. "secure pipe first, tools through it" → VPN.</div>
+
+<h2>Remote tool pick-list</h2>
+<table>
+<tr><th>Need</th><th>Tool</th></tr>
+<tr><td>User stays in session; invites helper</td><td>MSRA / Quick Assist</td></tr>
+<tr><td>Unattended Windows desktop takeover</td><td>RDP (Pro+ host) over VPN</td></tr>
+<tr><td>Linux / network device CLI</td><td>SSH (prefer keys)</td></tr>
+<tr><td>Encrypted pipe into the network first</td><td>VPN (+ MFA)</td></tr>
+<tr><td>MSP fleet monitor / patch / remotes</td><td>RMM</td></tr>
+<tr><td>Cross-platform GUI; wrap securely</td><td>VNC (encrypted or tunnelled)</td></tr>
+<tr><td>Cold-caller asks you to install remote tool</td><td>Scam — refuse; educate</td></tr>
+</table>
+<div class="keyfact"><b>Assistance ≠ RDP:</b> Quick Assist shares the user's session; RDP logs them off and takes over. Never expose 3389 to the internet — VPN first.</div>
 `,
 quiz:[
 {q:"A user needs to show a technician their error WHILE staying in control of the session, granting help by invitation. Which tool fits?", o:["RDP","MSRA/Quick Assist (remote assistance)","SSH","diskpart"], a:1, e:"Remote ASSISTANCE shares the user's live session by invitation. RDP would log the console user off and take over — the key discriminator."},
@@ -4947,6 +5069,7 @@ function renderDomainHero(coreKey, d){
     : coreKey==="core2" && d.num==="1.0" ? " domain-hero-os"
     : coreKey==="core2" && d.num==="2.0" ? " domain-hero-security"
     : coreKey==="core2" && d.num==="3.0" ? " domain-hero-softts"
+    : coreKey==="core2" && d.num==="4.0" ? " domain-hero-ops"
     : ` domain-hero-${coreKey}`;
   return `<div class="domain-hero${domainTheme}">
     <div class="domain-hero-head"><span class="domain-icon">${icon}</span><div>
@@ -6292,6 +6415,7 @@ function render(){
       : view.core==="core2" && view.num==="1.0" ? " sheet-hero-os"
       : view.core==="core2" && view.num==="2.0" ? " sheet-hero-security"
       : view.core==="core2" && view.num==="3.0" ? " sheet-hero-softts"
+      : view.core==="core2" && view.num==="4.0" ? " sheet-hero-ops"
       : view.core==="core1" ? " sheet-hero-core1"
       : view.core==="core2" ? " sheet-hero-core2" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
