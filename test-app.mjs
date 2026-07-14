@@ -26,9 +26,20 @@ function assert(name, cond) {
 }
 
 await page.goto(`http://127.0.0.1:${port}/`);
+assert('Cover masthead', await page.isVisible('.cover-mast'));
+assert('Cover A+ brand mark', await page.isVisible('.cover-aplus'));
+assert('Cover exam bar', await page.evaluate(() => document.querySelector('.cover-exam-bar')?.textContent.includes('220-1201')));
 assert('Core 1 hero banner', await page.isVisible('.core-hero-core1'));
 assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count()) >= 5);
 assert('Core 1 games strip', await page.isVisible('.core1-games-strip'));
+assert('Charcoal app chrome', await page.evaluate(() => {
+  const bg = getComputedStyle(document.querySelector('header.app')).backgroundColor;
+  return bg === 'rgb(26, 29, 33)' || bg.includes('26, 29, 33');
+}));
+assert('CompTIA red accent token', await page.evaluate(() => {
+  const a = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().toLowerCase();
+  return a === '#d61f26';
+}));
 await page.click('text=1.0 Mobile Devices');
 assert('Domain hero on topic list', await page.isVisible('.domain-hero'));
 await page.click('text=1.2 Compare');
