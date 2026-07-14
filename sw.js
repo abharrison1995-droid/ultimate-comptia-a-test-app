@@ -1,11 +1,11 @@
-const CACHE = "aplus-revision-v23";
+const CACHE = "aplus-revision-v24";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+  "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
 ];
 
 self.addEventListener("install", (e) => {
