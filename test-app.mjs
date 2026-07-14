@@ -101,6 +101,26 @@ assert('5.7 ping ladder content', await page.evaluate(() => {
 }));
 await page.click('button:has-text("All 5.0 topics")');
 await page.click('.brand');
+await page.locator('.domain-card-core2').filter({ hasText: '2.0' }).click();
+assert('Security domain hero', await page.isVisible('.domain-hero-security'));
+await page.click('text=2.1 Summarize various security');
+assert('2.1 MFA factors table', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('Something you know') && t.includes('Least privilege');
+}));
+await page.click('button.sub-nav-btn:has-text("2.2")');
+assert('2.2 AAA protocol pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('TACACS+')));
+await page.click('button:has-text("All 2.0 topics")');
+await page.click('text=2.3 Detect');
+assert('2.3 malware symptom table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Cryptominer')));
+await page.click('button:has-text("All 2.0 topics")');
+await page.click('text=2.8 Use common data');
+assert('2.8 reuse vs destroy table', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('certificate of destruction') && t.toLowerCase().includes('not') && t.toLowerCase().includes('degauss');
+}));
+await page.click('button:has-text("All 2.0 topics")');
+await page.click('.brand');
 await page.locator('.domain-card-core1').filter({ hasText: '1.0' }).click();
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));

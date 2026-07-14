@@ -113,6 +113,8 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-hero-hardware{border-color:#FCD34D;background:linear-gradient(135deg,var(--panel) 50%,#FFFBEB 100%)}
 .domain-hero-troubleshoot{border-color:#99F6E4;background:linear-gradient(135deg,var(--panel) 50%,#F0FDFA 100%)}
 .domain-hero-cloud{border-color:#7DD3FC;background:linear-gradient(135deg,var(--panel) 50%,#ECFEFF 100%)}
+.domain-hero-core2{border-color:#99F6E4;background:linear-gradient(135deg,var(--panel) 50%,#F0FDFA 100%)}
+.domain-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,var(--panel) 50%,#F0FDF4 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -124,6 +126,8 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-hardware{border-color:#FCD34D;background:linear-gradient(135deg,#FFFBEB,var(--panel))}
 .sheet-hero-troubleshoot{border-color:#99F6E4;background:linear-gradient(135deg,#F0FDFA,var(--panel))}
 .sheet-hero-cloud{border-color:#7DD3FC;background:linear-gradient(135deg,#ECFEFF,var(--panel))}
+.sheet-hero-core2{border-color:#99F6E4;background:linear-gradient(135deg,#F0FDFA,var(--panel))}
+.sheet-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,#F0FDF4,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -3290,6 +3294,27 @@ notes:`
 <tr><td><b>Folder redirection</b></td><td>Points local folders (Documents/Desktop) at server storage — roams and gets backed up</td></tr>
 <tr><td><b>Security groups</b></td><td>Assign permissions to groups, put users in groups — never permission users one by one</td></tr>
 </table>
+
+<h2>MFA factors — know ↔ have ↔ are</h2>
+<table>
+<tr><th>Factor type</th><th>Examples</th></tr>
+<tr><td><b>Something you know</b></td><td>Password, PIN, security question</td></tr>
+<tr><td><b>Something you have</b></td><td>Phone authenticator, smart card, key fob, hardware token</td></tr>
+<tr><td><b>Something you are</b></td><td>Fingerprint, face, retina, palmprint</td></tr>
+</table>
+<div class="keyfact"><b>Trap:</b> password + security question is NOT MFA — both are "know". Password + authenticator app = true MFA (know + have).</div>
+
+<h2>Scenario pick-list — which control?</h2>
+<table>
+<tr><th>Scenario</th><th>Best control</th></tr>
+<tr><td>Stop vehicles at the entrance</td><td>Bollards</td></tr>
+<tr><td>Prevent tailgating at the server-room door</td><td>Access control vestibule (mantrap)</td></tr>
+<tr><td>Shoulder surfing at reception</td><td>Privacy screen filter</td></tr>
+<tr><td>New starter gets only the access their job needs</td><td>Least privilege (+ security group)</td></tr>
+<tr><td>Apply password policy to all Sales PCs</td><td>Sales OU + linked Group Policy</td></tr>
+<tr><td>Documents follow the user between PCs and get backed up</td><td>Folder redirection</td></tr>
+<tr><td>Map drives/printers at every domain sign-in</td><td>Login script / GPO preferences</td></tr>
+</table>
 `,
 quiz:[
 {q:"A data centre entrance uses two interlocking doors where only one person can pass per authentication. What is this, and what attack does it defeat?", o:["A bollard; ram raids","An access control vestibule; tailgating","A magnetometer; weapons","A turnstile; badge cloning"], a:1, e:"The vestibule (mantrap) forces one-at-a-time authenticated entry, physically preventing someone slipping through behind an authorised person."},
@@ -3326,6 +3351,18 @@ notes:`
 <li><b>Kerberos</b> — the ticket-based authentication protocol used inside <b>Windows domains/Active Directory</b>: authenticate once to the KDC, receive tickets, enjoy <b>SSO</b> without resending passwords.</li>
 <li><b>Multifactor</b> — layering a second factor on any of the above.</li>
 </ul>
+
+<h2>AAA / protocol pick-list</h2>
+<table>
+<tr><th>Need</th><th>Protocol</th></tr>
+<tr><td>Per-user WiFi join with own credentials</td><td>WPA2/3-<b>Enterprise</b> + 802.1X + <b>RADIUS</b></td></tr>
+<tr><td>Home/SOHO one shared passphrase</td><td>WPA2/3-<b>Personal</b> (PSK)</td></tr>
+<tr><td>Most secure WiFi today / resist offline handshake crack</td><td><b>WPA3</b> (SAE)</td></tr>
+<tr><td>SSO tickets inside an AD domain</td><td><b>Kerberos</b></td></tr>
+<tr><td>Admin logins to routers/switches, full-session encrypt, command authZ</td><td><b>TACACS+</b></td></tr>
+<tr><td>WPA2 cipher to choose</td><td><b>AES</b> (not TKIP)</td></tr>
+</table>
+<div class="keyfact"><b>Leaver trap:</b> WPA-Personal = change the shared key on every device when someone leaves. Enterprise = disable that one user account.</div>
 `,
 quiz:[
 {q:"Which wireless security protocol is the most secure currently available?", o:["WPA2-AES","WPA3","WPA-TKIP","WEP-128"], a:1, e:"WPA3 with SAE resists offline dictionary attacks on captured handshakes and adds forward secrecy — the current best practice."},
@@ -3371,6 +3408,19 @@ notes:`
 <li><b>OS reinstallation</b> — the nuclear option when trust can't be re-established (deep rootkits): wipe and reinstall from known-good media, restore data from clean backups.</li>
 </ul>
 <div class="callout"><b>Exam tells:</b> "files encrypted + payment demand" → ransomware → restore from backup, don't pay. "AV finds nothing but behaviour persists" → rootkit → boot-time/offline scan or reinstall. "installed a 'free game' then trouble started" → trojan. "fans roaring, CPU pegged at 100% constantly" → cryptominer.</div>
+
+<h2>Symptom → malware type</h2>
+<table>
+<tr><th>Symptom</th><th>Likely type</th><th>First response</th></tr>
+<tr><td>Files renamed/locked + ransom note</td><td>Ransomware</td><td>Isolate; restore from offline backups (don't pay)</td></tr>
+<tr><td>Installed "free" app; then popups/unknown software</td><td>Trojan</td><td>Remove app; full AV scan</td></tr>
+<tr><td>CPU/GPU pegged overnight; heat/fans</td><td>Cryptominer</td><td>Find process; scan/rebuild</td></tr>
+<tr><td>AV finds nothing from inside Windows; symptoms remain</td><td>Rootkit</td><td>Boot-time / WinRE scan or wipe+reinstall</td></tr>
+<tr><td>Infects before OS; returns after in-OS clean</td><td>Boot sector virus</td><td>Offline / recovery media scan</td></tr>
+<tr><td>Passwords leaking; odd typing capture</td><td>Keylogger</td><td>Scan; check for inline hardware dongle</td></tr>
+<tr><td>AV/Update mysteriously disabled</td><td>Self-defending malware</td><td>Treat as infection indicator; remediate offline</td></tr>
+</table>
+<div class="keyfact"><b>Trust lost → rebuild:</b> when deep infection persists despite scans, wipe from known-good media and restore only clean backups. System Restore points can be infected too.</div>
 `,
 quiz:[
 {q:"Every document on a PC has a strange extension and a note demands Bitcoin for the decryption key. What is this, and what is the correct recovery?", o:["Spyware; run adware removal","Ransomware; wipe and restore from known-good backups","A virus; pay to be safe","A rootkit; reboot"], a:1, e:"Ransomware's answer is clean restoration from offline backups. Paying funds crime and doesn't guarantee decryption."},
@@ -3424,6 +3474,22 @@ notes:`
 <li><b>EOL OSs</b> — no patches will ever come (1.8 crossover).</li>
 <li><b>BYOD</b> — personal devices touching corporate data: unmanaged patch state, apps, and loss risk (mitigate with MDM/MAM policy).</li>
 </ul>
+
+<h2>Scenario pick-list — name the attack</h2>
+<table>
+<tr><th>Scenario</th><th>Attack / issue</th></tr>
+<tr><td>Email from "bank" asking you to log in via a link</td><td>Phishing</td></tr>
+<tr><td>Phone call: "IT needs your password"</td><td>Vishing</td></tr>
+<tr><td>Personalised email to the CEO demanding a wire transfer</td><td>Whaling</td></tr>
+<tr><td>Someone watches you type a PIN on the train</td><td>Shoulder surfing</td></tr>
+<tr><td>Stranger follows you through a badge door</td><td>Tailgating</td></tr>
+<tr><td>Fake "CoffeeShop_FreeWiFi" capturing logins</td><td>Evil twin</td></tr>
+<tr><td>Exploit with no vendor patch yet</td><td>Zero-day</td></tr>
+<tr><td>Fix released in January; 40 PCs never installed it</td><td>Unpatched systems (not zero-day)</td></tr>
+<tr><td>Login form accepts <code>' OR 1=1--</code> and dumps users</td><td>SQL injection</td></tr>
+<tr><td>Malicious script in a forum post runs in visitors' browsers</td><td>XSS</td></tr>
+</table>
+<div class="keyfact"><b>Zero-day vs unpatched:</b> zero-day = no patch exists yet. Unpatched = patch exists but wasn't applied. Exam loves this split.</div>
 `,
 quiz:[
 {q:"The finance director receives a highly personalised email, apparently from the CEO, urgently requesting a wire transfer. Which attack is this?", o:["Vishing","Whaling","Shoulder surfing","An evil twin"], a:1, e:"Executive-targeted phishing is whaling — personalised, high-value, often invoking authority and urgency."},
@@ -3476,6 +3542,23 @@ notes:`
 <li><b>EFS (Encrypting File System)</b> — per-FILE/folder encryption tied to a user's account, on NTFS (Pro+).</li>
 <li>Discriminator: whole drive → BitLocker; USB stick → BitLocker To Go; individual files, per-user → EFS.</li>
 </ul>
+
+<h2>Encryption picker</h2>
+<table>
+<tr><th>Need</th><th>Feature</th></tr>
+<tr><td>Encrypt whole laptop volume; TPM; manage recovery keys</td><td><b>BitLocker</b> (Pro+)</td></tr>
+<tr><td>Encrypt USB sticks / removables</td><td><b>BitLocker To Go</b></td></tr>
+<tr><td>Encrypt specific files for one user only</td><td><b>EFS</b></td></tr>
+</table>
+
+<h2>Permissions decision tree</h2>
+<ul>
+<li>Accessing <b>locally</b>? → <b>NTFS only</b> (share permissions do not apply).</li>
+<li>Accessing <b>over the network</b>? → apply both; <b>most restrictive wins</b>.</li>
+<li>Explicit <b>Deny</b> anywhere in the effective set → Deny wins.</li>
+<li>Greyed permissions matching parent → <b>inheritance</b>; break inheritance only for exceptions.</li>
+</ul>
+<div class="keyfact"><b>Stolen drive trap:</b> NTFS permissions fail if the attacker mounts the disk elsewhere. <b>BitLocker</b> is what stops physical theft from yielding readable data.</div>
 `,
 quiz:[
 {q:"A user connects to a share over the network. The share permission grants Change, but NTFS grants Read only. What can they do?", o:["Change files — share wins","Read only — the most restrictive combination applies","Full control — permissions add up","Nothing — conflict blocks access"], a:1, e:"When share and NTFS permissions combine over the network, the most restrictive effective result wins: Read."},
@@ -3521,6 +3604,29 @@ notes:`
 <li><b>Encrypt data at rest</b> — BitLocker on workstations (2.5).</li>
 <li><b>Disable AutoRun/AutoPlay</b> — stops removable media executing automatically on insertion: a classic malware vector (the "found USB stick in the car park" attack).</li>
 </ul>
+
+<h2>Workstation hardening checklist</h2>
+<ol>
+<li>Rename/disable built-in Administrator; set a unique strong password.</li>
+<li>Disable Guest account.</li>
+<li>Enforce password complexity + failed-attempt <b>lockout</b>.</li>
+<li>Restrict login times where role allows.</li>
+<li>Inactivity screen lock / screensaver password; train Win+L.</li>
+<li>BitLocker on workstations; disable AutoRun/AutoPlay.</li>
+<li>Set BIOS/UEFI supervisor password (block boot-order bypass).</li>
+</ol>
+
+<h2>Scenario pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Control</th></tr>
+<tr><td>Scripted password guessing</td><td>Failed-attempts lockout</td></tr>
+<tr><td>USB sticks found in car park infect PCs on insert</td><td>Disable AutoRun/AutoPlay</td></tr>
+<tr><td>Warehouse staff only work 06:00–20:00</td><td>Login time restrictions</td></tr>
+<tr><td>PCs left unlocked at lunch</td><td>Timeout lock + Win+L habit</td></tr>
+<tr><td>Shoulder surfing / PII on open-plan screens</td><td>Privacy filters + clean desk</td></tr>
+<tr><td>Default Admin account still enabled</td><td>Rename/disable + strong unique password</td></tr>
+</table>
+<div class="keyfact"><b>Least privilege again:</b> giving every new starter access to all shares "to be safe" is the opposite of restrict-user-permissions.</div>
 `,
 quiz:[
 {q:"An attacker with a stolen password list scripts thousands of login attempts. Which account policy defeats this?", o:["Password hints","Failed-attempts lockout after a small number of tries","Longer usernames","Disabling UAC"], a:1, e:"Lockout thresholds stop brute-force and credential-stuffing cold — a handful of guesses, then the account locks."},
@@ -3565,6 +3671,18 @@ notes:`
 <li><b>Profile security requirements</b> — MDM-pushed configuration profiles enforce passcodes, encryption, app restrictions before granting access.</li>
 <li><b>IoT devices</b> — change default credentials, patch firmware, and <b>segment onto their own network/VLAN</b> (Core 1 2.4 crossover).</li>
 </ul>
+
+<h2>Lost / stolen decision tree</h2>
+<table>
+<tr><th>Situation</th><th>Action</th></tr>
+<tr><td>Mislaid in the building — hope to find it</td><td>Locator app (map + ring)</td></tr>
+<tr><td>Confirmed stolen with corporate data</td><td><b>Remote wipe</b> (needs prior MDM/account enrolment)</td></tr>
+<tr><td>BYOD; wipe work email only, keep photos</td><td><b>MAM</b> container wipe</td></tr>
+<tr><td>Corporate-owned; full device control</td><td><b>MDM</b> (passcode, encrypt, remote wipe)</td></tr>
+<tr><td>Thief guessing the PIN offline</td><td>Failed-attempt lockout / wipe after N tries</td></tr>
+</table>
+<div class="keyfact"><b>Passcode ≠ encryption alone:</b> the lock screen gates the UI; encryption protects storage if the thief chips the disk. Modern phones pair them — passcode unlocks the encryption key.</div>
+<div class="keyfact"><b>IoT trio:</b> change defaults → patch firmware → segment VLAN. Never leave cameras/thermostats on the staff LAN with factory passwords.</div>
 `,
 quiz:[
 {q:"Which screen-lock method provides essentially NO security?", o:["Pattern","Swipe","PIN","Fingerprint"], a:1, e:"Swipe merely prevents pocket dialling. Everything else at least requires knowledge or biometrics."},
@@ -3599,6 +3717,18 @@ notes:`
 <li><b>Low-level format</b> — closer to a full overwrite in common usage (true LLF is a factory process); the exam contrast: standard format = recoverable, low-level/overwrite = not.</li>
 </ul>
 <div class="callout"><b>Exam tells:</b> "drives will be reused internally" → wiping/erasing. "drives leaving the building forever" → physical destruction (shred). "SSD" → NOT degaussing. "quick formatted then sold" → data was recoverable — that's the mistake.</div>
+
+<h2>Reuse vs destroy — pick the method</h2>
+<table>
+<tr><th>Scenario</th><th>Method</th></tr>
+<tr><td>Healthy drives redeployed inside the company</td><td>Software <b>wipe/overwrite</b> (SSD: manufacturer secure erase)</td></tr>
+<tr><td>Regulated data leaving forever</td><td>Industrial <b>shredding</b> + certificate of destruction</td></tr>
+<tr><td>Magnetic HDDs / tape, destroy in-house field</td><td>Degaussing (also kills the drive)</td></tr>
+<tr><td>SSD batch retirement</td><td>Secure erase / crypto-erase — or shred; <b>not</b> degauss</td></tr>
+<tr><td>Quick format then sold</td><td><b>Wrong</b> — data still recoverable</td></tr>
+<tr><td>Outsourced destruction</td><td>Demand <b>certificate</b> listing serials + method</td></tr>
+</table>
+<div class="keyfact"><b>Format ≠ sanitise:</b> standard/quick format rebuilds the filesystem; overwriting (or shredding) is what actually removes data. Degaussing does nothing to flash/SSDs.</div>
 
 <h2>Outsourcing</h2>
 <ul>
@@ -3647,6 +3777,28 @@ notes:`
 <li><b>Disable unused ports</b> — close/turn off services and ports not needed (management interfaces especially — no WAN-side admin).</li>
 <li><b>Port forwarding/mapping</b> — deliberately publishing an internal service (e.g. WAN :8080 → 192.168.1.50:80): forward only what's needed, to specific hosts.</li>
 </ul>
+
+<h2>Ordered SOHO hardening — do these first</h2>
+<ol>
+<li>Change default <b>admin password</b>.</li>
+<li>Update <b>firmware</b>.</li>
+<li>Set WiFi to <b>WPA3</b> (or WPA2-AES minimum); change default passphrase.</li>
+<li><b>Disable UPnP</b>; use deliberate port forwards only.</li>
+<li>Disable WAN-side remote admin / unused services.</li>
+<li>Place router securely; avoid signal leaking to the car park.</li>
+</ol>
+
+<h2>Scenario pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Setting</th></tr>
+<tr><td>Any LAN app opening inbound ports by itself</td><td>Disable UPnP</td></tr>
+<tr><td>Publish one game/CCTV port to a fixed PC</td><td>Port forward + DHCP reservation</td></tr>
+<tr><td>Internet-facing host isolated from LAN</td><td>Screened subnet (DMZ)</td></tr>
+<tr><td>Block adult sites for kids</td><td>Content filtering</td></tr>
+<tr><td>Hidden SSID alone for "security"</td><td>Obscurity only — still need WPA2/3</td></tr>
+<tr><td>Default admin left on WAN management</td><td>Change password; disable WAN admin</td></tr>
+</table>
+<div class="keyfact"><b>Hidden SSID + MAC filter ≠ encryption.</b> Both are trivially observed/spoofed. Real protection is WPA2-AES / WPA3.</div>
 `,
 quiz:[
 {q:"What is the FIRST configuration change on any new SOHO router?", o:["Change the WiFi channel","Change the default administrator password","Disable DHCP","Enable UPnP"], a:1, e:"Default admin credentials are printed in manuals and databases online — changing them precedes everything else."},
@@ -3687,6 +3839,19 @@ notes:`
 <tr><td><b>Sign-in/browser data synchronization</b></td><td>Sync bookmarks/passwords across devices via an account — convenient; consider what syncs onto shared machines</td></tr>
 <tr><td><b>Ad blockers</b></td><td>Block adverts and the malvertising delivered through them</td></tr>
 </table>
+
+<h2>Browser decision map</h2>
+<table>
+<tr><th>Situation</th><th>Do this</th></tr>
+<tr><td>Certificate expired / name mismatch / untrusted</td><td><b>Stop</b> — don't enter secrets; possible on-path</td></tr>
+<tr><td>No padlock / <code>http://</code> on a login page</td><td>Do not enter credentials/payment</td></tr>
+<tr><td>Installer from a mirror</td><td>Compare <b>SHA-256</b> to vendor value</td></tr>
+<tr><td>Hash mismatch</td><td>Delete; download from official source only</td></tr>
+<tr><td>Shared reception PC</td><td>Clear browsing data; don't sign in / sync browser</td></tr>
+<tr><td>Legit app pop-ups blocked</td><td>Per-site exception — don't disable blocker globally</td></tr>
+<tr><td>Private/incognito mode</td><td>Local amnesia only — not anonymous to network/sites</td></tr>
+</table>
+<div class="keyfact"><b>Private browsing myth:</b> no local history after the session — employers, ISPs, and websites still see traffic. It does not replace HTTPS or a VPN.</div>
 `,
 quiz:[
 {q:"A user downloads an installer from a mirror site. How can they verify it wasn't tampered with?", o:["Scan the filename","Compare its SHA-256 hash against the value published by the vendor","Check the file size looks right","Run it and see"], a:1, e:"Hash comparison proves bit-for-bit integrity: any modification changes the hash completely. Mismatch = don't run it."},
@@ -4548,6 +4713,7 @@ function renderDomainHero(coreKey, d){
   const domainTheme = coreKey==="core1" && d.num==="3.0" ? " domain-hero-hardware"
     : coreKey==="core1" && d.num==="4.0" ? " domain-hero-cloud"
     : coreKey==="core1" && d.num==="5.0" ? " domain-hero-troubleshoot"
+    : coreKey==="core2" && d.num==="2.0" ? " domain-hero-security"
     : ` domain-hero-${coreKey}`;
   return `<div class="domain-hero${domainTheme}">
     <div class="domain-hero-head"><span class="domain-icon">${icon}</span><div>
@@ -5890,7 +6056,9 @@ function render(){
     const sheetHeroCls = view.core==="core1" && view.num==="3.0" ? " sheet-hero-hardware"
       : view.core==="core1" && view.num==="4.0" ? " sheet-hero-cloud"
       : view.core==="core1" && view.num==="5.0" ? " sheet-hero-troubleshoot"
-      : view.core==="core1" ? " sheet-hero-core1" : "";
+      : view.core==="core2" && view.num==="2.0" ? " sheet-hero-security"
+      : view.core==="core1" ? " sheet-hero-core1"
+      : view.core==="core2" ? " sheet-hero-core2" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;
     app.innerHTML = `<div class="sheet-hero${sheetHeroCls}">
       <div class="eyebrow">Revision sheet · Domain ${d.num}</div>
