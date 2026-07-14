@@ -116,6 +116,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-hero-core2{border-color:#99F6E4;background:linear-gradient(135deg,var(--panel) 50%,#F0FDFA 100%)}
 .domain-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,var(--panel) 50%,#F0FDF4 100%)}
 .domain-hero-os{border-color:#7DD3FC;background:linear-gradient(135deg,var(--panel) 50%,#F0F9FF 100%)}
+.domain-hero-softts{border-color:#FDBA74;background:linear-gradient(135deg,var(--panel) 50%,#FFF7ED 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -130,6 +131,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-core2{border-color:#99F6E4;background:linear-gradient(135deg,#F0FDFA,var(--panel))}
 .sheet-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,#F0FDF4,var(--panel))}
 .sheet-hero-os{border-color:#7DD3FC;background:linear-gradient(135deg,#F0F9FF,var(--panel))}
+.sheet-hero-softts{border-color:#FDBA74;background:linear-gradient(135deg,#FFF7ED,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -4084,6 +4086,21 @@ notes:`
 <li><b>Reboot</b> → <b>restart services</b> → <b>update/uninstall-reinstall the app</b> → <b>verify requirements / add resources</b> → <b>sfc /scannow</b> (system file check) → <b>roll back updates/drivers</b> → <b>System Restore</b> (restore point) → <b>rebuild user profile</b> → <b>repair install of Windows</b> → <b>reimage/clean reinstall</b>.</li>
 <li>Exam logic: choose the LEAST destructive step that addresses the cause; escalate only as needed.</li>
 </ul>
+
+<h2>First-move pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>First move</th></tr>
+<tr><td>BSOD after a driver/update change</td><td>Safe Mode → roll back that driver/update</td></tr>
+<tr><td>"No OS found" + USB stick plugged in</td><td>Remove stick / fix boot order</td></tr>
+<tr><td>Low memory with full workload</td><td>Page file stopgap → add RAM</td></tr>
+<tr><td>Service won't start</td><td>Start dependencies; check Event Viewer</td></tr>
+<tr><td>System utilities crash / OS erratic</td><td><code>sfc /scannow</code></td></tr>
+<tr><td>USB "not enough controller resources"</td><td>Move devices / powered hub</td></tr>
+<tr><td>Symptoms only in one user account</td><td>Rebuild that profile</td></tr>
+<tr><td>Clock drifts while PC is on</td><td>NTP / timezone (not CMOS yet)</td></tr>
+<tr><td>App crashes on launch</td><td>Update/reinstall app before System Restore</td></tr>
+</table>
+<div class="keyfact"><b>Least destructive first:</b> reboot → service → app reinstall → sfc → rollback → restore → rebuild profile → repair install → reimage. Never jump to reimage when a driver roll-back will do.</div>
 `,
 quiz:[
 {q:"After a graphics driver update, a PC BSODs on every boot. What is the FIRST targeted fix?", o:["Reinstall Windows","Boot Safe Mode and roll back the driver","Replace the GPU","Increase the page file"], a:1, e:"A crash correlated with a driver change means roll the driver back — Safe Mode loads without it, making the rollback possible. Least destructive, matches the cause."},
@@ -4119,6 +4136,19 @@ notes:`
 <li><b>Redirections</b> — search/URL redirects to wrong sites: hijacked browser settings, malicious extensions, poisoned hosts file, or rogue DNS/proxy settings. Work through that list.</li>
 </ul>
 <div class="callout"><b>Exam tells:</b> browser redirects + hosts file mention → check/clean the hosts file. "Every site shows certificate errors since yesterday" → check the system date/time. "Security popup demands a phone call" → fake AV, never call. Any combination of these → proceed to the 3.3 malware removal procedure.</div>
+
+<h2>Security symptom → first check</h2>
+<table>
+<tr><th>Symptom</th><th>First check</th></tr>
+<tr><td>AV vendor sites won't load; other sites OK</td><td>Hosts file blacklist</td></tr>
+<tr><td>Redirected bank URL / hijacked search</td><td>Hosts → extensions → browser settings → DNS/proxy</td></tr>
+<tr><td>Every HTTPS site warns about certificates</td><td>System date/time first</td></tr>
+<tr><td>"Call Microsoft / install this cleaner" popup</td><td>Scareware — close, don't call; real AV console</td></tr>
+<tr><td>Notification spam for dating/cleaners</td><td>Revoke site notification permissions + PUP sweep</td></tr>
+<tr><td>Windows Update fails + popups/sluggishness</td><td>Treat as infection cluster → 3.3 procedure</td></tr>
+<tr><td>Sudden network quarantine after IDS alerts</td><td>NAC isolation — remediate before reconnect</td></tr>
+</table>
+<div class="keyfact"><b>Hosts path:</b> <code>C:\Windows\System32\drivers\etc\hosts</code> — overrides DNS. Malware blackholes security sites to 127.0.0.1.</div>
 `,
 quiz:[
 {q:"A user's browser reaches most sites, but every antivirus vendor's website fails to load. What does this pattern suggest?", o:["ISP outage","Malware blocking security sites (often via the hosts file) to protect itself","Firewall misconfiguration by IT","DNS server downtime"], a:1, e:"Selective blocking of security/AV domains is malware self-defence — inspect the hosts file and proceed to the removal procedure."},
@@ -4157,6 +4187,18 @@ notes:`
 <li>Scanning from <b>Safe Mode/WinRE</b> prevents the malware defending itself (ties to rootkits, 2.3).</li>
 <li>Education last isn't optional garnish — the user is the patched vulnerability.</li>
 </ul>
+
+<h2>Step cue → action</h2>
+<table>
+<tr><th>Exam cue</th><th>Step</th></tr>
+<tr><td>Symptoms confirmed — what NEXT?</td><td>2 Quarantine (disconnect)</td></tr>
+<tr><td>Why disable System Restore first?</td><td>3 Infected restore points</td></tr>
+<tr><td>Update AV definitions, then scan in Safe Mode/WinRE</td><td>4 Remediate</td></tr>
+<tr><td>When create the new restore point?</td><td>6 After clean, restore re-enabled</td></tr>
+<tr><td>Last step always?</td><td>7 Educate the user</td></tr>
+<tr><td>Deep rootkit; trust gone</td><td>Wipe/reimage as remediation (still do 2, 5, 6, 7)</td></tr>
+</table>
+<div class="keyfact"><b>Order trap:</b> never remediate on a live network, never create a restore point before the clean, never skip education. Recurrence tomorrow = restore wasn't disabled or patches weren't applied.</div>
 `,
 quiz:[
 {q:"What is the correct order of the malware removal best-practice steps?", o:["Quarantine, investigate, remediate, disable restore, educate, schedule, enable restore","Investigate/verify, quarantine, disable System Restore, remediate, schedule scans and updates, enable restore + create restore point, educate the user","Remediate, quarantine, investigate, educate, restore, scan, enable","Educate, investigate, quarantine, remediate, restore, scan, disable"], a:1, e:"The seven steps in order — investigate → quarantine → disable restore → remediate → schedule scans/updates → enable restore + new point → educate. Near-guaranteed exam question."},
@@ -4197,6 +4239,21 @@ notes:`
 <li><b>AirDrop specifics:</b> requires WiFi AND Bluetooth on, devices close, and receiving visibility set (Contacts Only vs Everyone) — visibility settings are the classic AirDrop "fault".</li>
 <li><b>NFC:</b> must be enabled; remove thick cases; correct antenna position against the terminal.</li>
 </ul>
+
+<h2>Mobile issue pick-list</h2>
+<table>
+<tr><th>Symptom</th><th>First fixes</th></tr>
+<tr><td>App crashes on launch</td><td>Force-stop → clear cache/data → update/reinstall</td></tr>
+<tr><td>OS update won't install</td><td>Free storage + charge/plugged in</td></tr>
+<tr><td>Rapid battery drain</td><td>Battery usage stats (rogue app vs worn battery)</td></tr>
+<tr><td>Screen won't rotate</td><td>Rotation lock in quick settings</td></tr>
+<tr><td>AirDrop fails</td><td>WiFi + Bluetooth on; receiver visibility</td></tr>
+<tr><td>Contactless pay fails after metal case</td><td>NFC blocked — remove/change case</td></tr>
+<tr><td>2% storage; slow/crashy</td><td>Free space immediately</td></tr>
+<tr><td>Random reboots after update</td><td>Patch → remove new apps → factory reset → hardware</td></tr>
+<tr><td>One WiFi network: connected, no internet</td><td>Forget network and rejoin</td></tr>
+</table>
+<div class="keyfact"><b>App-local first:</b> force-stop and clear cache beat factory reset for a single crashing app. Escalate device-wide only when apps/OS keep failing.</div>
 `,
 quiz:[
 {q:"An app crashes on launch after months of working. Rank the FIRST two steps of the standard fix ladder.", o:["Factory reset, then reinstall","Force-stop the app and clear its cache/data, then update or reinstall it","Root the device, then patch","Replace the battery"], a:1, e:"Start app-local: force-stop and clear cache/data resolves most corrupt-state crashes; updating/reinstalling follows before any device-level surgery."},
@@ -4236,6 +4293,19 @@ notes:`
 <li><b>Leaked personal files/data</b> — accounts/photos appearing where they shouldn't: assume device or credential compromise.</li>
 </ul>
 <div class="callout"><b>Remediation pattern:</b> identify and uninstall the offending app (check battery/data stats for the culprit) → run mobile anti-malware → revoke odd permissions/profiles → update the OS → if trust is gone, backup, factory reset, restore selectively, change passwords. And for enterprises: MDM detects root/jailbreak and non-compliance and can quarantine the device.</div>
+
+<h2>Compromise triad + response</h2>
+<table>
+<tr><th>Signal</th><th>Meaning / action</th></tr>
+<tr><td>Unexpected data usage + heat + lag</td><td>Hidden malware workload — check battery + data stats</td></tr>
+<tr><td>Sideloaded "free" APK then ads/flood</td><td>Untrusted APK vector — uninstall + scan</td></tr>
+<tr><td>Bank app with wrong developer</td><td>App spoofing — remove, change credentials, MFA</td></tr>
+<tr><td>Root / jailbreak on enrolled phone</td><td>MDM quarantine — sandbox untrusted</td></tr>
+<tr><td>Developer mode + unknown-apps install</td><td>Attack surface — disable if not a developer</td></tr>
+<tr><td>Scareware "install cleaner now"</td><td>Don't install; remove scareware; legitimate scan</td></tr>
+<tr><td>Photos leaked; device suspect</td><td>Clean device for password resets + MFA; reset phone if needed</td></tr>
+</table>
+<div class="keyfact"><b>Sideloading trap:</b> Android APKs outside official stores skip vetting — top mobile malware route. Enterprise answer to root/sideload/non-compliance = <b>MDM</b>.</div>
 `,
 quiz:[
 {q:"An Android user installed a 'free' version of a paid game from a forum APK link; now ads flood the device and data usage has tripled. What was the root cause?", o:["The game's servers","Sideloading an APK from an untrusted source, bypassing store vetting","5G roaming","Developer mode being off"], a:1, e:"Out-of-store APKs skip every safety check — the canonical Android infection route. The bundled 'free' game carried the payload."},
@@ -4876,6 +4946,7 @@ function renderDomainHero(coreKey, d){
     : coreKey==="core1" && d.num==="5.0" ? " domain-hero-troubleshoot"
     : coreKey==="core2" && d.num==="1.0" ? " domain-hero-os"
     : coreKey==="core2" && d.num==="2.0" ? " domain-hero-security"
+    : coreKey==="core2" && d.num==="3.0" ? " domain-hero-softts"
     : ` domain-hero-${coreKey}`;
   return `<div class="domain-hero${domainTheme}">
     <div class="domain-hero-head"><span class="domain-icon">${icon}</span><div>
@@ -6220,6 +6291,7 @@ function render(){
       : view.core==="core1" && view.num==="5.0" ? " sheet-hero-troubleshoot"
       : view.core==="core2" && view.num==="1.0" ? " sheet-hero-os"
       : view.core==="core2" && view.num==="2.0" ? " sheet-hero-security"
+      : view.core==="core2" && view.num==="3.0" ? " sheet-hero-softts"
       : view.core==="core1" ? " sheet-hero-core1"
       : view.core==="core2" ? " sheet-hero-core2" : "";
     crumbs.innerHTML = `<b>${ROSTER[view.core].name}</b> · ${d.num} · ${s.id}`;

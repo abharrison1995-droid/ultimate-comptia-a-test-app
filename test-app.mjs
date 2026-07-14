@@ -141,6 +141,25 @@ assert('2.8 reuse vs destroy table', await page.evaluate(() => {
 }));
 await page.click('button:has-text("All 2.0 topics")');
 await page.click('.brand');
+await page.locator('.domain-card-core2').filter({ hasText: '3.0' }).click();
+assert('Soft-TS domain hero', await page.isVisible('.domain-hero-softts'));
+await page.click('text=3.1 Troubleshoot common Windows');
+assert('3.1 first-move pick-list', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('Least destructive') && t.includes('Rebuild that profile');
+}));
+await page.click('button.sub-nav-btn:has-text("3.2")');
+assert('3.2 hosts file symptom', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('hosts')));
+await page.click('button.sub-nav-btn:has-text("3.3")');
+assert('3.3 malware step cues', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('Quarantine') && t.includes('Educate the user');
+}));
+await page.click('button:has-text("All 3.0 topics")');
+await page.click('text=3.5 Troubleshoot common mobile OS and application security');
+assert('3.5 compromise triad', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Sideloading')));
+await page.click('button:has-text("All 3.0 topics")');
+await page.click('.brand');
 await page.locator('.domain-card-core1').filter({ hasText: '1.0' }).click();
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
