@@ -34,8 +34,18 @@ async function playCurrentMatch() {
 
 async function goToGamesHub() {
   if (await page.locator('h1.page').filter({ hasText: 'Revision Games' }).isVisible()) return;
-  if (await page.isVisible('text=All games')) await page.click('text=All games');
-  else await page.locator('button').filter({ hasText: /See all \d+ games/ }).click();
+  if (await page.locator('.title-screen').isVisible().catch(() => false)) {
+    await page.locator('.title-cta-sec').filter({ hasText: 'Revision Games' }).click();
+  } else if (await page.isVisible('text=All games')) {
+    await page.click('text=All games');
+  } else if (await page.locator('.core-games-menu').count()) {
+    await page.evaluate(() => { const el = document.querySelector('details.core-games-menu'); if (el) el.open = true; });
+    await page.locator('.core-game-link').filter({ hasText: 'All Revision Games' }).click();
+  } else {
+    await page.click('.brand');
+    await page.waitForSelector('.title-screen');
+    await page.locator('.title-cta-sec').filter({ hasText: 'Revision Games' }).click();
+  }
   await page.waitForSelector('h1.page >> text=Revision Games');
 }
 async function openGame(name) {

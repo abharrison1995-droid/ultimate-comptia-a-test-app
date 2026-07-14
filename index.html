@@ -99,6 +99,22 @@ p.sub{color:var(--muted);margin-bottom:22px}
 @keyframes aplus-in{from{opacity:0;transform:translateX(-12px) scale(.96)}to{opacity:1;transform:none}}
 @keyframes bar-in{from{transform:scaleY(0);transform-origin:top}to{transform:scaleY(1)}}
 .cover-exam-bar{animation:bar-in .55s .15s ease both}
+.title-screen{display:grid;gap:14px;margin:0 0 8px}
+.title-cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.title-cta-grid{grid-template-columns:1fr}}
+.title-cta{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;text-align:left;padding:18px 16px;border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:var(--radius);background:var(--rock);color:#F5F6F7;cursor:pointer;transition:transform .15s,border-color .15s}
+.title-cta:hover{transform:translateY(-2px);border-color:var(--accent)}
+.title-cta .cta-kicker{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#F5A5A8}
+.title-cta .cta-title{font-family:var(--display);font-weight:800;font-size:1.45rem;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.title-cta .cta-sub{font-size:.88rem;color:#C8CED6;line-height:1.35}
+.title-cta-secondary{display:grid;gap:10px}
+.title-cta-sec{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);color:var(--ink);font-weight:700;cursor:pointer;text-align:left}
+.title-cta-sec:hover{border-color:var(--accent)}
+.title-cta-sec .sec-label{font-family:var(--display);font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.title-cta-sec .sec-meta{font-size:.82rem;font-weight:600;color:var(--muted)}
+.title-cta-continue{border-color:var(--accent);background:var(--accent-soft)}
+.title-cta-continue .sec-label{color:var(--accent)}
+.core-home-head{margin:0 0 16px}
 .notes h2{font-family:var(--display);font-size:1.15rem;font-weight:700;margin:26px 0 8px;padding-top:14px;border-top:1px solid var(--line)}
 .notes h2:first-child{border-top:0;margin-top:8px;padding-top:0}
 .notes h2[id]{scroll-margin-top:64px}
@@ -167,22 +183,21 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-os{border-color:#7DD3FC;border-left-color:#0284C7;background:linear-gradient(135deg,#F0F9FF,var(--panel))}
 .sheet-hero-softts{border-color:#FDBA74;border-left-color:#EA580C;background:linear-gradient(135deg,#FFF7ED,var(--panel))}
 .sheet-hero-ops{border-color:#94A3B8;border-left-color:#64748B;background:linear-gradient(135deg,#F8FAFC,var(--panel))}
-.core1-games-strip{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);margin:0 0 18px;overflow:hidden}
-.core1-games-strip > summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none;user-select:none;min-height:44px}
-.core1-games-strip > summary::-webkit-details-marker{display:none}
-.core1-games-strip > summary::after{content:"▾";color:var(--accent);font-size:1rem;font-weight:700;margin-left:auto;flex-shrink:0;line-height:1}
-.core1-games-strip[open] > summary::after{content:"▴"}
-.core1-games-strip-title{font-family:var(--display);font-size:.98rem;font-weight:800;margin:0;color:var(--ink);letter-spacing:.03em;text-transform:uppercase}
-.core1-games-strip-meta{font-size:.78rem;font-weight:600;color:var(--muted)}
-.core1-games-strip-body{border-top:1px solid var(--line);padding:0}
-.core1-games-strip-menu{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
-.core1-drill{display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);padding:11px 12px;text-align:left;font:inherit;font-weight:600;cursor:pointer}
-.core1-drill:last-child{border-bottom:0}
-.core1-drill:hover,.core1-drill:focus-visible{background:var(--accent-soft);outline:none}
-.core1-drill .icon{font-size:1.15rem;width:1.5rem;text-align:center;flex-shrink:0}
-.core1-drill .label{font-family:var(--display);font-weight:800;font-size:.95rem;letter-spacing:.02em;text-transform:uppercase}
-.core1-drill .hint{font-size:.78rem;font-weight:500;color:var(--muted);margin-left:auto;text-align:right;max-width:42%}
-@media (max-width:520px){.core1-drill .hint{display:none}}
+.core1-games-strip,.core-games-menu{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);margin:0 0 18px;overflow:hidden}
+.core1-games-strip > summary,.core-games-menu > summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none;user-select:none;min-height:44px}
+.core1-games-strip > summary::-webkit-details-marker,.core-games-menu > summary::-webkit-details-marker{display:none}
+.core1-games-strip > summary::after,.core-games-menu > summary::after{content:"▾";color:var(--accent);font-size:1rem;font-weight:700;margin-left:auto;flex-shrink:0;line-height:1}
+.core1-games-strip[open] > summary::after,.core-games-menu[open] > summary::after{content:"▴"}
+.core1-games-strip-title,.core-games-menu-title{font-family:var(--display);font-size:.98rem;font-weight:800;margin:0;color:var(--ink);letter-spacing:.03em;text-transform:uppercase}
+.core1-games-strip-meta,.core-games-menu-meta{font-size:.78rem;font-weight:600;color:var(--muted)}
+.core1-games-strip-body,.core-games-menu-body{border-top:1px solid var(--line);padding:0}
+.core1-drill,.core-game-link{display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);padding:11px 12px;text-align:left;font:inherit;font-weight:600;cursor:pointer}
+.core1-drill:last-child,.core-game-link:last-child{border-bottom:0}
+.core1-drill:hover,.core1-drill:focus-visible,.core-game-link:hover,.core-game-link:focus-visible{background:var(--accent-soft);outline:none}
+.core1-drill .icon,.core-game-link .icon{font-size:1.15rem;width:1.5rem;text-align:center;flex-shrink:0}
+.core1-drill .label,.core-game-link .label{font-family:var(--display);font-weight:800;font-size:.95rem;letter-spacing:.02em;text-transform:uppercase}
+.core1-drill .hint,.core-game-link .hint{font-size:.78rem;font-weight:500;color:var(--muted);margin-left:auto;text-align:right;max-width:42%}
+@media (max-width:520px){.core1-drill .hint,.core-game-link .hint{display:none}}
 .notes .keyfact{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;font-size:.94rem;line-height:1.5}
 .notes .keyfact b:first-child{color:var(--amber)}
 /* quiz */
@@ -5112,6 +5127,42 @@ function renderCoreHero(coreKey){
   const c = ROSTER[coreKey], t = CORE_THEME[coreKey];
   return `<div class="core-hero core-hero-${coreKey}"><div class="core-hero-icon">${t.icon}</div><div><div class="core-hero-label">${c.name} · ${c.code}</div><div class="core-hero-sub">${t.tagline}</div></div></div>`;
 }
+const LAST_CORE_KEY = "last_core";
+function rememberCore(coreKey){ store.set(LAST_CORE_KEY, coreKey); }
+function getLastCore(){
+  const v = store.get(LAST_CORE_KEY);
+  return (v==="core1" || v==="core2") ? v : null;
+}
+function enterCore(coreKey){
+  if(coreKey!=="core1" && coreKey!=="core2") return;
+  rememberCore(coreKey);
+  go("core", {core: coreKey});
+}
+function gamesForCore(coreKey){
+  return GAME_CATALOG.filter(g => g.ready && g.domains?.some(d => d.core === coreKey));
+}
+function renderCoreGamesMenu(coreKey){
+  const games = gamesForCore(coreKey);
+  const items = games.map(g =>
+    `<button type="button" class="core-game-link" onclick="go('game',{gameId:'${g.id}'})">
+      <span class="icon" aria-hidden="true">${g.icon}</span>
+      <span class="label">${esc(g.name)}</span>
+      <span class="hint">${esc(g.desc)}</span>
+    </button>`
+  ).join("");
+  const hub = `<button type="button" class="core-game-link" onclick="go('games')">
+    <span class="icon" aria-hidden="true">🎮</span>
+    <span class="label">All Revision Games</span>
+    <span class="hint">Shared games hub</span>
+  </button>`;
+  return `<details class="core-games-menu">
+    <summary>
+      <span class="core-games-menu-title">Revision Games</span>
+      <span class="core-games-menu-meta">${games.length} for this core</span>
+    </summary>
+    <div class="core-games-menu-body" role="menu">${items}${hub}</div>
+  </details>`;
+}
 function renderDomainCard(coreKey, d, built){
   const icon = DOMAIN_ICONS[coreKey]?.[d.num] || "📘";
   return `<button class="card clickable domain-card domain-card-${coreKey}" onclick="go('domain',{core:'${coreKey}',num:'${d.num}'})">
@@ -5142,25 +5193,7 @@ function renderDomainHero(coreKey, d){
       <span class="domain-stat-pill"><strong>25</strong> domain mock Qs</span>
     </div></div>`;
 }
-function renderCore1GamesStrip(){
-  const ids = ["ports","connectors","wifi","troubleshoot"];
-  const items = ids.map(id=>{
-    const g = gameMeta(id);
-    if(!g) return "";
-    return `<button type="button" class="core1-drill" onclick="go('game',{gameId:'${id}'})">
-      <span class="icon" aria-hidden="true">${g.icon}</span>
-      <span class="label">${esc(g.name)}</span>
-      <span class="hint">${esc(g.desc)}</span>
-    </button>`;
-  }).join("");
-  return `<details class="core1-games-strip">
-    <summary>
-      <span class="core1-games-strip-title">Core 1 quick drills</span>
-      <span class="core1-games-strip-meta">${ids.length} games</span>
-    </summary>
-    <div class="core1-games-strip-body" role="menu">${items}</div>
-  </details>`;
-}
+function renderCore1GamesStrip(){ return renderCoreGamesMenu("core1"); }
 function scoreKey(id){ return "score_"+id; }
 function scorePill(id, total){
   const s = store.get(scoreKey(id));
@@ -5256,8 +5289,7 @@ function gamesProgressCard(){
     <div class="dash-stats">${playedLine}<br>${fablesLine}<br>${milLine}</div>
   </div>`;
 }
-function progressDashboard(){
-  const c1 = coreProgress("core1"), c2 = coreProgress("core2");
+function progressDashboard(coreKey){
   let totalAttempts = 0;
   try{ totalAttempts = Object.keys(localStorage).filter(k => k.startsWith("aplus_score_")).length; }catch(e){}
   function coreCard(key, p){
@@ -5278,6 +5310,12 @@ function progressDashboard(){
       </div>${weak}
     </div>`;
   }
+  if(coreKey==="core1" || coreKey==="core2"){
+    const p = coreProgress(coreKey);
+    if(!p.attempted) return "";
+    return `<div class="dashboard" aria-label="Study progress">${coreCard(coreKey, p)}</div>`;
+  }
+  const c1 = coreProgress("core1"), c2 = coreProgress("core2");
   if(!c1.attempted && !c2.attempted) return "";
   return `<div class="dashboard" aria-label="Study progress">
     ${coreCard("core1", c1)}
@@ -6418,68 +6456,112 @@ function renderGame(){
 /* ============================================================
    Views
    ============================================================ */
+function renderTitleScreen(){
+  const last = getLastCore();
+  const lastMeta = last ? ROSTER[last] : null;
+  const lastTheme = last ? CORE_THEME[last] : null;
+  const progress = getSavedProgress();
+  const gameReady = GAME_CATALOG.filter(g=>g.ready).length;
+  const continueBtn = lastMeta ? `<button type="button" class="title-cta-sec title-cta-continue" onclick="enterCore('${last}')">
+      <span><span class="sec-label">Continue ${esc(lastMeta.name)}</span><br><span class="sec-meta">${esc(lastTheme.tagline)}</span></span>
+      <span class="sec-meta">${esc(lastMeta.code)} →</span>
+    </button>` : "";
+  const resumeBtn = progress && progress.qs ? `<button type="button" class="title-cta-sec" onclick="resumeQuiz()">
+      <span><span class="sec-label">Resume quiz</span><br><span class="sec-meta">${esc(progress.label)} · Q${(progress.i||0)+1}/${progress.qs.length}</span></span>
+      <span class="sec-meta">Continue →</span>
+    </button>` : "";
+  return storageWarning() +
+    `<section class="cover-mast" aria-label="CompTIA A+ Complete Review Guide">
+      <div class="cover-mast-sky">
+        <div class="edition">V15 · Complete Review</div>
+        <div class="edition-mark">A+ Study</div>
+      </div>
+      <div class="cover-mast-block">
+        <div class="cover-mark">
+          <span class="cover-comptia">CompTIA®</span>
+          <span class="cover-aplus" aria-hidden="true">A+</span>
+        </div>
+        <div class="cover-title">
+          <span>Complete</span>
+          <span>Review</span>
+          <span>Guide</span>
+        </div>
+        <div class="cover-exam-bar" aria-label="Exam codes">
+          <span>Core 1 Exam 220-1201</span>
+          <span>Core 2 Exam 220-1202</span>
+        </div>
+      </div>
+      <div class="cover-mast-foot">
+        <p><strong>Choose a core to study</strong> · revision sheets, mini mocks, and domain exams stay on each core’s home.</p>
+        <ul class="cover-tools">
+          <li>Core 1 · 220-1201</li>
+          <li>Core 2 · 220-1202</li>
+          <li>Shared games hub</li>
+        </ul>
+      </div>
+    </section>` +
+    installBanner() +
+    `<div class="title-screen">
+      <div class="title-cta-grid">
+        <button type="button" class="title-cta" onclick="enterCore('core1')">
+          <span class="cta-kicker">${CORE_THEME.core1.icon} Exam 220-1201</span>
+          <span class="cta-title">Core 1</span>
+          <span class="cta-sub">${esc(CORE_THEME.core1.tagline)}</span>
+        </button>
+        <button type="button" class="title-cta" onclick="enterCore('core2')">
+          <span class="cta-kicker">${CORE_THEME.core2.icon} Exam 220-1202</span>
+          <span class="cta-title">Core 2</span>
+          <span class="cta-sub">${esc(CORE_THEME.core2.tagline)}</span>
+        </button>
+      </div>
+      <div class="title-cta-secondary">
+        ${continueBtn}
+        ${resumeBtn}
+        <button type="button" class="title-cta-sec" onclick="go('games')">
+          <span><span class="sec-label">Revision Games</span><br><span class="sec-meta">${gameReady} drills · story chat · Millionaire</span></span>
+          <span class="sec-meta">Open →</span>
+        </button>
+      </div>
+    </div>`;
+}
+function renderCoreHome(coreKey){
+  const c = ROSTER[coreKey];
+  if(!c) return renderTitleScreen();
+  let html = storageWarning() + resumeBanner() + progressDashboard(coreKey) +
+    `<div class="core-home-head">${renderCoreHero(coreKey)}</div>
+     <p class="sub" style="margin-top:-6px">Pick a domain for revision sheets and mocks. Pass mark: ${coreKey==="core1"?"675":"700"}/900.</p>
+     <div class="grid" style="margin-bottom:18px">`;
+  for(const d of c.domains){
+    const built = findDomain(coreKey, d.num);
+    if(built) html += renderDomainCard(coreKey, d, built);
+    else {
+      html += `<div class="card locked domain-card domain-card-${coreKey}"><div class="domain-card-top"><span class="domain-icon">📘</span><span class="domain-weight">${d.weight}%</span></div>
+        <h3>${d.num} ${esc(d.name)}</h3>
+        <div class="meta">${d.weight}% of exam</div>
+        <div class="weightbar"><i style="width:${d.weight*2.5}%"></i></div></div>`;
+    }
+  }
+  html += `</div>${renderCoreGamesMenu(coreKey)}`;
+  return html;
+}
 function render(){
   const app = document.getElementById("app");
   const back = document.getElementById("backbtn");
   const crumbs = document.getElementById("crumbs");
-  back.style.display = view.name==="home" ? "none":"inline-block";
+  back.style.display = (view.name==="home") ? "none":"inline-block";
 
   if(view.name==="home"){
     crumbs.innerHTML = "220-1201 · 220-1202";
-    let html = storageWarning() +
-      `<section class="cover-mast" aria-label="CompTIA A+ Complete Review Guide">
-        <div class="cover-mast-sky">
-          <div class="edition">V15 · Complete Review</div>
-          <div class="edition-mark">A+ Study</div>
-        </div>
-        <div class="cover-mast-block">
-          <div class="cover-mark">
-            <span class="cover-comptia">CompTIA®</span>
-            <span class="cover-aplus" aria-hidden="true">A+</span>
-          </div>
-          <div class="cover-title">
-            <span>Complete</span>
-            <span>Review</span>
-            <span>Guide</span>
-          </div>
-          <div class="cover-exam-bar" aria-label="Exam codes">
-            <span>Core 1 Exam 220-1201</span>
-            <span>Core 2 Exam 220-1202</span>
-          </div>
-        </div>
-        <div class="cover-mast-foot">
-          <p><strong>Pick a domain</strong> · read the notes · sit the mini mocks · then take the 25-question domain mock. Pass marks: Core 1 — 675/900 · Core 2 — 700/900.</p>
-          <ul class="cover-tools">
-            <li>Revision sheets</li>
-            <li>Mini &amp; domain mocks</li>
-            <li>Revision games</li>
-          </ul>
-        </div>
-      </section>` +
-      installBanner() + resumeBanner() + progressDashboard();
-    for(const key of ["core1","core2"]){
-      const c = ROSTER[key];
-      html += renderCoreHero(key) + `<div class="grid" style="margin-bottom:26px">`;
-      for(const d of c.domains){
-        const built = findDomain(key,d.num);
-        if(built) html += renderDomainCard(key, d, built);
-        else {
-          html += `<div class="card locked domain-card domain-card-${key}"><div class="domain-card-top"><span class="domain-icon">📘</span><span class="domain-weight">${d.weight}%</span></div>
-            <h3>${d.num} ${esc(d.name)}</h3>
-            <div class="meta">${d.weight}% of exam</div>
-            <div class="weightbar"><i style="width:${d.weight*2.5}%"></i></div></div>`;
-        }
-      }
-      html += `</div>`;
-      if(key==="core1") html += renderCore1GamesStrip();
-    }
-    html += `<div class="home-games" id="homeGames">
-      <div class="eyebrow">🎮 Revision Games</div>
-      <p class="sub" style="margin-top:0;margin-bottom:10px">Featured picks — story chat, Millionaire ladder, and port drill.</p>
-      <div class="grid" style="margin-bottom:12px">${renderGamesHub("home")}</div>
-      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all ${GAME_CATALOG.filter(g=>g.ready).length} games →</button></p>
-    </div>`;
-    app.innerHTML = html;
+    app.innerHTML = renderTitleScreen();
+    return;
+  }
+
+  if(view.name==="core"){
+    const coreKey = view.core==="core2" ? "core2" : "core1";
+    rememberCore(coreKey);
+    const c = ROSTER[coreKey];
+    crumbs.innerHTML = `<b>${c.name}</b> · ${c.code}`;
+    app.innerHTML = renderCoreHome(coreKey);
     return;
   }
 
