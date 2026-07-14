@@ -101,6 +101,26 @@ assert('5.7 ping ladder content', await page.evaluate(() => {
 }));
 await page.click('button:has-text("All 5.0 topics")');
 await page.click('.brand');
+await page.locator('.domain-card-core2').filter({ hasText: '1.0' }).click();
+assert('OS domain hero', await page.isVisible('.domain-hero-os'));
+await page.click('text=1.1 Identify basic features');
+assert('1.1 edition pick-list', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('BitLocker with recovery') && t.includes('Pro');
+}));
+await page.click('button.sub-nav-btn:has-text("1.2")');
+assert('1.2 scenario command table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('sfc /scannow')));
+await page.click('button:has-text("All 1.0 topics")');
+await page.click('text=1.5 Use the appropriate Windows Settings');
+assert('1.5 Settings pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Storage Sense')));
+await page.click('button:has-text("All 1.0 topics")');
+await page.click('text=1.9 Perform OS installations');
+assert('1.9 GPT install pick-list', await page.evaluate(() => {
+  const t = document.querySelector('.notes')?.textContent || '';
+  return t.includes('PXE') && t.includes('GPT required');
+}));
+await page.click('button:has-text("All 1.0 topics")');
+await page.click('.brand');
 await page.locator('.domain-card-core2').filter({ hasText: '2.0' }).click();
 assert('Security domain hero', await page.isVisible('.domain-hero-security'));
 await page.click('text=2.1 Summarize various security');

@@ -115,6 +115,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .domain-hero-cloud{border-color:#7DD3FC;background:linear-gradient(135deg,var(--panel) 50%,#ECFEFF 100%)}
 .domain-hero-core2{border-color:#99F6E4;background:linear-gradient(135deg,var(--panel) 50%,#F0FDFA 100%)}
 .domain-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,var(--panel) 50%,#F0FDF4 100%)}
+.domain-hero-os{border-color:#7DD3FC;background:linear-gradient(135deg,var(--panel) 50%,#F0F9FF 100%)}
 .domain-hero-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
 .domain-hero-head .domain-icon{font-size:2.2rem}
 .domain-hero h1.page{margin:0;font-size:1.5rem}
@@ -128,6 +129,7 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-cloud{border-color:#7DD3FC;background:linear-gradient(135deg,#ECFEFF,var(--panel))}
 .sheet-hero-core2{border-color:#99F6E4;background:linear-gradient(135deg,#F0FDFA,var(--panel))}
 .sheet-hero-security{border-color:#86EFAC;background:linear-gradient(135deg,#F0FDF4,var(--panel))}
+.sheet-hero-os{border-color:#7DD3FC;background:linear-gradient(135deg,#F0F9FF,var(--panel))}
 .core1-games-strip{background:linear-gradient(135deg,#EFF6FF,var(--panel));border:2px solid #BFDBFE;border-radius:16px;padding:16px;margin:0 0 22px}
 .core1-games-strip h2{font-family:var(--display);font-size:1rem;font-weight:800;margin:0 0 6px;color:#1D4ED8}
 .core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
@@ -2715,6 +2717,20 @@ notes:`
 <li><b>In-place upgrade</b> keeps files, apps, and settings (e.g. Windows 10 → 11, Home → Pro via licence key). You can move up editions in place; moving <b>down</b> an edition, or 64-bit → 32-bit (or vice versa), requires a <b>clean install</b>.</li>
 <li>Windows 11 hardware floor (ties to Core 1 3.4): TPM 2.0, Secure Boot-capable UEFI, 4 GB RAM, 64 GB storage, supported 64-bit CPU.</li>
 </ul>
+
+<h2>Edition pick-list — match the need</h2>
+<table>
+<tr><th>Need</th><th>Minimum edition</th></tr>
+<tr><td>Join Active Directory domain</td><td>Pro</td></tr>
+<tr><td>BitLocker with recovery-key management</td><td>Pro</td></tr>
+<tr><td>gpedit.msc / local Group Policy</td><td>Pro</td></tr>
+<tr><td>Host Remote Desktop (be connected to)</td><td>Pro</td></tr>
+<tr><td>Act as RDP client only</td><td>Home OK</td></tr>
+<tr><td>3 TB RAM / dual CPUs / ReFS</td><td>Pro for Workstations</td></tr>
+<tr><td>Volume licensing + AppLocker</td><td>Enterprise</td></tr>
+<tr><td>40+ PCs, chaotic local passwords</td><td>Domain (needs Pro+ clients)</td></tr>
+</table>
+<div class="keyfact"><b>Clean install required for:</b> edition <i>downgrade</i>, or 32↔64-bit change. Edition <i>upgrade</i> (Home→Pro) and version upgrade (10→11) can be in-place.</div>
 `,
 quiz:[
 {q:"A small business PC running Windows Home must join the company's Active Directory domain. What is required?", o:["Enable domain join in Settings","Upgrade to Windows Pro (or higher)","Install gpedit.msc manually","Join via Remote Desktop instead"], a:1, e:"Domain join is a Pro-and-above feature — Home simply lacks it. An in-place edition upgrade with a Pro key is the standard route."},
@@ -2779,6 +2795,22 @@ notes:`
 <tr><td><code>[command] /?</code></td><td>Help for any command</td></tr>
 </table>
 <div class="callout"><b>Exam pairings:</b> "corrupted system files" → <code>sfc /scannow</code>. "New group policy must apply now" → <code>gpupdate /force</code>. "Which policies applied?" → <code>gpresult</code>. "Copy a whole directory tree preserving permissions, resumable" → <code>robocopy</code>. "Stale DNS entry" → <code>ipconfig /flushdns</code>. "Where does the connection fail along the route?" → <code>tracert</code>/<code>pathping</code>.</div>
+
+<h2>Scenario → command</h2>
+<table>
+<tr><th>Scenario</th><th>Command</th></tr>
+<tr><td>Corrupted Windows system files</td><td><code>sfc /scannow</code></td></tr>
+<tr><td>Filesystem errors + bad sectors</td><td><code>chkdsk /r</code></td></tr>
+<tr><td>Stale DNS after site moved</td><td><code>ipconfig /flushdns</code></td></tr>
+<tr><td>Force Group Policy now</td><td><code>gpupdate /force</code></td></tr>
+<tr><td>See which GPOs applied</td><td><code>gpresult /r</code></td></tr>
+<tr><td>Map Z: to a share</td><td><code>net use Z: \\\\server\\share</code></td></tr>
+<tr><td>Big folder copy, resumable</td><td><code>robocopy</code></td></tr>
+<tr><td>Where does the route die?</td><td><code>tracert</code> / <code>pathping</code></td></tr>
+<tr><td>Listening ports / active connections</td><td><code>netstat</code></td></tr>
+<tr><td>Edition / build dialog</td><td><code>winver</code></td></tr>
+</table>
+<div class="keyfact"><b>net use ≠ net user:</b> <code>net use</code> maps drives; <code>net user</code> manages accounts — deliberate exam mix-up.</div>
 `,
 quiz:[
 {q:"Windows behaves oddly and the technician suspects corrupted system files. Which command verifies and repairs them?", o:["chkdsk /r","sfc /scannow","diskpart clean","gpupdate /force"], a:1, e:"System File Checker scans protected OS files against known-good copies and repairs them. chkdsk handles the disk/filesystem, not Windows' own files."},
@@ -2828,6 +2860,21 @@ notes:`
 <tr><td><b>regedit</b> (Registry Editor)</td><td>Edit the registry — export the key first as a backup</td></tr>
 </table>
 <div class="callout"><b>Exam pairings:</b> "why did it crash last night?" → Event Viewer. "extend a partition" → Disk Management. "run a script every Monday" → Task Scheduler. "boot into Safe Mode next restart" → msconfig. "which process is thrashing the disk / locking a file?" → Resource Monitor. "record a CPU baseline over a week" → Performance Monitor.</div>
+
+<h2>Tool pick-list</h2>
+<table>
+<tr><th>Need</th><th>Tool</th></tr>
+<tr><td>Why did it crash overnight?</td><td>Event Viewer</td></tr>
+<tr><td>Initialise disk / extend partition / drive letter</td><td>Disk Management</td></tr>
+<tr><td>Yellow triangle on a device</td><td>Device Manager</td></tr>
+<tr><td>Safe Mode next reboot</td><td>msconfig → Boot → Safe boot</td></tr>
+<tr><td>Disable bloatware at startup</td><td>Task Manager → Startup</td></tr>
+<tr><td>Which process locks this file / hammers disk?</td><td>Resource Monitor</td></tr>
+<tr><td>Week-long CPU baseline</td><td>Performance Monitor</td></tr>
+<tr><td>Read-only hardware inventory</td><td>msinfo32</td></tr>
+<tr><td>Schedule Friday backup script</td><td>Task Scheduler</td></tr>
+</table>
+<div class="keyfact"><b>Before regedit:</b> always export the key or create a restore point — registry mistakes can break Windows.</div>
 `,
 quiz:[
 {q:"A server rebooted unexpectedly overnight. Which tool shows what happened and when?", o:["Task Manager","Event Viewer","msconfig","Device Manager"], a:1, e:"Event Viewer's System log records shutdowns, errors, and their sources with timestamps — the first stop for post-incident investigation."},
@@ -2876,6 +2923,22 @@ notes:`
 <li><b>Fast startup</b> — hybrid: signs out, then hibernates the kernel for quicker cold boots.</li>
 <li><b>Power plans</b> (Balanced / Power saver / High performance) · <b>choose what closing the lid does</b> · <b>USB selective suspend</b> — Windows powers down idle USB devices; disable it when USB peripherals keep dropping out.</li>
 </ul>
+
+<h2>Applet pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Applet</th></tr>
+<tr><td><code>holiday.jpg.exe</code> shows as <code>holiday.jpg</code></td><td>File Explorer Options — show extensions</td></tr>
+<tr><td>Session must survive battery removal</td><td>Power Options → Hibernate</td></tr>
+<tr><td>USB device drops when idle</td><td>Disable USB selective suspend</td></tr>
+<tr><td>Uninstall app / enable Hyper-V feature</td><td>Programs and Features</td></tr>
+<tr><td>Rename PC / join domain</td><td>System</td></tr>
+<tr><td>Search finds nothing in a folder</td><td>Indexing Options</td></tr>
+<tr><td>Outbound app blocked</td><td>Windows Defender Firewall</td></tr>
+<tr><td>System-wide proxy</td><td>Internet Options → LAN settings</td></tr>
+<tr><td>Corrupt Outlook profile</td><td>Mail applet</td></tr>
+<tr><td>Set page file manually</td><td>System → Advanced → Virtual memory</td></tr>
+</table>
+<div class="keyfact"><b>Sleep vs hibernate:</b> Sleep = RAM powered (fast, dies if power lost). Hibernate = RAM to disk (zero power, survives battery drain).</div>
 `,
 quiz:[
 {q:"A user was tricked by a file named 'holiday.jpg.exe' displaying as 'holiday.jpg'. Which setting prevents this deception?", o:["Show hidden files","Untick 'Hide extensions for known file types' in File Explorer Options","Enable indexing","Rename all downloads"], a:1, e:"With extension-hiding disabled, the real .exe suffix is visible — the standard defence against double-extension tricks."},
@@ -2910,6 +2973,22 @@ notes:`
 <tr><td><b>Update &amp; Security</b></td><td>Windows Update (pause, history, active hours), Delivery Optimization, Windows Security, <b>Backup</b>, Troubleshoot, <b>Recovery</b> (Reset this PC, advanced startup), Activation</td></tr>
 </table>
 <div class="callout"><b>Exam pairings:</b> "app can't use the microphone" → Privacy. "stop Windows updating during work hours / view update history" → Update &amp; Security. "add a fingerprint sign-in" → Accounts → Sign-in options. "reset this PC" → Update &amp; Security → Recovery. "change default browser/PDF app" → Apps → Default apps. "wrong timezone" → Time &amp; Language.</div>
+
+<h2>Settings pick-list</h2>
+<table>
+<tr><th>Need</th><th>Path</th></tr>
+<tr><td>App blocked from mic/camera</td><td>Privacy → microphone/camera</td></tr>
+<tr><td>No update reboots 09:00–18:00</td><td>Update &amp; Security → Active hours</td></tr>
+<tr><td>Add PIN / fingerprint / Hello</td><td>Accounts → Sign-in options</td></tr>
+<tr><td>Reset this PC</td><td>Update &amp; Security → Recovery</td></tr>
+<tr><td>Wrong PDF / browser handler</td><td>Apps → Default apps</td></tr>
+<tr><td>Stop big downloads on 4G hotspot</td><td>Network → mark as metered</td></tr>
+<tr><td>Extend desktop / fix scaling</td><td>System → Display</td></tr>
+<tr><td>Clock wrong after travel</td><td>Time &amp; Language</td></tr>
+<tr><td>Rename PC / see edition</td><td>System → About</td></tr>
+<tr><td>Auto-clear temp files</td><td>System → Storage → Storage Sense</td></tr>
+</table>
+<div class="keyfact"><b>Control Panel vs Settings:</b> exam may name either path — know the job (proxy, firewall, updates, Hello) more than the exact menu location.</div>
 `,
 quiz:[
 {q:"A video-call app cannot access the user's microphone though the hardware works elsewhere. Which Settings category fixes this?", o:["System","Devices","Privacy (microphone app permissions)","Gaming"], a:2, e:"Privacy holds per-app permissions for microphone, camera, and location — the app is simply denied there."},
@@ -2958,6 +3037,20 @@ notes:`
 <li><b>Proxy</b> — Settings → Network & Internet → Proxy (or Internet Options): route web traffic via an intermediary server; wrong proxy = "browser can't reach anything though the network is fine".</li>
 <li><b>Metered connections</b> — flag a network as pay-per-use to defer big downloads.</li>
 </ul>
+
+<h2>Client network triage</h2>
+<table>
+<tr><th>Symptom</th><th>Likely client setting</th></tr>
+<tr><td>Can't see other PCs / share on home WiFi shown as Public</td><td>Switch profile to <b>Private</b></td></tr>
+<tr><td>Café / airport WiFi</td><td>Keep <b>Public</b></td></tr>
+<tr><td>LAN works; internet dead; blank gateway</td><td>Fix default gateway / DHCP</td></tr>
+<tr><td>IP works; names fail</td><td>DNS servers</td></tr>
+<tr><td>Browser only fails; "proxy refused"</td><td>Proxy settings</td></tr>
+<tr><td>Local service unreachable from LAN</td><td>Firewall inbound exception</td></tr>
+<tr><td>Need encrypted tunnel to HQ</td><td>VPN connection</td></tr>
+<tr><td>Map S: permanently</td><td>Map drive / <code>net use … /persistent:yes</code></td></tr>
+</table>
+<div class="keyfact"><b>Public vs Private:</b> Public = no discovery/sharing (untrusted). Private = discoverable/shareable (trusted home/office). Wrong profile is the classic "I can't see the printer" fix.</div>
 `,
 quiz:[
 {q:"A user at home cannot see any other devices under Network in File Explorer, and nobody can reach their shares. Their WiFi shows 'Public network'. What is the fix?", o:["Reinstall the NIC driver","Change the network profile to Private","Disable the firewall permanently","Enable DHCP"], a:1, e:"The Public profile disables discovery and sharing by design. Switching the trusted home network to Private restores visibility and sharing."},
@@ -3002,6 +3095,17 @@ notes:`
 <li><b>Impact to operation:</b> downtime during installation, retraining, workflow changes.</li>
 <li><b>Impact to business:</b> licensing costs and compliance, support burden, security/compliance implications. Unlicensed installs = legal risk.</li>
 </ul>
+
+<h2>Pre-install checklist</h2>
+<ol>
+<li>Confirm <b>OS bitness</b> — 32-bit OS cannot run 64-bit apps; 64-bit OS runs both.</li>
+<li>Check vendor matrix for <b>OS version</b> support (don't upgrade Windows under unsupported LOB apps).</li>
+<li>Size <b>RAM / CPU / GPU+VRAM / storage</b> against minimums.</li>
+<li>Note any <b>hardware token/dongle</b> licence requirement.</li>
+<li>Plan <b>network</b> impact (bandwidth × seats, licence servers) and <b>operation</b> downtime.</li>
+<li>Confirm <b>licensing</b> / business compliance before mass rollout.</li>
+</ol>
+<div class="keyfact"><b>64↔32 rule:</b> 64-bit Windows runs 32-bit apps (Program Files (x86)). 32-bit Windows never runs 64-bit apps — and can't use more than ~4 GB RAM.</div>
 `,
 quiz:[
 {q:"Can a 32-bit application run on 64-bit Windows?", o:["No, never","Yes — 64-bit Windows runs 32-bit apps (installed to Program Files (x86))","Only in a VM","Only if recompiled"], a:1, e:"64-bit Windows includes WOW64 compatibility for 32-bit applications. The reverse — 64-bit apps on a 32-bit OS — is impossible."},
@@ -3044,6 +3148,19 @@ notes:`
 <tr><td><b>APFS</b></td><td>macOS</td><td>Apple File System — snapshots, encryption, SSD-optimised</td></tr>
 </table>
 <div class="callout"><b>Exam tells:</b> "file over 4 GB won't copy to the USB stick" → FAT32 limit → reformat exFAT. "drive needs permissions and encryption" → NTFS. Linux → ext4. Mac → APFS.</div>
+
+<h2>Filesystem pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Filesystem</th></tr>
+<tr><td>Windows system / boot drive</td><td>NTFS</td></tr>
+<tr><td>USB for Win + Mac + camera, large videos</td><td>exFAT</td></tr>
+<tr><td>6 GB file won't copy; stick has free space</td><td>Was FAT32 → reformat exFAT</td></tr>
+<tr><td>Linux install default</td><td>ext4</td></tr>
+<tr><td>Modern Mac system volume</td><td>APFS</td></tr>
+<tr><td>Cheap school Chromebook fleet</td><td>ChromeOS</td></tr>
+<tr><td>Unpatched forever after vendor drops support</td><td>EOL OS — migrate or isolate</td></tr>
+</table>
+<div class="keyfact"><b>FAT32 4 GB trap:</b> free space does not matter — a single file over 4 GB fails. Removable media for big files → exFAT.</div>
 
 <h2>Vendor life-cycle and compatibility</h2>
 <ul>
@@ -3099,6 +3216,20 @@ notes:`
 <tr><td>Resilience</td><td>Single partition table</td><td>Backup table + CRC checks</td></tr>
 </table>
 <div class="callout"><b>Exam tells:</b> "3 TB drive only shows 2 TB usable" → it's MBR; convert to GPT. "UEFI + Secure Boot install" → GPT. "needs more than 4 primary partitions" → GPT.</div>
+
+<h2>Install / partition pick-list</h2>
+<table>
+<tr><th>Scenario</th><th>Choice</th></tr>
+<tr><td>200 identical new PCs</td><td>PXE + golden image</td></tr>
+<tr><td>Setup sees no disks on RAID box</td><td>Load third-party storage driver</td></tr>
+<tr><td>4 TB disk shows only 2 TB</td><td>Was MBR → convert to GPT</td></tr>
+<tr><td>UEFI + Secure Boot Windows 11</td><td>GPT required</td></tr>
+<tr><td>OS broken; keep apps and data</td><td>Repair installation</td></tr>
+<tr><td>Back to factory day-one state</td><td>Recovery partition restore</td></tr>
+<tr><td>Pro → Home or 32↔64-bit</td><td>Clean install (not in-place)</td></tr>
+<tr><td>Before any upgrade</td><td>Backup + app/driver + hardware checks</td></tr>
+</table>
+<div class="keyfact"><b>MBR limits:</b> 2 TB max disk · 4 primary partitions. Bigger disks / UEFI boot → GPT.</div>
 
 <h2>Upgrade considerations</h2>
 <ul>
@@ -3160,6 +3291,19 @@ notes:`
 <tr><td><b>Force Quit</b> (Cmd+Option+Esc)</td><td>Kill unresponsive apps (Task Manager's End task equivalent)</td></tr>
 <tr><td><b>System Preferences/Settings</b></td><td>Displays, Networks, Printers &amp; Scanners, Privacy, Accessibility, Time Machine panes</td></tr>
 </table>
+
+<h2>macOS ↔ Windows equivalents</h2>
+<table>
+<tr><th>Need</th><th>macOS</th><th>Windows cousin</th></tr>
+<tr><td>Full-disk encryption</td><td>FileVault</td><td>BitLocker</td></tr>
+<tr><td>File manager</td><td>Finder</td><td>File Explorer</td></tr>
+<tr><td>Kill frozen app</td><td>Force Quit</td><td>Task Manager → End task</td></tr>
+<tr><td>Password vault</td><td>Keychain</td><td>Credential Manager</td></tr>
+<tr><td>System search</td><td>Spotlight</td><td>Windows Search</td></tr>
+<tr><td>Versioned backups</td><td>Time Machine</td><td>File History / backup tools</td></tr>
+<tr><td>Disk repair/partition</td><td>Disk Utility</td><td>Disk Management</td></tr>
+</table>
+<div class="keyfact"><b>.dmg install:</b> mount → drag <code>.app</code> into Applications. Drag-to-Trash uninstall often leaves preference files behind.</div>
 `,
 quiz:[
 {q:"A downloaded Mac app arrives as a .dmg file. What is the standard installation procedure?", o:["Run it like an .exe","Mount the .dmg and drag the .app bundle into the Applications folder","Extract it with Disk Utility","Convert it to .pkg first"], a:1, e:".dmg files mount as virtual disks; drag-and-drop of the .app into Applications is the classic Mac install."},
@@ -3201,6 +3345,23 @@ notes:`
 <tr><td><code>top</code></td><td>Live process/resource monitor (Task Manager-ish)</td></tr>
 </table>
 <div class="callout"><b>Exam pairings:</b> "install software on Ubuntu" → <code>apt-get</code>. "on Red Hat" → <code>yum</code>. "run as admin" → <code>sudo</code>. "what's eating the CPU right now" → <code>top</code>. "how full are the disks" → <code>df -h</code>. "find the word 'error' in a log" → <code>grep</code>. "change who owns a file" → <code>chown</code>; "what they can do with it" → <code>chmod</code>. "DNS test" → <code>dig</code>. "IP address" → <code>ip a</code>.</div>
+
+<h2>Linux scenario → command</h2>
+<table>
+<tr><th>Scenario</th><th>Command</th></tr>
+<tr><td>Install package on Ubuntu</td><td><code>apt-get install</code></td></tr>
+<tr><td>Update packages on Red Hat</td><td><code>yum update</code> / <code>dnf</code></td></tr>
+<tr><td>One admin command</td><td><code>sudo …</code></td></tr>
+<tr><td>Live CPU hog</td><td><code>top</code></td></tr>
+<tr><td>Disk free space</td><td><code>df -h</code></td></tr>
+<tr><td>Search log for "failed"</td><td><code>grep failed logfile</code></td></tr>
+<tr><td>Owner execute on a script</td><td><code>chmod u+x script.sh</code></td></tr>
+<tr><td>Change file owner</td><td><code>chown user file</code></td></tr>
+<tr><td>DNS lookup</td><td><code>dig</code></td></tr>
+<tr><td>Show IP addresses</td><td><code>ip a</code></td></tr>
+<tr><td>Windows file shares from Linux</td><td>Samba</td></tr>
+</table>
+<div class="keyfact"><b>apt vs yum:</b> Ubuntu/Debian → apt. Red Hat/Fedora → yum/dnf. <b>chmod vs chown:</b> permissions vs ownership.</div>
 
 <h2>Best practices and tools</h2>
 <ul>
@@ -4713,6 +4874,7 @@ function renderDomainHero(coreKey, d){
   const domainTheme = coreKey==="core1" && d.num==="3.0" ? " domain-hero-hardware"
     : coreKey==="core1" && d.num==="4.0" ? " domain-hero-cloud"
     : coreKey==="core1" && d.num==="5.0" ? " domain-hero-troubleshoot"
+    : coreKey==="core2" && d.num==="1.0" ? " domain-hero-os"
     : coreKey==="core2" && d.num==="2.0" ? " domain-hero-security"
     : ` domain-hero-${coreKey}`;
   return `<div class="domain-hero${domainTheme}">
@@ -6056,6 +6218,7 @@ function render(){
     const sheetHeroCls = view.core==="core1" && view.num==="3.0" ? " sheet-hero-hardware"
       : view.core==="core1" && view.num==="4.0" ? " sheet-hero-cloud"
       : view.core==="core1" && view.num==="5.0" ? " sheet-hero-troubleshoot"
+      : view.core==="core2" && view.num==="1.0" ? " sheet-hero-os"
       : view.core==="core2" && view.num==="2.0" ? " sheet-hero-security"
       : view.core==="core1" ? " sheet-hero-core1"
       : view.core==="core2" ? " sheet-hero-core2" : "";
