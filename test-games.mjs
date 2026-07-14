@@ -32,6 +32,27 @@ async function playCurrentMatch() {
   await page.waitForSelector('text=Play again', { timeout: 15000 });
 }
 
+async function playCurrentMatchDrag() {
+  await page.waitForSelector('.game-board');
+  const pairs = await page.evaluate(() => game.left.map(l => ({ left: l.id, match: l.match })));
+  for (const p of pairs) {
+    const rid = await page.evaluate((id) => game.left.find(x => x.id === id).match, p.left);
+    const left = page.locator(`[data-game-id="L:${p.left}"]`);
+    const right = page.locator(`[data-game-id="R:${rid}"]`);
+    const lb = await left.boundingBox();
+    const rb = await right.boundingBox();
+    await page.mouse.move(lb.x + lb.width - 6, lb.y + lb.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(40);
+    const live = await page.evaluate(() => !!document.querySelector('.cable-live'));
+    if (!live) throw new Error('Expected live drag cable');
+    await page.mouse.move(rb.x + 8, rb.y + rb.height / 2, { steps: 14 });
+    await page.mouse.up();
+    await page.waitForTimeout(220);
+  }
+  await page.waitForSelector('text=Play again', { timeout: 15000 });
+}
+
 async function goToGamesHub() {
   if (await page.locator('h1.page').filter({ hasText: 'Revision Games' }).isVisible()) return;
   if (await page.isVisible('text=All games')) await page.click('text=All games');
@@ -53,11 +74,22 @@ assert('14 games in catalog', gameCount === 14);
 
 await goToGamesHub();
 await openGame('Port Match');
-await playCurrentMatch();
-assert('Port Match completes', await page.isVisible('text=Play again'));
+await playCurrentMatchDrag();
+assert('Port Match drag-cables completes', await page.isVisible('text=Play again'));
+assert('Port Match shows linked cable paths', await page.evaluate(() =>
+  document.querySelectorAll('.game-cables .cable-core').length >= 0
+));
 assert('Port Match hints on pool', await page.evaluate(() =>
   PORT_DATA.normal.every(p => p.hint) && PORT_DATA.hard.every(p => p.hint)
 ));
+
+await openGame('Connector Snap');
+await playCurrentMatchDrag();
+assert('Connector Snap drag-cables completes', await page.isVisible('text=Play again'));
+
+await openGame('Port Match');
+await playCurrentMatch();
+assert('Port Match tap fallback completes', await page.isVisible('text=Play again'));
 
 await openGame('Tool Toss');
 await playCurrentMatch();

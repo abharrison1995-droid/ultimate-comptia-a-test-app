@@ -239,20 +239,28 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .game-board{position:relative;background:var(--panel);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px 12px 20px;margin:16px 0}
 .game-board h2{font-family:var(--display);font-size:1.1rem;text-align:center;margin-bottom:4px}
 .game-hint{text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:14px}
-.game-cols{display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:start}
+.game-cols{display:grid;grid-template-columns:1fr 56px 1fr;gap:8px;align-items:start}
 .game-col{display:flex;flex-direction:column;gap:8px}
 .game-seq{display:grid;gap:8px;max-width:480px;margin:0 auto}
 .game-seq .game-item{text-align:left;justify-content:flex-start;padding:14px}
 .game-seq .game-item .step-n{font-size:.72rem;color:var(--muted);margin-right:8px}
 .game-hub-icon{font-size:1.4rem;opacity:.35;padding:8px 0;text-align:center}
-.game-item{border:2px solid var(--line);border-radius:12px;padding:12px 10px;font-weight:600;font-size:.9rem;text-align:center;background:var(--bg);cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s;min-height:48px;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
-.game-item:active{transform:scale(.96)}
+.game-item{border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-weight:600;font-size:.9rem;text-align:center;background:var(--bg);cursor:grab;transition:transform .12s,border-color .12s,box-shadow .12s;min-height:48px;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;touch-action:none;user-select:none;-webkit-user-select:none}
+.game-item:active{cursor:grabbing}
 .game-item.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);animation:pulse-sel .8s ease infinite}
 .game-item.matched{border-color:var(--good);background:var(--good-soft);cursor:default;animation:pop-in .35s ease}
 .game-item.wrong-shake{animation:shake .4s ease;border-color:var(--bad);background:var(--bad-soft)}
+.game-item.drop-hover:not(.matched){border-color:var(--accent);background:var(--accent-soft);transform:scale(1.02)}
 .game-item.shape-item{padding:8px}
-.game-item.shape-item svg{width:44px;height:44px}
+.game-item.shape-item svg{width:44px;height:44px;pointer-events:none}
 .game-item.port-num{font-family:var(--display);font-size:1.05rem;font-weight:800}
+.game-item .jack{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translateY(-50%);background:var(--charcoal);border:2px solid var(--accent);box-shadow:0 0 0 2px var(--panel);pointer-events:none;z-index:3}
+.game-item .jack-out{right:-8px}
+.game-item .jack-in{left:-8px}
+.game-item.matched .jack{border-color:var(--good);background:var(--good)}
+.game-item.selected .jack{border-color:var(--accent);background:var(--accent)}
+.game-board.dragging{cursor:grabbing}
+.game-board.dragging .game-item:not(.matched){cursor:grabbing}
 .game-col-head{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:center;margin-bottom:4px}
 .port-svc{display:block;line-height:1.2}
 .port-cat{display:block;font-size:.65rem;font-weight:700;color:var(--accent);margin-top:3px;letter-spacing:.02em}
@@ -270,13 +278,18 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .mode-chip.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .mode-chip.hard.active{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
 .game-scorebar{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:8px}
-.game-cables{position:absolute;inset:0;pointer-events:none;z-index:1}
-.game-cables line{stroke:var(--accent);stroke-width:3;stroke-linecap:round;opacity:.7}
-.game-cables line.good{stroke:var(--good);stroke-width:4;animation:cable-in .4s ease}
+.game-cables{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible}
+.game-cables .cable-jacket{fill:none;stroke:#1A1D21;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.game-cables .cable-core{fill:none;stroke:var(--good);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.game-cables .cable-live.cable-jacket{stroke:#3A4048;stroke-width:8}
+.game-cables .cable-live.cable-core{stroke:var(--accent);stroke-width:4;stroke-dasharray:10 7;animation:cable-dash .55s linear infinite}
+.game-cables .cable-plug{fill:var(--accent);stroke:#1A1D21;stroke-width:1.5}
+.game-cables .cable-plug.good{fill:var(--good)}
 @keyframes pulse-sel{0%,100%{box-shadow:0 0 0 3px var(--accent-soft)}50%{box-shadow:0 0 0 6px transparent}}
 @keyframes pop-in{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-@keyframes cable-in{from{stroke-dashoffset:40;opacity:0}to{stroke-dashoffset:0;opacity:.85}}
+@keyframes cable-in{from{opacity:0}to{opacity:1}}
+@keyframes cable-dash{to{stroke-dashoffset:-34}}
 @keyframes confetti{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-30px) scale(1.4);opacity:0}}
 .game-done-emoji{font-size:2.5rem;margin-bottom:8px;animation:confetti 1s ease infinite}
 .game-core{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;background:var(--panel);overflow:hidden}
@@ -5291,7 +5304,7 @@ if("serviceWorker" in navigator){
 }
 
 /* ============================================================
-   Revision Games — tap-to-connect matching drills
+   Revision Games — drag-cable matching drills
    ============================================================ */
 const GAME_CATALOG = [
   {id:"ports", icon:"🔌", name:"Port Match", desc:"Match services to default ports — category tags & hints on every link", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]},
@@ -5989,26 +6002,14 @@ function rightKey(item){ return game.matchType==="port" ? item.text : item.id; }
 function pairOk(leftItem, rightItem){
   return game.matchType==="port" ? leftItem.match===rightItem.text : leftItem.match===rightItem.id;
 }
-function gameTap(side, itemId){
-  if(!game || game.done || game.phase!=="play" || game.type==="sequence" || game.type==="story") return;
-  const getRight = (id)=> game.right.find(x=>x.text===id || x.id===id);
-  const getLeft = (id)=> game.left.find(x=>x.id===id);
-  const isDone = (s,id)=>{
-    if(s==="left") return game.matched["L:"+id];
-    const it = getRight(id); return it && game.matched["R:"+rightKey(it)];
-  };
-  if(isDone(side, itemId)) return;
-  if(!game.selected){
-    game.selected = {side, id:itemId};
-    game.toast = "👆 Now tap the match…";
-    game.toastKind = "";
-    renderGame(); return;
-  }
-  if(game.selected.side===side){ game.selected = {side, id:itemId}; renderGame(); return; }
-  const leftId = game.selected.side==="left" ? game.selected.id : itemId;
-  const rightId = game.selected.side==="right" ? game.selected.id : itemId;
-  const leftItem = getLeft(leftId);
-  const rightItem = getRight(rightId);
+function getMatchLeft(id){ return game.left.find(x=>x.id===id); }
+function getMatchRight(id){ return game.right.find(x=>x.text===id || x.id===id); }
+function isMatchDone(side, id){
+  if(side==="left") return !!game.matched["L:"+id];
+  const it = getMatchRight(id);
+  return !!(it && game.matched["R:"+rightKey(it)]);
+}
+function applyMatchResult(leftItem, rightItem){
   if(pairOk(leftItem, rightItem)){
     game.matched["L:"+leftItem.id] = true;
     game.matched["R:"+rightKey(rightItem)] = true;
@@ -6023,19 +6024,166 @@ function gameTap(side, itemId){
       game.done = true;
       recordScore(gameScoreKey(game.id, game.mode), game.pairs.length, game.pairs.length);
     }
-  } else {
-    game.mistakes++;
-    if(game.matchType==="port"){
-      game.toast = `${leftItem.text} → port ${leftItem.match}, not ${rightItem.text}`;
-    } else {
-      game.toast = pickToast("bad");
-    }
-    game.toastKind = "bad";
-    game.flash = {left:leftId, right:rightId};
-    setTimeout(()=>{ if(game && !game.done){ game.flash=null; renderGame(); } }, 450);
+    return true;
   }
+  game.mistakes++;
+  if(game.matchType==="port"){
+    game.toast = `${leftItem.text} → port ${leftItem.match}, not ${rightItem.text}`;
+  } else {
+    game.toast = pickToast("bad");
+  }
+  game.toastKind = "bad";
+  game.flash = {left:leftItem.id, right:rightKey(rightItem)};
+  setTimeout(()=>{ if(game && !game.done){ game.flash=null; renderGame(); } }, 450);
+  return false;
+}
+function tryConnectPair(sideA, idA, sideB, idB){
+  if(!game || game.done || game.phase!=="play" || game.type!=="match") return false;
+  if(sideA===sideB) return false;
+  if(isMatchDone(sideA, idA) || isMatchDone(sideB, idB)) return false;
+  const leftId = sideA==="left" ? idA : idB;
+  const rightId = sideA==="right" ? idA : idB;
+  const leftItem = getMatchLeft(leftId);
+  const rightItem = getMatchRight(rightId);
+  if(!leftItem || !rightItem) return false;
+  return applyMatchResult(leftItem, rightItem);
+}
+function gameTap(side, itemId){
+  if(!game || game.done || game.phase!=="play" || game.type!=="match") return;
+  if(isMatchDone(side, itemId)) return;
+  if(!game.selected){
+    game.selected = {side, id:itemId};
+    game.toast = "Drag the cable — or tap the match…";
+    game.toastKind = "";
+    renderGame(); return;
+  }
+  if(game.selected.side===side){ game.selected = {side, id:itemId}; renderGame(); return; }
+  tryConnectPair(game.selected.side, game.selected.id, side, itemId);
   game.selected = null;
   renderGame();
+}
+let cableDrag = null;
+function gameDataSel(side, id){
+  const prefix = side==="left" ? "L" : "R";
+  const escId = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(id) : String(id).replace(/"/g, '\\"');
+  return `[data-game-id="${prefix}:${escId}"]`;
+}
+function parseGameId(raw){
+  if(!raw || raw[1]!==":") return null;
+  const side = raw[0]==="L" ? "left" : raw[0]==="R" ? "right" : null;
+  if(!side) return null;
+  return {side, id: raw.slice(2)};
+}
+function jackPoint(el, side, boardRect){
+  const r = el.getBoundingClientRect();
+  const x = side==="left" ? (r.right - boardRect.left) : (r.left - boardRect.left);
+  const y = r.top + r.height/2 - boardRect.top;
+  return {x, y};
+}
+function clearDropHovers(){
+  document.querySelectorAll(".game-item.drop-hover").forEach(el=>el.classList.remove("drop-hover"));
+}
+function setDropHover(el){
+  clearDropHovers();
+  if(el) el.classList.add("drop-hover");
+}
+function boardLocal(ev){
+  const board = document.getElementById("gameBoard");
+  if(!board) return {x:0,y:0};
+  const br = board.getBoundingClientRect();
+  return {x: ev.clientX - br.left, y: ev.clientY - br.top, br};
+}
+function gameCableDown(ev, side, itemId){
+  if(!game || game.done || game.phase!=="play" || game.type!=="match") return;
+  if(ev.button != null && ev.button!==0) return;
+  if(isMatchDone(side, itemId)) return;
+  ev.preventDefault();
+  const loc = boardLocal(ev);
+  const prev = game.selected && game.selected.side!==side ? {...game.selected} : null;
+  cableDrag = {
+    side, id: itemId,
+    x: loc.x, y: loc.y,
+    startX: ev.clientX, startY: ev.clientY,
+    moved: false,
+    pointerId: ev.pointerId,
+    hover: null,
+    prevSelect: prev
+  };
+  game.selected = {side, id: itemId};
+  game.toast = "Drag the cable to its match…";
+  game.toastKind = "";
+  const board = document.getElementById("gameBoard");
+  if(board) board.classList.add("dragging");
+  document.querySelectorAll(".game-item.selected").forEach(el=>el.classList.remove("selected"));
+  const src = document.querySelector(gameDataSel(side, itemId));
+  if(src) src.classList.add("selected");
+  try{ ev.currentTarget.setPointerCapture(ev.pointerId); }catch(e){}
+  const toast = document.querySelector(".game-toast");
+  if(toast){ toast.textContent = game.toast; toast.className = "game-toast"; }
+  drawGameCables();
+}
+function gameCableMove(ev){
+  if(!cableDrag || ev.pointerId!==cableDrag.pointerId) return;
+  ev.preventDefault();
+  const dx = ev.clientX - cableDrag.startX, dy = ev.clientY - cableDrag.startY;
+  if(Math.hypot(dx, dy) > 8) cableDrag.moved = true;
+  const loc = boardLocal(ev);
+  cableDrag.x = loc.x;
+  cableDrag.y = loc.y;
+  const hit = document.elementFromPoint(ev.clientX, ev.clientY)?.closest?.("[data-game-id]");
+  const parsed = hit ? parseGameId(hit.getAttribute("data-game-id")) : null;
+  if(parsed && parsed.side!==cableDrag.side && !isMatchDone(parsed.side, parsed.id)){
+    cableDrag.hover = parsed;
+    setDropHover(hit);
+  } else {
+    cableDrag.hover = null;
+    clearDropHovers();
+  }
+  drawGameCables();
+}
+function gameCableUp(ev){
+  if(!cableDrag || (ev.pointerId!=null && ev.pointerId!==cableDrag.pointerId)) return;
+  const drag = cableDrag;
+  cableDrag = null;
+  clearDropHovers();
+  const board = document.getElementById("gameBoard");
+  if(board) board.classList.remove("dragging");
+  let target = drag.hover;
+  if(!target){
+    const hit = document.elementFromPoint(ev.clientX, ev.clientY)?.closest?.("[data-game-id]");
+    target = hit ? parseGameId(hit.getAttribute("data-game-id")) : null;
+  }
+  if(target && target.side!==drag.side){
+    tryConnectPair(drag.side, drag.id, target.side, target.id);
+    game.selected = null;
+    renderGame();
+    return;
+  }
+  if(!drag.moved && drag.prevSelect){
+    tryConnectPair(drag.prevSelect.side, drag.prevSelect.id, drag.side, drag.id);
+    game.selected = null;
+    renderGame();
+    return;
+  }
+  if(drag.moved){
+    game.selected = null;
+    document.querySelectorAll(".game-item.selected").forEach(el=>el.classList.remove("selected"));
+    const toast = document.querySelector(".game-toast");
+    if(toast){
+      game.toast = "Grab a jack and drag the cable across…";
+      game.toastKind = "";
+      toast.textContent = game.toast;
+      toast.className = "game-toast";
+    }
+    drawGameCables();
+    return;
+  }
+  // Pure tap — keep selection for a second tap
+  game.toast = "Now drag or tap the matching option…";
+  game.toastKind = "";
+  const toast = document.querySelector(".game-toast");
+  if(toast){ toast.textContent = game.toast; toast.className = "game-toast"; }
+  drawGameCables();
 }
 function gameSeqTap(itemId){
   if(!game || game.done || game.type!=="sequence") return;
@@ -6058,28 +6206,62 @@ function gameSeqTap(itemId){
   }
   renderGame();
 }
+function appendCable(svg, x1, y1, x2, y2, kind){
+  const mx = (x1 + x2) / 2;
+  const d = `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+  const jacket = document.createElementNS("http://www.w3.org/2000/svg","path");
+  jacket.setAttribute("d", d);
+  jacket.setAttribute("class", `cable-jacket${kind==="live"?" cable-live":""}`);
+  svg.appendChild(jacket);
+  const core = document.createElementNS("http://www.w3.org/2000/svg","path");
+  core.setAttribute("d", d);
+  core.setAttribute("class", `cable-core${kind==="live"?" cable-live":""}`);
+  if(kind==="good") core.style.animation = "cable-in .35s ease";
+  svg.appendChild(core);
+  const plug = (x, y, good)=>{
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 4.5);
+    c.setAttribute("class", `cable-plug${good?" good":""}`);
+    svg.appendChild(c);
+  };
+  if(kind==="good"){ plug(x1,y1,true); plug(x2,y2,true); }
+  else if(kind==="live"){ plug(x2,y2,false); }
+}
 function drawGameCables(){
   const svg = document.getElementById("gameCables");
   const board = document.getElementById("gameBoard");
   if(!svg || !board || !game || game.type!=="match") return;
   svg.innerHTML = "";
   const br = board.getBoundingClientRect();
-  for(const ln of game.lines){
-    const le = document.querySelector(`[data-game-id="L:${ln.left}"]`);
-    const re = document.querySelector(`[data-game-id="R:${ln.right}"]`);
+  svg.setAttribute("viewBox", `0 0 ${Math.max(br.width,1)} ${Math.max(br.height,1)}`);
+  svg.setAttribute("width", String(br.width));
+  svg.setAttribute("height", String(br.height));
+  for(const ln of game.lines||[]){
+    const le = document.querySelector(gameDataSel("left", ln.left));
+    const re = document.querySelector(gameDataSel("right", ln.right));
     if(!le || !re) continue;
-    const lr = le.getBoundingClientRect(), rr = re.getBoundingClientRect();
-    const x1 = lr.right - br.left, y1 = lr.top + lr.height/2 - br.top;
-    const x2 = rr.left - br.left, y2 = rr.top + rr.height/2 - br.top;
-    const mx = (x1+x2)/2;
-    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-    path.setAttribute("d", `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
-    path.setAttribute("fill","none");
-    path.setAttribute("stroke","var(--good)");
-    path.setAttribute("stroke-width","4");
-    svg.appendChild(path);
+    const a = jackPoint(le, "left", br), b = jackPoint(re, "right", br);
+    appendCable(svg, a.x, a.y, b.x, b.y, "good");
+  }
+  if(cableDrag){
+    const src = document.querySelector(gameDataSel(cableDrag.side, cableDrag.id));
+    if(src){
+      const a = jackPoint(src, cableDrag.side, br);
+      appendCable(svg, a.x, a.y, cableDrag.x, cableDrag.y, "live");
+    }
+  } else if(game.selected && !game.done){
+    const src = document.querySelector(gameDataSel(game.selected.side, game.selected.id));
+    if(src){
+      const a = jackPoint(src, game.selected.side, br);
+      const stub = game.selected.side==="left" ? a.x + 18 : a.x - 18;
+      appendCable(svg, a.x, a.y, stub, a.y, "live");
+    }
   }
 }
+document.addEventListener("pointermove", gameCableMove, {passive:false});
+document.addEventListener("pointerup", gameCableUp);
+document.addEventListener("pointercancel", gameCableUp);
+window.addEventListener("resize", ()=>{ if(game && game.type==="match") drawGameCables(); });
 function storyProgressPill(){
   let n = 0;
   for(const s of STORY_DATA) if(store.get(scoreKey(gameScoreKey("storychat", s.id)))) n++;
@@ -6179,15 +6361,15 @@ function renderGame(){
       <button class="mode-chip hard ${game.mode==="hard"?"active":""}" onclick="setGameMode('hard')">🔥 Hard — secure ports & traps</button>
     </div>` : "";
     const hint = meta.id==="ports"
-      ? "Tap a service, then its port number. Each correct link shows a memory hint. Hard mode adds secure mail & directory traps (465, 587, 993, 636…)."
+      ? "Drag a cable from a service to its port — or tap both ends. Each correct link shows a memory hint. Hard mode adds secure mail & directory traps (465, 587, 993, 636…)."
       : meta.type==="story"
       ? "Pick a legend — they'll chat you through a tech rescue. Answer from four options at each beat."
       : meta.type==="millionaire"
       ? "15 exam questions, rising stakes, three lifelines. Pick an answer, lock in your final answer, and listen for Agent Chip."
       : meta.type==="sequence"
       ? "Steps are shuffled — tap them in the correct troubleshooting order."
-      : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
-      : "Tap left, then right — connect the match.";
+      : meta.shapes ? "Drag a cable from a connector shape to its match — or tap both ends."
+      : "Drag a cable between matches — or tap left, then right.";
     app.innerHTML = `<div class="eyebrow">Revision Games</div>
       <h1 class="page">${meta.icon} ${esc(meta.name)}</h1>
       <p class="sub">${esc(meta.desc)}</p>${modes}
@@ -6367,7 +6549,8 @@ function renderGame(){
     else if(game.matchType==="port" && item.cat){
       inner = `<span class="port-svc">${esc(item.text)}</span><span class="port-cat">${esc(PORT_CAT[item.cat]||item.cat)}</span>`;
     } else inner = esc(item.text);
-    return `<button type="button" class="${cls}" data-game-id="L:${item.id}" onclick="gameTap('left','${item.id}')" ${matched["L:"+item.id]?"disabled":""}>${inner}</button>`;
+    const disabled = matched["L:"+item.id];
+    return `<button type="button" class="${cls}" data-game-id="L:${esc(item.id)}" onpointerdown='gameCableDown(event,"left",${JSON.stringify(item.id)})' ${disabled?"disabled":""}><span class="jack jack-out" aria-hidden="true"></span>${inner}</button>`;
   }).join("");
   const rightHtml = game.right.map(item=>{
     const rid = rightKey(item);
@@ -6375,13 +6558,14 @@ function renderGame(){
     if(matched["R:"+rid]) cls += " matched";
     else if(game.selected?.side==="right" && game.selected.id===rid) cls += " selected";
     else if(flash.right===rid) cls += " wrong-shake";
-    return `<button type="button" class="${cls}" data-game-id="R:${rid}" onclick="gameTap('right','${rid}')" ${matched["R:"+rid]?"disabled":""}>${esc(item.text)}</button>`;
+    const disabled = matched["R:"+rid];
+    return `<button type="button" class="${cls}" data-game-id="R:${esc(rid)}" onpointerdown='gameCableDown(event,"right",${JSON.stringify(rid)})' ${disabled?"disabled":""}><span class="jack jack-in" aria-hidden="true"></span>${esc(item.text)}</button>`;
   }).join("");
   const colHeadL = game.matchType==="port" ? `<div class="game-col-head">Service</div>` : "";
   const colHeadR = game.matchType==="port" ? `<div class="game-col-head">Port</div>` : "";
   const done = Object.keys(matched).length/2;
   app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} ${esc(meta.name)}${game.mode==="hard"?" · Hard":""}</span><span>${done}/${game.pairs.length} linked</span></div>
-    <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap left, then right — connect the match!")}</div>
+    <div class="game-toast ${game.toastKind}">${esc(game.toast||"Grab a jack and drag the cable across — or tap both ends.")}</div>
     <div class="game-board" id="gameBoard">
       <svg class="game-cables" id="gameCables" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="game-cols">
