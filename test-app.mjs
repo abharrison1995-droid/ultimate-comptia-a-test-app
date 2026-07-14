@@ -32,6 +32,16 @@ assert('Cover exam bar', await page.evaluate(() => document.querySelector('.cove
 assert('Core 1 hero banner', await page.isVisible('.core-hero-core1'));
 assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count()) >= 5);
 assert('Core 1 games strip', await page.isVisible('.core1-games-strip'));
+assert('Quick drills collapsed by default', await page.evaluate(() => {
+  const el = document.querySelector('details.core1-games-strip');
+  return !!el && !el.open;
+}));
+assert('Quick drills expand to show games', await page.evaluate(() => {
+  const el = document.querySelector('details.core1-games-strip');
+  if (!el) return false;
+  el.open = true;
+  return el.querySelectorAll('.game-card').length >= 4;
+}));
 assert('No top Revision Games dash card', await page.evaluate(() => !document.querySelector('.dash-games')));
 assert('Games progress sits in home games section', await page.isVisible('#homeGames .games-progress-blurb'));
 assert('Charcoal app chrome', await page.evaluate(() => {

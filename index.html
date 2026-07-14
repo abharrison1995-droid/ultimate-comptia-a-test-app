@@ -167,9 +167,15 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-os{border-color:#7DD3FC;border-left-color:#0284C7;background:linear-gradient(135deg,#F0F9FF,var(--panel))}
 .sheet-hero-softts{border-color:#FDBA74;border-left-color:#EA580C;background:linear-gradient(135deg,#FFF7ED,var(--panel))}
 .sheet-hero-ops{border-color:#94A3B8;border-left-color:#64748B;background:linear-gradient(135deg,#F8FAFC,var(--panel))}
-.core1-games-strip{background:linear-gradient(135deg,#F7F8FA,var(--panel));border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);padding:16px;margin:0 0 22px}
-.core1-games-strip h2{font-family:var(--display);font-size:1.15rem;font-weight:800;margin:0 0 6px;color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
-.core1-games-strip p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
+.core1-games-strip{background:linear-gradient(135deg,#F7F8FA,var(--panel));border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);margin:0 0 22px;overflow:hidden}
+.core1-games-strip > summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;cursor:pointer;list-style:none;user-select:none}
+.core1-games-strip > summary::-webkit-details-marker{display:none}
+.core1-games-strip > summary::after{content:"▸";color:var(--accent);font-size:1.1rem;font-weight:700;transition:transform .2s;flex-shrink:0}
+.core1-games-strip[open] > summary::after{transform:rotate(90deg)}
+.core1-games-strip-title{font-family:var(--display);font-size:1.05rem;font-weight:800;margin:0;color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
+.core1-games-strip-meta{font-size:.8rem;font-weight:600;color:var(--muted);margin-left:auto}
+.core1-games-strip-body{padding:0 14px 14px}
+.core1-games-strip-body p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
 .notes .keyfact{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;font-size:.94rem;line-height:1.5}
 .notes .keyfact b:first-child{color:var(--amber)}
 /* quiz */
@@ -5135,9 +5141,16 @@ function renderCore1GamesStrip(){
     const g = gameMeta(id);
     return g ? `<button class="game-card clickable" onclick="go('game',{gameId:'${id}'})"><div class="icon">${g.icon}</div><h3>${esc(g.name)}</h3><div class="meta">${esc(g.desc)}</div></button>` : "";
   }).join("");
-  return `<div class="core1-games-strip"><h2>⚡ Core 1 quick drills</h2>
-    <p>Match games mapped to Core 1 domains — great warm-ups before mocks.</p>
-    <div class="grid">${cards}</div></div>`;
+  return `<details class="core1-games-strip">
+    <summary>
+      <span class="core1-games-strip-title">Core 1 quick drills</span>
+      <span class="core1-games-strip-meta">${ids.length} warm-ups</span>
+    </summary>
+    <div class="core1-games-strip-body">
+      <p>Match games mapped to Core 1 domains — expand to play a warm-up before mocks.</p>
+      <div class="grid">${cards}</div>
+    </div>
+  </details>`;
 }
 function scoreKey(id){ return "score_"+id; }
 function scorePill(id, total){
