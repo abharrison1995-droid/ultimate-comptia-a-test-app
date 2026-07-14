@@ -220,6 +220,7 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .dash-weak b{color:var(--amber)}
 .dash-games{margin-top:4px}
 .dash-games b{color:var(--ink)}
+.games-progress-blurb{font-size:.86rem}
 .game-card.featured{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft)}
 .install-banner{background:var(--panel);border:1px dashed var(--accent);border-radius:var(--radius);padding:14px 16px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .install-banner p{margin:0;font-size:.9rem}
@@ -5217,21 +5218,16 @@ function gamesProgressSummary(){
   }
   return {playedCount: played.size, total: ready.length, fablesPlayed, fablesTotal: STORY_DATA.length, milBest, milQ};
 }
-function gamesProgressCard(){
+function gamesProgressBlurb(){
   const g = gamesProgressSummary();
-  const milLine = g.milBest
-    ? `<b>${esc(g.milBest)}</b> best on A+ Millionaire`
-  : `A+ Millionaire — <b>not played yet</b>`;
-  const fablesLine = g.fablesPlayed
-    ? `<b>${g.fablesPlayed}/${g.fablesTotal}</b> Fix-It Fables legends completed`
-    : `Fix-It Fables — <b>${g.fablesTotal} legends</b> to try`;
-  const playedLine = g.playedCount
-    ? `<b>${g.playedCount}/${g.total}</b> game types played`
-    : `<b>${g.total}</b> games ready — pick one below`;
-  return `<div class="dash-card dash-games" aria-label="Games progress">
-    <h2>🎮 Revision Games</h2>
-    <div class="dash-stats">${playedLine}<br>${fablesLine}<br>${milLine}</div>
-  </div>`;
+  const mil = g.milBest ? `${esc(g.milBest)} Millionaire best` : "Millionaire not played yet";
+  const fables = g.fablesPlayed
+    ? `${g.fablesPlayed}/${g.fablesTotal} Fix-It Fables done`
+    : `${g.fablesTotal} Fix-It Fables ready`;
+  const played = g.playedCount
+    ? `${g.playedCount}/${g.total} game types played`
+    : `${g.total} games ready`;
+  return `${played} · ${fables} · ${mil}`;
 }
 function progressDashboard(){
   const c1 = coreProgress("core1"), c2 = coreProgress("core2");
@@ -5255,12 +5251,11 @@ function progressDashboard(){
       </div>${weak}
     </div>`;
   }
-  if(!c1.attempted && !c2.attempted) return gamesProgressCard();
+  if(!c1.attempted && !c2.attempted) return "";
   return `<div class="dashboard" aria-label="Study progress">
     ${coreCard("core1", c1)}
     ${coreCard("core2", c2)}
     <div class="dash-card"><div class="dash-stats">Saved quiz scores: <b>${totalAttempts}</b> · Pass targets: Core 1 <b>675/900</b> · Core 2 <b>700/900</b></div></div>
-    ${gamesProgressCard()}
   </div>`;
 }
 let deferredInstall = null;
@@ -6451,10 +6446,13 @@ function render(){
       html += `</div>`;
       if(key==="core1") html += renderCore1GamesStrip();
     }
-    html += `<div class="eyebrow">🎮 Revision Games</div>
-      <p class="sub" style="margin-top:0;margin-bottom:10px">Featured picks — story chat, Millionaire ladder, and port drill.</p>
+    html += `<div class="home-games" id="homeGames">
+      <div class="eyebrow">🎮 Revision Games</div>
+      <p class="sub" style="margin-top:0;margin-bottom:6px">Featured picks — story chat, Millionaire ladder, and port drill.</p>
+      <p class="sub games-progress-blurb" style="margin-top:0;margin-bottom:12px">${gamesProgressBlurb()}</p>
       <div class="grid" style="margin-bottom:12px">${renderGamesHub("home")}</div>
-      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all ${GAME_CATALOG.filter(g=>g.ready).length} games →</button></p>`;
+      <p style="margin:-4px 0 22px"><button class="btn" onclick="go('games')">See all ${GAME_CATALOG.filter(g=>g.ready).length} games →</button></p>
+    </div>`;
     app.innerHTML = html;
     return;
   }

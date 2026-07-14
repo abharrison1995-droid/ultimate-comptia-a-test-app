@@ -32,6 +32,8 @@ assert('Cover exam bar', await page.evaluate(() => document.querySelector('.cove
 assert('Core 1 hero banner', await page.isVisible('.core-hero-core1'));
 assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count()) >= 5);
 assert('Core 1 games strip', await page.isVisible('.core1-games-strip'));
+assert('No top Revision Games dash card', await page.evaluate(() => !document.querySelector('.dash-games')));
+assert('Games progress sits in home games section', await page.isVisible('#homeGames .games-progress-blurb'));
 assert('Charcoal app chrome', await page.evaluate(() => {
   const bg = getComputedStyle(document.querySelector('header.app')).backgroundColor;
   return bg === 'rgb(26, 29, 33)' || bg.includes('26, 29, 33');
