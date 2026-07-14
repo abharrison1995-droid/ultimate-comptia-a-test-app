@@ -42,8 +42,8 @@ assert('Quick drills expand to show games', await page.evaluate(() => {
   el.open = true;
   return el.querySelectorAll('.game-card').length >= 4;
 }));
-assert('No top Revision Games dash card', await page.evaluate(() => !document.querySelector('.dash-games')));
-assert('Games progress sits in home games section', await page.isVisible('#homeGames .games-progress-blurb'));
+assert('No Revision Games dash card on home', await page.evaluate(() => !document.querySelector('.dash-games')));
+assert('Home still has games section', await page.isVisible('#homeGames'));
 assert('Charcoal app chrome', await page.evaluate(() => {
   const bg = getComputedStyle(document.querySelector('header.app')).backgroundColor;
   return bg === 'rgb(26, 29, 33)' || bg.includes('26, 29, 33');
@@ -52,6 +52,15 @@ assert('CompTIA red accent token', await page.evaluate(() => {
   const a = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().toLowerCase();
   return a === '#d61f26';
 }));
+await page.locator('button').filter({ hasText: /See all \d+ games/ }).click();
+await page.waitForSelector('h1.page >> text=Revision Games');
+assert('Games progress on games tab', await page.isVisible('.dash-games'));
+assert('Games progress text on games tab', await page.evaluate(() =>
+  document.querySelector('.dash-games')?.textContent.includes('game types') ||
+  document.querySelector('.dash-games')?.textContent.includes('games ready')
+));
+await page.click('.brand');
+await page.waitForSelector('.core-hero-core1');
 await page.click('text=1.0 Mobile Devices');
 assert('Domain hero on topic list', await page.isVisible('.domain-hero'));
 await page.click('text=1.2 Compare');
