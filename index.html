@@ -167,15 +167,22 @@ footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
 .sheet-hero-os{border-color:#7DD3FC;border-left-color:#0284C7;background:linear-gradient(135deg,#F0F9FF,var(--panel))}
 .sheet-hero-softts{border-color:#FDBA74;border-left-color:#EA580C;background:linear-gradient(135deg,#FFF7ED,var(--panel))}
 .sheet-hero-ops{border-color:#94A3B8;border-left-color:#64748B;background:linear-gradient(135deg,#F8FAFC,var(--panel))}
-.core1-games-strip{background:linear-gradient(135deg,#F7F8FA,var(--panel));border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);margin:0 0 22px;overflow:hidden}
-.core1-games-strip > summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;cursor:pointer;list-style:none;user-select:none}
+.core1-games-strip{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);margin:0 0 18px;overflow:hidden}
+.core1-games-strip > summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none;user-select:none;min-height:44px}
 .core1-games-strip > summary::-webkit-details-marker{display:none}
-.core1-games-strip > summary::after{content:"▸";color:var(--accent);font-size:1.1rem;font-weight:700;transition:transform .2s;flex-shrink:0}
-.core1-games-strip[open] > summary::after{transform:rotate(90deg)}
-.core1-games-strip-title{font-family:var(--display);font-size:1.05rem;font-weight:800;margin:0;color:var(--ink);letter-spacing:.04em;text-transform:uppercase}
-.core1-games-strip-meta{font-size:.8rem;font-weight:600;color:var(--muted);margin-left:auto}
-.core1-games-strip-body{padding:0 14px 14px}
-.core1-games-strip-body p{font-size:.86rem;color:var(--muted);margin:0 0 12px}
+.core1-games-strip > summary::after{content:"▾";color:var(--accent);font-size:1rem;font-weight:700;margin-left:auto;flex-shrink:0;line-height:1}
+.core1-games-strip[open] > summary::after{content:"▴"}
+.core1-games-strip-title{font-family:var(--display);font-size:.98rem;font-weight:800;margin:0;color:var(--ink);letter-spacing:.03em;text-transform:uppercase}
+.core1-games-strip-meta{font-size:.78rem;font-weight:600;color:var(--muted)}
+.core1-games-strip-body{border-top:1px solid var(--line);padding:0}
+.core1-games-strip-menu{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
+.core1-drill{display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);padding:11px 12px;text-align:left;font:inherit;font-weight:600;cursor:pointer}
+.core1-drill:last-child{border-bottom:0}
+.core1-drill:hover,.core1-drill:focus-visible{background:var(--accent-soft);outline:none}
+.core1-drill .icon{font-size:1.15rem;width:1.5rem;text-align:center;flex-shrink:0}
+.core1-drill .label{font-family:var(--display);font-weight:800;font-size:.95rem;letter-spacing:.02em;text-transform:uppercase}
+.core1-drill .hint{font-size:.78rem;font-weight:500;color:var(--muted);margin-left:auto;text-align:right;max-width:42%}
+@media (max-width:520px){.core1-drill .hint{display:none}}
 .notes .keyfact{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px;font-size:.94rem;line-height:1.5}
 .notes .keyfact b:first-child{color:var(--amber)}
 /* quiz */
@@ -5137,19 +5144,21 @@ function renderDomainHero(coreKey, d){
 }
 function renderCore1GamesStrip(){
   const ids = ["ports","connectors","wifi","troubleshoot"];
-  const cards = ids.map(id=>{
+  const items = ids.map(id=>{
     const g = gameMeta(id);
-    return g ? `<button class="game-card clickable" onclick="go('game',{gameId:'${id}'})"><div class="icon">${g.icon}</div><h3>${esc(g.name)}</h3><div class="meta">${esc(g.desc)}</div></button>` : "";
+    if(!g) return "";
+    return `<button type="button" class="core1-drill" onclick="go('game',{gameId:'${id}'})">
+      <span class="icon" aria-hidden="true">${g.icon}</span>
+      <span class="label">${esc(g.name)}</span>
+      <span class="hint">${esc(g.desc)}</span>
+    </button>`;
   }).join("");
   return `<details class="core1-games-strip">
     <summary>
       <span class="core1-games-strip-title">Core 1 quick drills</span>
-      <span class="core1-games-strip-meta">${ids.length} warm-ups</span>
+      <span class="core1-games-strip-meta">${ids.length} games</span>
     </summary>
-    <div class="core1-games-strip-body">
-      <p>Match games mapped to Core 1 domains — expand to play a warm-up before mocks.</p>
-      <div class="grid">${cards}</div>
-    </div>
+    <div class="core1-games-strip-body" role="menu">${items}</div>
   </details>`;
 }
 function scoreKey(id){ return "score_"+id; }

@@ -40,7 +40,13 @@ assert('Quick drills expand to show games', await page.evaluate(() => {
   const el = document.querySelector('details.core1-games-strip');
   if (!el) return false;
   el.open = true;
-  return el.querySelectorAll('.game-card').length >= 4;
+  return el.querySelectorAll('.core1-drill').length >= 4 && el.querySelectorAll('.game-card').length === 0;
+}));
+assert('Quick drills open height stays compact', await page.evaluate(() => {
+  const el = document.querySelector('details.core1-games-strip');
+  if (!el) return false;
+  el.open = true;
+  return el.getBoundingClientRect().height < 320;
 }));
 assert('No Revision Games dash card on home', await page.evaluate(() => !document.querySelector('.dash-games')));
 assert('Home still has games section', await page.isVisible('#homeGames'));
