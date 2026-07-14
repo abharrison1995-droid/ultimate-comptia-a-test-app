@@ -25,31 +25,25 @@ function assert(name, cond) {
   else { console.log('FAIL:', name); failed++; }
 }
 
+async function openCore(which = 'core1') {
+  const needTitle = !(await page.locator('.title-screen').isVisible().catch(() => false));
+  if (needTitle) {
+    await page.click('.brand');
+    await page.waitForSelector('.title-screen');
+  }
+  const label = which === 'core2' ? 'Core 2' : 'Core 1';
+  await page.locator('.title-cta').filter({ hasText: label }).click();
+  await page.waitForSelector(which === 'core2' ? '.core-hero-core2' : '.core-hero-core1');
+}
+
+
 await page.goto(`http://127.0.0.1:${port}/`);
-assert('Cover masthead', await page.isVisible('.cover-mast'));
+assert('Cover masthead on title', await page.isVisible('.cover-mast'));
 assert('Cover A+ brand mark', await page.isVisible('.cover-aplus'));
 assert('Cover exam bar', await page.evaluate(() => document.querySelector('.cover-exam-bar')?.textContent.includes('220-1201')));
-assert('Core 1 hero banner', await page.isVisible('.core-hero-core1'));
-assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count()) >= 5);
-assert('Core 1 games strip', await page.isVisible('.core1-games-strip'));
-assert('Quick drills collapsed by default', await page.evaluate(() => {
-  const el = document.querySelector('details.core1-games-strip');
-  return !!el && !el.open;
-}));
-assert('Quick drills expand to show games', await page.evaluate(() => {
-  const el = document.querySelector('details.core1-games-strip');
-  if (!el) return false;
-  el.open = true;
-  return el.querySelectorAll('.core1-drill').length >= 4 && el.querySelectorAll('.game-card').length === 0;
-}));
-assert('Quick drills open height stays compact', await page.evaluate(() => {
-  const el = document.querySelector('details.core1-games-strip');
-  if (!el) return false;
-  el.open = true;
-  return el.getBoundingClientRect().height < 320;
-}));
-assert('No Revision Games dash card on home', await page.evaluate(() => !document.querySelector('.dash-games')));
-assert('Home still has games section', await page.isVisible('#homeGames'));
+assert('Title screen Core picks', await page.evaluate(() => document.querySelectorAll('.title-cta').length === 2));
+assert('Title screen Games link', await page.locator('.title-cta-sec').filter({ hasText: 'Revision Games' }).count() >= 1);
+assert('No domain cards on title', (await page.locator('.domain-card-core1').count()) === 0);
 assert('Charcoal app chrome', await page.evaluate(() => {
   const bg = getComputedStyle(document.querySelector('header.app')).backgroundColor;
   return bg === 'rgb(26, 29, 33)' || bg.includes('26, 29, 33');
@@ -58,7 +52,28 @@ assert('CompTIA red accent token', await page.evaluate(() => {
   const a = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().toLowerCase();
   return a === '#d61f26';
 }));
-await page.locator('button').filter({ hasText: /See all \d+ games/ }).click();
+
+await page.locator('.title-cta').filter({ hasText: 'Core 1' }).click();
+await page.waitForSelector('.core-hero-core1');
+assert('Core 1 home hero', await page.isVisible('.core-hero-core1'));
+assert('Core 1 domain cards', (await page.locator('.domain-card-core1').count()) >= 5);
+assert('No Core 2 domains on Core 1 home', (await page.locator('.domain-card-core2').count()) === 0);
+assert('Core games menu present', await page.isVisible('.core-games-menu'));
+assert('Core games menu collapsed', await page.evaluate(() => {
+  const el = document.querySelector('details.core-games-menu');
+  return !!el && !el.open;
+}));
+assert('Core games menu expands', await page.evaluate(() => {
+  const el = document.querySelector('details.core-games-menu');
+  if (!el) return false;
+  el.open = true;
+  return el.querySelectorAll('.core-game-link').length >= 4;
+}));
+await page.click('.brand');
+await page.waitForSelector('.title-screen');
+assert('Continue Core 1 on title', await page.locator('.title-cta-continue').filter({ hasText: 'Continue Core 1' }).isVisible());
+
+await page.locator('.title-cta-sec').filter({ hasText: 'Revision Games' }).click();
 await page.waitForSelector('h1.page >> text=Revision Games');
 assert('Games progress on games tab', await page.isVisible('.dash-games'));
 assert('Games progress text on games tab', await page.evaluate(() =>
@@ -66,6 +81,8 @@ assert('Games progress text on games tab', await page.evaluate(() =>
   document.querySelector('.dash-games')?.textContent.includes('games ready')
 ));
 await page.click('.brand');
+await page.waitForSelector('.title-screen');
+await page.locator('.title-cta').filter({ hasText: 'Core 1' }).click();
 await page.waitForSelector('.core-hero-core1');
 await page.click('text=1.0 Mobile Devices');
 assert('Domain hero on topic list', await page.isVisible('.domain-hero'));
@@ -82,7 +99,7 @@ assert('1.4 APN and tethering content', await page.evaluate(() => {
 }));
 assert('1.4 connectivity symptom table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Captive portal')));
 await page.click('button:has-text("All 1.0 topics")');
-await page.click('.brand');
+await openCore('core1');
 await page.locator('.domain-card-core1').filter({ hasText: '2.0' }).click();
 assert('Networking domain hero', await page.isVisible('.domain-hero'));
 await page.click('text=2.2 Compare');
@@ -91,7 +108,7 @@ await page.click('button:has-text("All 2.0 topics")');
 await page.click('text=2.6 Compare');
 assert('2.6 NAT and port forwarding', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Port forwarding')));
 await page.click('button:has-text("All 2.0 topics")');
-await page.click('.brand');
+await openCore('core1');
 await page.locator('.domain-card-core1').filter({ hasText: '3.0' }).click();
 assert('Hardware domain hero', await page.isVisible('.domain-hero-hardware'));
 await page.click('text=3.2 Given');
@@ -108,7 +125,7 @@ await page.click('button:has-text("All 3.0 topics")');
 await page.click('text=3.6 Deploy');
 assert('3.6 connection comparison table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Network printer')));
 await page.click('button:has-text("All 3.0 topics")');
-await page.click('.brand');
+await openCore('core1');
 await page.locator('.domain-card-core1').filter({ hasText: '4.0' }).click();
 assert('Cloud domain hero', await page.isVisible('.domain-hero-cloud'));
 await page.click('text=4.1 Summarize cloud');
@@ -121,7 +138,7 @@ await page.click('button.sub-nav-btn:has-text("4.2")');
 assert('4.2 network modes table', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Host-only')));
 assert('4.2 purpose pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Cross-platform')));
 await page.click('button:has-text("All 4.0 topics")');
-await page.click('.brand');
+await openCore('core1');
 await page.locator('.domain-card-core1').filter({ hasText: '5.0' }).click();
 assert('Troubleshooting domain hero', await page.isVisible('.domain-hero-troubleshoot'));
 await page.click('text=5.1 Given');
@@ -138,7 +155,7 @@ assert('5.7 ping ladder content', await page.evaluate(() => {
   return t.includes('Ping ladder') && t.includes('Port flapping');
 }));
 await page.click('button:has-text("All 5.0 topics")');
-await page.click('.brand');
+await openCore('core2');
 await page.locator('.domain-card-core2').filter({ hasText: '1.0' }).click();
 assert('OS domain hero', await page.isVisible('.domain-hero-os'));
 await page.click('text=1.1 Identify basic features');
@@ -158,7 +175,7 @@ assert('1.9 GPT install pick-list', await page.evaluate(() => {
   return t.includes('PXE') && t.includes('GPT required');
 }));
 await page.click('button:has-text("All 1.0 topics")');
-await page.click('.brand');
+await openCore('core2');
 await page.locator('.domain-card-core2').filter({ hasText: '2.0' }).click();
 assert('Security domain hero', await page.isVisible('.domain-hero-security'));
 await page.click('text=2.1 Summarize various security');
@@ -178,7 +195,7 @@ assert('2.8 reuse vs destroy table', await page.evaluate(() => {
   return t.includes('certificate of destruction') && t.toLowerCase().includes('not') && t.toLowerCase().includes('degauss');
 }));
 await page.click('button:has-text("All 2.0 topics")');
-await page.click('.brand');
+await openCore('core2');
 await page.locator('.domain-card-core2').filter({ hasText: '3.0' }).click();
 assert('Soft-TS domain hero', await page.isVisible('.domain-hero-softts'));
 await page.click('text=3.1 Troubleshoot common Windows');
@@ -197,7 +214,7 @@ await page.click('button:has-text("All 3.0 topics")');
 await page.click('text=3.5 Troubleshoot common mobile OS and application security');
 assert('3.5 compromise triad', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Sideloading')));
 await page.click('button:has-text("All 3.0 topics")');
-await page.click('.brand');
+await openCore('core2');
 await page.locator('.domain-card-core2').filter({ hasText: '4.0' }).click();
 assert('Ops domain hero', await page.isVisible('.domain-hero-ops'));
 await page.click('text=4.1 Implement best practices');
@@ -216,7 +233,7 @@ await page.click('button:has-text("All 4.0 topics")');
 await page.click('text=4.9 Use remote access');
 assert('4.9 remote tool pick-list', await page.evaluate(() => document.querySelector('.notes')?.textContent.includes('Quick Assist')));
 await page.click('button:has-text("All 4.0 topics")');
-await page.click('.brand');
+await openCore('core1');
 await page.locator('.domain-card-core1').filter({ hasText: '1.0' }).click();
 await page.click('text=1.1 Install');
 assert('Revision sheet has read meta', await page.isVisible('.notes-meta'));
@@ -244,6 +261,7 @@ assert('Progress cleared after leaving', progress === null);
 
 // Retake stack test
 await page.goto(`http://127.0.0.1:${port}/`);
+await openCore('core1');
 await page.click('text=1.0 Mobile Devices');
 await page.click('text=Start domain mock');
 for (let i = 0; i < 25; i++) {
@@ -266,11 +284,10 @@ await page.click('.opt >> nth=0');
 const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('aplus_quiz_progress')));
 assert('Quiz progress auto-saves', saved && saved.i === 0 && saved.right >= 0);
 
-// Resume banner
+// Resume from title screen
 await page.goto(`http://127.0.0.1:${port}/`);
-const banner = await page.isVisible('.resume-banner');
-assert('Resume banner shown on home', banner);
-await page.click('text=Continue quiz');
+assert('Resume quiz on title', await page.locator('.title-cta-sec').filter({ hasText: 'Resume quiz' }).isVisible());
+await page.locator('.title-cta-sec').filter({ hasText: 'Resume quiz' }).click();
 const resumed = await page.evaluate(() => view.name === 'quiz' && quiz && quiz.i === 0);
 assert('Resume restores quiz session', resumed);
 
