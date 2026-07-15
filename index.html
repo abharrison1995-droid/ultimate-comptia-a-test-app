@@ -140,8 +140,12 @@ p.sub{color:var(--muted);margin-bottom:22px}
 .notes-table-wrap table{margin:0;min-width:280px}
 .sub-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:16px 0 8px;flex-wrap:wrap}
 .sub-nav .sub-nav-btn{font-size:.88rem;padding:8px 12px}
-footer.domfoot.notes-mock-footer{position:sticky;bottom:0;background:color-mix(in srgb, var(--bg) 90%, transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);margin-top:20px;padding:14px 0 12px;z-index:5}
-footer.domfoot.notes-mock-footer .sub{font-size:.88rem}
+footer.domfoot.notes-mock-footer{position:sticky;bottom:0;background:color-mix(in srgb, var(--bg) 94%, transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:2px solid var(--accent);margin-top:16px;padding:8px 0 max(8px,env(safe-area-inset-bottom));z-index:5}
+footer.domfoot.notes-mock-footer .notes-mock-bar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+footer.domfoot.notes-mock-footer .notes-mock-label{display:flex;flex-direction:column;gap:1px;min-width:0}
+footer.domfoot.notes-mock-footer .notes-mock-title{font-family:var(--display);font-weight:800;font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;line-height:1.1}
+footer.domfoot.notes-mock-footer .notes-mock-meta{font-size:.76rem;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+footer.domfoot.notes-mock-footer .btn{padding:8px 12px;font-size:.86rem;white-space:nowrap;flex-shrink:0}
 .core-hero{display:flex;align-items:center;gap:16px;padding:18px 20px 18px 16px;border-radius:var(--radius);margin:0 0 16px;color:#F5F6F7;position:relative;overflow:hidden;background:var(--rock);border-left:5px solid var(--accent)}
 .core-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(214,31,38,.12),transparent 42%);pointer-events:none}
 .core-hero-icon{font-size:2.2rem;line-height:1;position:relative;z-index:1}
@@ -394,6 +398,7 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
   .cover-exam-bar{grid-column:2;grid-row:1 / span 2;min-width:46px}
   .cover-aplus{font-size:4rem}
   .cover-tools{text-align:left}
+  .notes-mock-footer .btn{padding:7px 10px;font-size:.82rem}
 }
 @supports(padding:max(0px)){
   header.app{padding-top:max(12px,env(safe-area-inset-top))}
@@ -6821,9 +6826,13 @@ function render(){
       <div class="notes-sheet"><div class="notes">${sheet.html}</div></div>
       ${renderSubNav(view.core, view.num, d, s.id)}
       <footer class="domfoot notes-mock-footer">
-        <h1 class="page" style="font-size:1.25rem">Mini mock ${scorePill(d.id+"_"+s.id, s.quiz.length)}</h1>
-        <p class="sub">${s.quiz.length} questions on ${s.id} only. Answers explained as you go.</p>
-        <button class="btn primary" onclick="startQuiz('${view.core}','${d.num}','${s.id}')">Start mini mock (${s.quiz.length} questions)</button>
+        <div class="notes-mock-bar">
+          <div class="notes-mock-label">
+            <span class="notes-mock-title">Mini mock ${scorePill(d.id+"_"+s.id, s.quiz.length)}</span>
+            <span class="notes-mock-meta">${s.quiz.length} questions · ${esc(s.id)}</span>
+          </div>
+          <button class="btn primary" onclick="startQuiz('${view.core}','${d.num}','${s.id}')">Start mini mock</button>
+        </div>
       </footer>`;
     return;
   }
