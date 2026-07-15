@@ -1,0 +1,24 @@
+{
+  "name": "aplus-revision-ios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A+ Revision — unofficial independent exam prep (Capacitor iOS)",
+  "scripts": {
+    "build:web": "node scripts/sync-www.mjs",
+    "sync": "npx cap sync ios",
+    "open:ios": "npx cap open ios",
+    "test:web": "node --test 2>/dev/null || true"
+  },
+  "dependencies": {
+    "@capacitor/app": "^7.0.1",
+    "@capacitor/core": "^7.2.0",
+    "@capacitor/haptics": "^7.0.1",
+    "@capacitor/ios": "^7.2.0",
+    "@capacitor/keyboard": "^7.0.1",
+    "@capacitor/splash-screen": "^7.0.1",
+    "@capacitor/status-bar": "^7.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.2.0"
+  }
+}
