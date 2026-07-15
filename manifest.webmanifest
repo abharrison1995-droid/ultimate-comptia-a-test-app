@@ -1,7 +1,7 @@
 {
   "name": "A+ Revision Guide",
   "short_name": "A+ Study",
-  "description": "CompTIA A+ Core 1 & Core 2 (220-1201 / 220-1202) revision notes and mocks",
+  "description": "Independent A+ exam study guide for Core 1 (220-1201) and Core 2 (220-1202). Not affiliated with CompTIA.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

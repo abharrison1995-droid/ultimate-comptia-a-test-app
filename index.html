@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="CompTIA A+ Core 1 & Core 2 (220-1201 / 220-1202) revision notes, mini mocks, and domain exams.">
+<meta name="description" content="Independent A+ exam study guide for Core 1 (220-1201) and Core 2 (220-1202) — revision notes, mini mocks, and practice drills. Not affiliated with CompTIA.">
 <meta name="theme-color" content="#1A1D21">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="A+ Study">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -86,7 +87,7 @@ p.sub{color:var(--muted);margin-bottom:22px}
 .cover-mast-sky .edition-mark{font-size:.72rem;font-weight:700;letter-spacing:.04em;background:var(--accent);color:#fff;padding:5px 9px}
 .cover-mast-block{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:stretch;padding:0;min-height:148px;background:var(--panel)}
 .cover-mark{display:flex;align-items:center;gap:10px;padding:22px 8px 22px 18px;min-width:0}
-.cover-comptia{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.22em;color:var(--accent);text-transform:uppercase;line-height:1}
+.cover-prep{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.22em;color:var(--accent);text-transform:uppercase;line-height:1}
 .cover-aplus{font-family:var(--display);font-weight:800;font-size:clamp(4.6rem,20vw,7rem);line-height:.82;letter-spacing:-.04em;color:var(--accent);animation:aplus-in .7s cubic-bezier(.2,.8,.2,1) both}
 .cover-title{display:flex;flex-direction:column;justify-content:center;padding:20px 8px;font-family:var(--display);font-weight:800;font-size:clamp(1.55rem,5.2vw,2.35rem);line-height:.95;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
 .cover-exam-bar{background:var(--accent);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:16px 10px;min-width:54px;font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
@@ -251,6 +252,14 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .games-progress-blurb{font-size:.86rem}
 .install-banner{background:var(--panel);border:1px dashed var(--accent);border-radius:var(--radius);padding:14px 16px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .install-banner p{margin:0;font-size:.9rem}
+.legal-footer{margin:28px 0 8px;padding:16px 14px;border-top:1px solid var(--line);font-size:.78rem;line-height:1.5;color:var(--muted)}
+.legal-footer strong{color:var(--ink);font-weight:700}
+.legal-footer a{color:var(--accent);font-weight:600}
+.settings-panel{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--charcoal);border-radius:var(--radius);padding:16px 18px;margin:0 0 14px}
+.settings-panel h2{font-family:var(--display);font-size:1.05rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;margin:0 0 8px}
+.settings-panel p{margin:0 0 10px;font-size:.92rem;color:var(--muted);line-height:1.5}
+.settings-panel .settings-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.settings-danger{border-color:var(--bad)!important;color:var(--bad)!important}
 .review{margin-top:20px;text-align:left}
 .review h3{font-family:var(--display);font-size:1rem;font-weight:700;margin:18px 0 10px;text-align:center}
 .review-item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:.9rem;text-align:left}
@@ -5302,8 +5311,8 @@ function gamesProgressSummary(){
 function gamesProgressCard(){
   const g = gamesProgressSummary();
   const milLine = g.milBest
-    ? `<b>${esc(g.milBest)}</b> best on A+ Millionaire`
-    : `A+ Millionaire — <b>not played yet</b>`;
+    ? `<b>${esc(g.milBest)}</b> best on A+ Ladder`
+    : `A+ Ladder — <b>not played yet</b>`;
   const fablesLine = g.fablesPlayed
     ? `<b>${g.fablesPlayed}/${g.fablesTotal}</b> Fix-It Fables legends completed`
     : `Fix-It Fables — <b>${g.fablesTotal} legends</b> to try`;
@@ -5355,17 +5364,65 @@ function installBanner(){
   if(localStorage.getItem("aplus_install_dismissed")) return "";
   if(window.matchMedia("(display-mode: standalone)").matches) return "";
   return `<div class="install-banner" id="installBanner">
-    <p><b>Install on your phone</b> — works offline after first load. Add to Home Screen for a full-screen study app.</p>
+    <p><b>Add to Home Screen</b> — installs this progressive web app for offline, full-screen study (not a separate native binary).</p>
     <div class="row" style="justify-content:flex-end">
       <button class="btn" onclick="dismissInstall()">Not now</button>
-      <button class="btn primary" id="installBtn" onclick="promptInstall()">Install app</button>
+      <button class="btn primary" id="installBtn" onclick="promptInstall()">Install PWA</button>
     </div>
   </div>`;
 }
 function dismissInstall(){ localStorage.setItem("aplus_install_dismissed","1"); const b=document.getElementById("installBanner"); if(b) b.remove(); }
 function promptInstall(){
   if(deferredInstall){ deferredInstall.prompt(); deferredInstall.userChoice.then(()=>{ deferredInstall=null; dismissInstall(); }); return; }
-  alert("On iPhone: tap Share → Add to Home Screen.\n\nOn Android: tap Install, or use the browser menu → Install app / Add to Home screen.");
+  alert("On iPhone/iPad: Safari → Share → Add to Home Screen (installs this progressive web app).\n\nOn Android: use Install / Add to Home screen from the browser menu.");
+}
+const LEGAL_DISCLAIMER = "This is an independent study aid and is not affiliated with, endorsed by, or sponsored by CompTIA®. CompTIA, A+, and related marks are trademarks of CompTIA Properties, LLC. Exam objectives and question styles are based on publicly available CompTIA materials for educational revision only. Game quizzes on this app are original study drills and are not affiliated with any television programme.";
+function legalFooterHtml(){
+  return `<footer class="legal-footer" role="contentinfo">
+    <p><strong>Legal</strong> — ${LEGAL_DISCLAIMER}</p>
+    <p style="margin:8px 0 0">Scores and progress stay on this device only. No sign-in. <a href="#" onclick="go('settings');return false">Privacy &amp; settings</a></p>
+  </footer>`;
+}
+function clearAllStudyData(){
+  if(!confirm("Delete all study data on this device?\n\nThis clears quiz scores, resume state, game bests, and install preferences. This cannot be undone.")) return;
+  try{
+    const keys = [];
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith("aplus_")) keys.push(k);
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+  }catch(e){}
+  quiz = null;
+  game = null;
+  stack = [];
+  view = {name:"home"};
+  setSaveStatus("saved", "Study data deleted");
+  render();
+  window.scrollTo({top:0});
+}
+function renderSettings(){
+  return `<div class="eyebrow">Privacy &amp; settings</div>
+    <h1 class="page">Your data</h1>
+    <p class="sub">This revision guide does not create accounts or send study data to a server. Everything below lives in this browser’s local storage.</p>
+    <div class="settings-panel">
+      <h2>Accounts &amp; Sign in with Apple</h2>
+      <p>No user accounts, third-party login, or cloud sync are offered, so <b>Sign in with Apple is not required</b> (App Store Review Guideline 4.8 applies only when other third-party logins are offered).</p>
+    </div>
+    <div class="settings-panel">
+      <h2>Delete study data</h2>
+      <p>Equivalent to account deletion for this local-only app (Guideline 5.1.1(v)). Removes quiz progress, saved scores, game bests, and preferences from this device.</p>
+      <div class="settings-actions">
+        <button type="button" class="btn settings-danger" onclick="clearAllStudyData()">Delete all study data</button>
+      </div>
+    </div>
+    <div class="settings-panel">
+      <h2>Trademark notice</h2>
+      <p>${LEGAL_DISCLAIMER}</p>
+    </div>
+    <div class="row" style="justify-content:flex-start;margin-top:8px">
+      <button type="button" class="btn" onclick="go('home')">Back to title</button>
+    </div>`;
 }
 window.addEventListener("beforeinstallprompt", (e)=>{
   e.preventDefault();
@@ -5394,7 +5451,7 @@ const GAME_CATALOG = [
   {id:"subnet", icon:"🔢", name:"Subnet Snap", desc:"Match IP + mask to the network address", ready:true, type:"match", matchType:"id", count:5, hub:"🔢", domains:[{core:"core1",num:"2.0"}]},
   {id:"troubleshoot", icon:"🛤️", name:"Troubleshoot Trail", desc:"Tap troubleshooting steps in the correct order", ready:true, type:"sequence", count:5, hub:"🛤️", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"}]},
   {id:"storychat", icon:"💬", name:"Fix-It Fables", desc:"Chat with legends — choose your answers to shape each tech rescue story", ready:true, type:"story", count:5, hub:"💬", domains:[{core:"core1",num:"5.0"},{core:"core2",num:"3.0"},{core:"core2",num:"4.0"}]},
-  {id:"millionaire", icon:"💰", name:"A+ Millionaire", desc:"Who Wants to Be a Millionaire style — lifelines, rising stakes, exam questions", ready:true, type:"millionaire", count:15, hub:"💰", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]}
+  {id:"millionaire", icon:"💰", name:"A+ Ladder", desc:"Rising-stakes exam quiz with lifelines and checkpoints — 15 questions to the top", ready:true, type:"millionaire", count:15, hub:"💰", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]}
 ];
 const PORT_CAT = {web:"Web",mail:"Mail",remote:"Remote",file:"Files",dir:"Directory",net:"Network",mgmt:"Mgmt",time:"Time",auth:"Auth"};
 const PORT_DATA = {
@@ -5752,7 +5809,7 @@ const MILLIONAIRE_SAFE_AT = [4,9];
 const MILLIONAIRE_FRIENDS = ["Your A+ tutor","A bootcamp buddy","Professor Pixel","That one friend who passed first try"];
 const MILLIONAIRE_HOST = {
   name:"Agent Chip", emoji:"🎙️",
-  welcome:["Welcome to A+ Millionaire! Fifteen questions, three lifelines, two checkpoints — let's see if you're exam ready.",
+  welcome:["Welcome to A+ Ladder! Fifteen questions, three lifelines, two checkpoints — let's see if you're exam ready.",
     "Agent Chip here. No pressure — but an entire helpdesk is watching. Probably."],
   question:[
     ["Let's warm up — low stakes, high learning."],
@@ -6481,7 +6538,7 @@ function renderGame(){
   }
   if(game.done){
     if(game.type==="millionaire"){
-      const headline = game.won ? "You're an A+ Millionaire!" : game.walked ? "You walked away!" : "Game over";
+      const headline = game.won ? "You're exam-ready!" : game.walked ? "You walked away!" : "Game over";
       const sub = game.won ? "Flawless run to the top of the ladder." : game.walked
         ? `You banked ${formatMillionairePrize(game.finalPrize)} at question ${game.i+1}.`
         : `Wrong answer — you leave with ${formatMillionairePrize(game.finalPrize)}.`;
@@ -6680,14 +6737,14 @@ function renderTitleScreen(){
       <span class="sec-meta">Continue →</span>
     </button>` : "";
   return storageWarning() +
-    `<section class="cover-mast" aria-label="CompTIA A+ Complete Review Guide">
+    `<section class="cover-mast" aria-label="A+ Complete Review Guide">
       <div class="cover-mast-sky">
-        <div class="edition">V15 · Complete Review</div>
+        <div class="edition">V15 · Independent Study</div>
         <div class="edition-mark">A+ Study</div>
       </div>
       <div class="cover-mast-block">
         <div class="cover-mark">
-          <span class="cover-comptia">CompTIA®</span>
+          <span class="cover-prep">Exam Prep</span>
           <span class="cover-aplus" aria-hidden="true">A+</span>
         </div>
         <div class="cover-title">
@@ -6727,11 +6784,16 @@ function renderTitleScreen(){
         ${continueBtn}
         ${resumeBtn}
         <button type="button" class="title-cta-sec" onclick="go('games')">
-          <span><span class="sec-label">Revision Games</span><br><span class="sec-meta">${gameReady} drills · story chat · Millionaire</span></span>
+          <span><span class="sec-label">Revision Games</span><br><span class="sec-meta">${gameReady} drills · story chat · A+ Ladder</span></span>
+          <span class="sec-meta">Open →</span>
+        </button>
+        <button type="button" class="title-cta-sec" onclick="go('settings')">
+          <span><span class="sec-label">Privacy &amp; settings</span><br><span class="sec-meta">Delete study data · legal notice</span></span>
           <span class="sec-meta">Open →</span>
         </button>
       </div>
-    </div>`;
+    </div>` +
+    legalFooterHtml();
 }
 function renderCoreHome(coreKey){
   const c = ROSTER[coreKey];
@@ -6762,6 +6824,12 @@ function render(){
   if(view.name==="home"){
     crumbs.innerHTML = "220-1201 · 220-1202";
     app.innerHTML = renderTitleScreen();
+    return;
+  }
+
+  if(view.name==="settings"){
+    crumbs.innerHTML = "<b>Privacy &amp; settings</b>";
+    app.innerHTML = renderSettings();
     return;
   }
 
