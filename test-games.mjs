@@ -54,7 +54,7 @@ async function openGame(name) {
   const n = await details.count();
   for (let i = 0; i < n; i++) await details.nth(i).evaluate(el => { el.open = true; });
   await page.locator('.game-card.clickable').filter({ hasText: name }).first().click();
-  await page.locator('button.btn.primary').filter({ hasText: 'Let' }).click();
+  await page.locator('button.btn.primary').filter({ hasText: /^Play$/ }).click();
 }
 
 await page.goto(`http://127.0.0.1:${port}/`);

@@ -246,10 +246,9 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .dash-stats b{color:var(--ink)}
 .dash-weak{margin-top:10px;font-size:.84rem;color:var(--muted)}
 .dash-weak b{color:var(--amber)}
-.dash-games{margin:0 0 18px;border-left:4px solid var(--accent)}
+.dash-games{margin:0 0 18px;border-left:3px solid var(--charcoal)}
 .dash-games b{color:var(--ink)}
 .games-progress-blurb{font-size:.86rem}
-.game-card.featured{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft)}
 .install-banner{background:var(--panel);border:1px dashed var(--accent);border-radius:var(--radius);padding:14px 16px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .install-banner p{margin:0;font-size:.9rem}
 .review{margin-top:20px;text-align:left}
@@ -259,30 +258,48 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .review-item .bad{color:var(--bad);font-size:.85rem}
 .review-item .good{color:var(--good);font-size:.85rem}
 /* revision games */
-.game-card{background:linear-gradient(135deg,var(--panel) 70%,var(--accent-soft));border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);padding:18px;text-align:left;width:100%;transition:transform .15s,border-color .15s}
-.game-card:hover:not(.locked){border-color:var(--accent);transform:translateY(-2px)}
+.games-mast{margin:0 0 20px;border:1px solid var(--line);overflow:hidden;background:var(--panel)}
+.games-mast-sky{background:var(--rock);color:#F5F6F7;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.games-mast-sky .edition{font-family:var(--display);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#C8CED6}
+.games-mast-sky .mark{font-size:.7rem;font-weight:700;letter-spacing:.04em;background:var(--accent);color:#fff;padding:4px 8px}
+.games-mast-body{padding:16px 16px 18px;border-top:3px solid var(--accent)}
+.games-mast-body h1.page{margin:0 0 4px;font-size:1.7rem}
+.games-mast-body .sub{margin:0;max-width:36rem}
+.games-progress{display:flex;flex-wrap:wrap;gap:10px 18px;margin:0 0 18px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--charcoal);background:var(--panel);font-size:.88rem;color:var(--muted);line-height:1.4}
+.games-progress b{color:var(--ink)}
+.game-card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--charcoal);border-radius:var(--radius);padding:16px 16px 14px;text-align:left;width:100%;transition:transform .15s,border-color .15s}
+.game-card:hover:not(.locked){border-color:var(--accent);border-left-color:var(--accent);transform:translateY(-1px)}
+.game-card.featured{border-left-color:var(--accent)}
 .game-card.locked{opacity:.5;cursor:default}
-.game-card .icon{font-size:1.8rem;margin-bottom:6px}
-.game-card h3{font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:.02em;text-transform:uppercase}
-.game-card .meta{font-size:.83rem;color:var(--muted)}
-.game-board{position:relative;background:var(--panel);border:2px dashed var(--accent);border-radius:var(--radius);padding:16px 12px 20px;margin:16px 0}
-.game-board h2{font-family:var(--display);font-size:1.1rem;text-align:center;margin-bottom:4px}
+.game-card .icon{font-size:1.45rem;margin-bottom:4px;line-height:1}
+.game-card h3{font-family:var(--display);font-weight:800;font-size:1.1rem;letter-spacing:.02em;text-transform:uppercase;display:flex;flex-wrap:wrap;align-items:center;gap:4px 0}
+.game-card .meta{font-size:.82rem;color:var(--muted);margin-top:4px}
+.game-card .game-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.game-tag{font-size:.65rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--fog);padding:3px 7px;border-radius:2px}
+.game-board{position:relative;background:var(--fog);border:1px solid var(--line);border-radius:var(--radius);padding:18px 14px 22px;margin:14px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.game-board.dragging{cursor:grabbing}
+.game-board.dragging .game-item:not(.matched){cursor:grabbing}
 .game-hint{text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:14px}
-.game-cols{display:grid;grid-template-columns:1fr 36px 1fr;gap:8px;align-items:start}
+.game-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
 .game-col{display:flex;flex-direction:column;gap:8px}
 .game-seq{display:grid;gap:8px;max-width:480px;margin:0 auto}
-.game-seq .game-item{text-align:left;justify-content:flex-start;padding:14px}
+.game-seq .game-item{text-align:left;justify-content:flex-start;padding:14px;cursor:pointer;touch-action:manipulation}
 .game-seq .game-item .step-n{font-size:.72rem;color:var(--muted);margin-right:8px}
-.game-hub-icon{font-size:1.4rem;opacity:.35;padding:8px 0;text-align:center}
-.game-item{border:2px solid var(--line);border-radius:12px;padding:12px 10px;font-weight:600;font-size:.9rem;text-align:center;background:var(--bg);cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s;min-height:48px;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
-.game-item:active{transform:scale(.96)}
-.game-item.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);animation:pulse-sel .8s ease infinite}
+.game-item{border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;font-weight:600;font-size:.9rem;text-align:center;background:var(--panel);cursor:grab;transition:transform .12s,border-color .12s,box-shadow .12s;min-height:48px;display:flex;align-items:center;justify-content:center;position:relative;z-index:2;touch-action:none;user-select:none;-webkit-user-select:none}
+.game-item:active{cursor:grabbing}
+.game-item.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);animation:pulse-sel .9s ease infinite}
 .game-item.matched{border-color:var(--good);background:var(--good-soft);cursor:default;animation:pop-in .35s ease}
 .game-item.wrong-shake{animation:shake .4s ease;border-color:var(--bad);background:var(--bad-soft)}
+.game-item.drop-hover:not(.matched){border-color:var(--accent);background:var(--accent-soft);transform:scale(1.015)}
 .game-item.shape-item{padding:8px}
-.game-item.shape-item svg{width:44px;height:44px}
+.game-item.shape-item svg{width:44px;height:44px;pointer-events:none}
 .game-item.port-num{font-family:var(--display);font-size:1.05rem;font-weight:800}
-.game-col-head{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:center;margin-bottom:4px}
+.game-item .jack{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;transform:translateY(-50%);background:var(--charcoal);border:2px solid var(--accent);box-shadow:0 0 0 2px var(--panel);pointer-events:none;z-index:3}
+.game-item .jack-out{right:-7px}
+.game-item .jack-in{left:-7px}
+.game-item.matched .jack{border-color:var(--good);background:var(--good)}
+.game-item.selected .jack{border-color:var(--accent);background:var(--accent)}
+.game-col-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:center;margin-bottom:2px}
 .port-svc{display:block;line-height:1.2}
 .port-cat{display:block;font-size:.65rem;font-weight:700;color:var(--accent);margin-top:3px;letter-spacing:.02em}
 .port-recap{margin-top:18px;text-align:left;max-width:440px;margin-left:auto;margin-right:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
@@ -291,32 +308,39 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
 .port-recap-row:last-child{border-bottom:none}
 .port-recap-num{font-family:var(--display);font-weight:800;color:var(--accent)}
 .port-recap-hint{grid-column:1/-1;font-size:.76rem;color:var(--muted);line-height:1.35}
-.game-toast{text-align:center;font-weight:700;font-size:.92rem;line-height:1.35;min-height:1.6em;margin:10px 0;padding:0 8px;transition:opacity .2s}
-.game-toast.good{color:var(--good)}
-.game-toast.bad{color:var(--bad)}
+.game-toast{text-align:center;font-weight:600;font-size:.9rem;line-height:1.4;min-height:1.5em;margin:8px 0 4px;padding:8px 12px;border-radius:var(--radius);color:var(--muted);background:transparent;transition:background .2s,color .2s}
+.game-toast.good{color:var(--good);background:var(--good-soft)}
+.game-toast.bad{color:var(--bad);background:var(--bad-soft)}
 .game-mode{display:flex;gap:8px;justify-content:center;margin:14px 0;flex-wrap:wrap}
-.mode-chip{border:2px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:3px;font-weight:700;font-size:.88rem;cursor:pointer}
+.mode-chip{border:1px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:var(--radius);font-weight:700;font-size:.86rem;cursor:pointer;color:var(--ink)}
 .mode-chip.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 .mode-chip.hard.active{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
-.game-scorebar{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:8px}
-.game-cables{position:absolute;inset:0;pointer-events:none;z-index:1}
-.game-cables line{stroke:var(--accent);stroke-width:3;stroke-linecap:round;opacity:.7}
-.game-cables line.good{stroke:var(--good);stroke-width:4;animation:cable-in .4s ease}
-@keyframes pulse-sel{0%,100%{box-shadow:0 0 0 3px var(--accent-soft)}50%{box-shadow:0 0 0 6px transparent}}
-@keyframes pop-in{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.game-scorebar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.82rem;font-weight:700;letter-spacing:.02em;color:#D7DCE3;margin-bottom:10px;padding:10px 14px;background:var(--charcoal);border-radius:var(--radius)}
+.game-scorebar .score-left{display:flex;align-items:center;gap:8px;min-width:0}
+.game-scorebar .score-right{color:#F5A5A8;white-space:nowrap}
+.game-cables{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible}
+.game-cables .cable-jacket{fill:none;stroke:#1A1D21;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.game-cables .cable-core{fill:none;stroke:var(--good);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.game-cables .cable-live.cable-jacket{stroke:#3A4048;stroke-width:8}
+.game-cables .cable-live.cable-core{stroke:var(--accent);stroke-width:4;stroke-dasharray:10 7;animation:cable-dash .55s linear infinite}
+.game-cables .cable-plug{fill:var(--accent);stroke:#1A1D21;stroke-width:1.5}
+.game-cables .cable-plug.good{fill:var(--good)}
+@keyframes pulse-sel{0%,100%{box-shadow:0 0 0 2px var(--accent-soft)}50%{box-shadow:0 0 0 5px transparent}}
+@keyframes pop-in{0%{transform:scale(.85)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-@keyframes cable-in{from{stroke-dashoffset:40;opacity:0}to{stroke-dashoffset:0;opacity:.85}}
+@keyframes cable-in{from{opacity:0}to{opacity:1}}
+@keyframes cable-dash{to{stroke-dashoffset:-34}}
 @keyframes confetti{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-30px) scale(1.4);opacity:0}}
-.game-done-emoji{font-size:2.5rem;margin-bottom:8px;animation:confetti 1s ease infinite}
+.game-done-mark{font-family:var(--display);font-weight:800;font-size:2.2rem;letter-spacing:.04em;color:var(--accent);margin-bottom:6px;animation:pop-in .45s ease}
 .game-core{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;background:var(--panel);overflow:hidden}
 .game-core summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;cursor:pointer;list-style:none;user-select:none}
 .game-core summary::-webkit-details-marker{display:none}
-.game-core-title{font-family:var(--display);font-weight:800;font-size:1rem}
+.game-core-title{font-family:var(--display);font-weight:800;font-size:1rem;text-transform:uppercase;letter-spacing:.03em}
 .game-core-meta{font-size:.82rem;font-weight:600;color:var(--muted)}
 .game-core summary::after{content:"▸";color:var(--accent);font-size:1.15rem;font-weight:700;transition:transform .2s;flex-shrink:0}
 .game-core[open] summary::after{transform:rotate(90deg)}
-.game-core[open] summary{border-bottom:1px solid var(--line);background:var(--accent-soft)}
-.game-core-body{padding:14px 14px 6px}
+.game-core[open] summary{border-bottom:1px solid var(--line);background:var(--fog)}
+.game-core-body{padding:14px 14px 10px}
 .game-domain{margin-bottom:18px}
 .game-domain:last-child{margin-bottom:6px}
 .game-domain .eyebrow{margin-bottom:4px}
@@ -362,6 +386,8 @@ footer.domfoot{margin-top:30px;padding-top:20px;border-top:1px solid var(--line)
   .wrap{padding:16px 12px 70px}
   .save-status{display:none}
   .game-item{font-size:.82rem;padding:10px 6px}
+  .game-cols{gap:18px}
+  .game-scorebar{font-size:.76rem;padding:8px 10px}
   .cover-mast-block{grid-template-columns:1fr auto;grid-template-rows:auto auto}
   .cover-mark{grid-column:1;padding:18px 12px 8px 14px}
   .cover-title{grid-column:1;padding:0 12px 18px 14px;font-size:1.45rem}
@@ -5284,9 +5310,10 @@ function gamesProgressCard(){
   const playedLine = g.playedCount
     ? `<b>${g.playedCount}/${g.total}</b> game types played`
     : `<b>${g.total}</b> games ready — pick one below`;
-  return `<div class="dash-card dash-games" aria-label="Games progress">
-    <h2>🎮 Your games progress</h2>
-    <div class="dash-stats">${playedLine}<br>${fablesLine}<br>${milLine}</div>
+  return `<div class="games-progress" aria-label="Games progress">
+    <span>${playedLine}</span>
+    <span>${fablesLine}</span>
+    <span>${milLine}</span>
   </div>`;
 }
 function progressDashboard(coreKey){
@@ -5351,7 +5378,7 @@ if("serviceWorker" in navigator){
 }
 
 /* ============================================================
-   Revision Games — tap-to-connect matching drills
+   Revision Games — drag-or-tap matching drills
    ============================================================ */
 const GAME_CATALOG = [
   {id:"ports", icon:"🔌", name:"Port Match", desc:"Match services to default ports — category tags & hints on every link", ready:true, type:"match", matchType:"port", modes:true, count:8, countHard:10, hub:"🔌", domains:[{core:"core1",num:"2.0"},{core:"core2",num:"2.0"}]},
@@ -5916,10 +5943,10 @@ function millionaireNext(){
   renderGame();
 }
 const GAME_TOASTS = {
-  good:["⚡ Patch perfect!","🔌 Connected!","✨ Nice run!","🎉 Nailed it!","💚 Solid match!"],
-  bad:["💥 Spark! Wrong match","🔥 Not quite — try again!","⚠️ Crosstalk! Retry","🔌 Loose connection — retry"],
-  seqGood:["👣 Good step!","➡️ Trail blazing!","✅ Correct order!"],
-  seqBad:["🚧 Wrong turn on the trail!","↩️ That step comes later!"]
+  good:["Patched.","Solid link.","Connected.","Clean match.","Nicely done."],
+  bad:["Wrong jack — try again.","No link.","Mismatch.","Loose cable — retry."],
+  seqGood:["Good step.","Correct order.","Keep going."],
+  seqBad:["Wrong turn — that step comes later.","Not yet — try another step."]
 };
 function gameMeta(id){ return GAME_CATALOG.find(g=>g.id===id); }
 function renderPortRecap(pairs){
@@ -6049,32 +6076,20 @@ function rightKey(item){ return game.matchType==="port" ? item.text : item.id; }
 function pairOk(leftItem, rightItem){
   return game.matchType==="port" ? leftItem.match===rightItem.text : leftItem.match===rightItem.id;
 }
-function gameTap(side, itemId){
-  if(!game || game.done || game.phase!=="play" || game.type==="sequence" || game.type==="story") return;
-  const getRight = (id)=> game.right.find(x=>x.text===id || x.id===id);
-  const getLeft = (id)=> game.left.find(x=>x.id===id);
-  const isDone = (s,id)=>{
-    if(s==="left") return game.matched["L:"+id];
-    const it = getRight(id); return it && game.matched["R:"+rightKey(it)];
-  };
-  if(isDone(side, itemId)) return;
-  if(!game.selected){
-    game.selected = {side, id:itemId};
-    game.toast = "👆 Now tap the match…";
-    game.toastKind = "";
-    renderGame(); return;
-  }
-  if(game.selected.side===side){ game.selected = {side, id:itemId}; renderGame(); return; }
-  const leftId = game.selected.side==="left" ? game.selected.id : itemId;
-  const rightId = game.selected.side==="right" ? game.selected.id : itemId;
-  const leftItem = getLeft(leftId);
-  const rightItem = getRight(rightId);
+function getMatchLeft(id){ return game.left.find(x=>x.id===id); }
+function getMatchRight(id){ return game.right.find(x=>x.text===id || x.id===id); }
+function isMatchDone(side, id){
+  if(side==="left") return !!game.matched["L:"+id];
+  const it = getMatchRight(id);
+  return !!(it && game.matched["R:"+rightKey(it)]);
+}
+function applyMatchResult(leftItem, rightItem){
   if(pairOk(leftItem, rightItem)){
     game.matched["L:"+leftItem.id] = true;
     game.matched["R:"+rightKey(rightItem)] = true;
     game.lines.push({left:leftItem.id, right:rightKey(rightItem)});
     if(game.matchType==="port" && leftItem.hint){
-      game.toast = `🔌 ${leftItem.text} :${leftItem.match} — ${leftItem.hint}`;
+      game.toast = `${leftItem.text} :${leftItem.match} — ${leftItem.hint}`;
     } else {
       game.toast = pickToast("good");
     }
@@ -6083,19 +6098,165 @@ function gameTap(side, itemId){
       game.done = true;
       recordScore(gameScoreKey(game.id, game.mode), game.pairs.length, game.pairs.length);
     }
-  } else {
-    game.mistakes++;
-    if(game.matchType==="port"){
-      game.toast = `${leftItem.text} → port ${leftItem.match}, not ${rightItem.text}`;
-    } else {
-      game.toast = pickToast("bad");
-    }
-    game.toastKind = "bad";
-    game.flash = {left:leftId, right:rightId};
-    setTimeout(()=>{ if(game && !game.done){ game.flash=null; renderGame(); } }, 450);
+    return true;
   }
+  game.mistakes++;
+  if(game.matchType==="port"){
+    game.toast = `${leftItem.text} → port ${leftItem.match}, not ${rightItem.text}`;
+  } else {
+    game.toast = pickToast("bad");
+  }
+  game.toastKind = "bad";
+  game.flash = {left:leftItem.id, right:rightKey(rightItem)};
+  setTimeout(()=>{ if(game && !game.done){ game.flash=null; renderGame(); } }, 450);
+  return false;
+}
+function tryConnectPair(sideA, idA, sideB, idB){
+  if(!game || game.done || game.phase!=="play" || game.type!=="match") return false;
+  if(sideA===sideB) return false;
+  if(isMatchDone(sideA, idA) || isMatchDone(sideB, idB)) return false;
+  const leftId = sideA==="left" ? idA : idB;
+  const rightId = sideA==="right" ? idA : idB;
+  const leftItem = getMatchLeft(leftId);
+  const rightItem = getMatchRight(rightId);
+  if(!leftItem || !rightItem) return false;
+  return applyMatchResult(leftItem, rightItem);
+}
+function gameTap(side, itemId){
+  if(!game || game.done || game.phase!=="play" || game.type!=="match") return;
+  if(isMatchDone(side, itemId)) return;
+  if(!game.selected){
+    game.selected = {side, id:itemId};
+    game.toast = "Drag the cable — or tap the match…";
+    game.toastKind = "";
+    renderGame(); return;
+  }
+  if(game.selected.side===side){ game.selected = {side, id:itemId}; renderGame(); return; }
+  tryConnectPair(game.selected.side, game.selected.id, side, itemId);
   game.selected = null;
   renderGame();
+}
+let cableDrag = null;
+function gameDataSel(side, id){
+  const prefix = side==="left" ? "L" : "R";
+  const escId = (typeof CSS !== "undefined" && CSS.escape) ? CSS.escape(id) : String(id).replace(/"/g, '\\"');
+  return `[data-game-id="${prefix}:${escId}"]`;
+}
+function parseGameId(raw){
+  if(!raw || raw[1]!==":") return null;
+  const side = raw[0]==="L" ? "left" : raw[0]==="R" ? "right" : null;
+  if(!side) return null;
+  return {side, id: raw.slice(2)};
+}
+function jackPoint(el, side, boardRect){
+  const r = el.getBoundingClientRect();
+  const x = side==="left" ? (r.right - boardRect.left) : (r.left - boardRect.left);
+  const y = r.top + r.height/2 - boardRect.top;
+  return {x, y};
+}
+function clearDropHovers(){
+  document.querySelectorAll(".game-item.drop-hover").forEach(el=>el.classList.remove("drop-hover"));
+}
+function setDropHover(el){
+  clearDropHovers();
+  if(el) el.classList.add("drop-hover");
+}
+function boardLocal(ev){
+  const board = document.getElementById("gameBoard");
+  if(!board) return {x:0,y:0};
+  const br = board.getBoundingClientRect();
+  return {x: ev.clientX - br.left, y: ev.clientY - br.top, br};
+}
+function gameCableDown(ev, side, itemId){
+  if(!game || game.done || game.phase!=="play" || game.type!=="match") return;
+  if(ev.button != null && ev.button!==0) return;
+  if(isMatchDone(side, itemId)) return;
+  ev.preventDefault();
+  const loc = boardLocal(ev);
+  const prev = game.selected && game.selected.side!==side ? {...game.selected} : null;
+  cableDrag = {
+    side, id: itemId,
+    x: loc.x, y: loc.y,
+    startX: ev.clientX, startY: ev.clientY,
+    moved: false,
+    pointerId: ev.pointerId,
+    hover: null,
+    prevSelect: prev
+  };
+  game.selected = {side, id: itemId};
+  game.toast = "Drag the cable to its match…";
+  game.toastKind = "";
+  const board = document.getElementById("gameBoard");
+  if(board) board.classList.add("dragging");
+  document.querySelectorAll(".game-item.selected").forEach(el=>el.classList.remove("selected"));
+  const src = document.querySelector(gameDataSel(side, itemId));
+  if(src) src.classList.add("selected");
+  try{ ev.currentTarget.setPointerCapture(ev.pointerId); }catch(e){}
+  const toast = document.querySelector(".game-toast");
+  if(toast){ toast.textContent = game.toast; toast.className = "game-toast"; }
+  drawGameCables();
+}
+function gameCableMove(ev){
+  if(!cableDrag || ev.pointerId!==cableDrag.pointerId) return;
+  ev.preventDefault();
+  const dx = ev.clientX - cableDrag.startX, dy = ev.clientY - cableDrag.startY;
+  if(Math.hypot(dx, dy) > 8) cableDrag.moved = true;
+  const loc = boardLocal(ev);
+  cableDrag.x = loc.x;
+  cableDrag.y = loc.y;
+  const hit = document.elementFromPoint(ev.clientX, ev.clientY)?.closest?.("[data-game-id]");
+  const parsed = hit ? parseGameId(hit.getAttribute("data-game-id")) : null;
+  if(parsed && parsed.side!==cableDrag.side && !isMatchDone(parsed.side, parsed.id)){
+    cableDrag.hover = parsed;
+    setDropHover(hit);
+  } else {
+    cableDrag.hover = null;
+    clearDropHovers();
+  }
+  drawGameCables();
+}
+function gameCableUp(ev){
+  if(!cableDrag || (ev.pointerId!=null && ev.pointerId!==cableDrag.pointerId)) return;
+  const drag = cableDrag;
+  cableDrag = null;
+  clearDropHovers();
+  const board = document.getElementById("gameBoard");
+  if(board) board.classList.remove("dragging");
+  let target = drag.hover;
+  if(!target){
+    const hit = document.elementFromPoint(ev.clientX, ev.clientY)?.closest?.("[data-game-id]");
+    target = hit ? parseGameId(hit.getAttribute("data-game-id")) : null;
+  }
+  if(target && target.side!==drag.side){
+    tryConnectPair(drag.side, drag.id, target.side, target.id);
+    game.selected = null;
+    renderGame();
+    return;
+  }
+  if(!drag.moved && drag.prevSelect){
+    tryConnectPair(drag.prevSelect.side, drag.prevSelect.id, drag.side, drag.id);
+    game.selected = null;
+    renderGame();
+    return;
+  }
+  if(drag.moved){
+    game.selected = null;
+    document.querySelectorAll(".game-item.selected").forEach(el=>el.classList.remove("selected"));
+    const toast = document.querySelector(".game-toast");
+    if(toast){
+      game.toast = "Grab a jack and drag the cable across…";
+      game.toastKind = "";
+      toast.textContent = game.toast;
+      toast.className = "game-toast";
+    }
+    drawGameCables();
+    return;
+  }
+  game.toast = "Now drag or tap the matching option…";
+  game.toastKind = "";
+  const toast = document.querySelector(".game-toast");
+  if(toast){ toast.textContent = game.toast; toast.className = "game-toast"; }
+  drawGameCables();
 }
 function gameSeqTap(itemId){
   if(!game || game.done || game.type!=="sequence") return;
@@ -6118,28 +6279,62 @@ function gameSeqTap(itemId){
   }
   renderGame();
 }
+function appendCable(svg, x1, y1, x2, y2, kind){
+  const mx = (x1 + x2) / 2;
+  const d = `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+  const jacket = document.createElementNS("http://www.w3.org/2000/svg","path");
+  jacket.setAttribute("d", d);
+  jacket.setAttribute("class", `cable-jacket${kind==="live"?" cable-live":""}`);
+  svg.appendChild(jacket);
+  const core = document.createElementNS("http://www.w3.org/2000/svg","path");
+  core.setAttribute("d", d);
+  core.setAttribute("class", `cable-core${kind==="live"?" cable-live":""}`);
+  if(kind==="good") core.style.animation = "cable-in .35s ease";
+  svg.appendChild(core);
+  const plug = (x, y, good)=>{
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 4.5);
+    c.setAttribute("class", `cable-plug${good?" good":""}`);
+    svg.appendChild(c);
+  };
+  if(kind==="good"){ plug(x1,y1,true); plug(x2,y2,true); }
+  else if(kind==="live"){ plug(x2,y2,false); }
+}
 function drawGameCables(){
   const svg = document.getElementById("gameCables");
   const board = document.getElementById("gameBoard");
   if(!svg || !board || !game || game.type!=="match") return;
   svg.innerHTML = "";
   const br = board.getBoundingClientRect();
-  for(const ln of game.lines){
-    const le = document.querySelector(`[data-game-id="L:${ln.left}"]`);
-    const re = document.querySelector(`[data-game-id="R:${ln.right}"]`);
+  svg.setAttribute("viewBox", `0 0 ${Math.max(br.width,1)} ${Math.max(br.height,1)}`);
+  svg.setAttribute("width", String(br.width));
+  svg.setAttribute("height", String(br.height));
+  for(const ln of game.lines||[]){
+    const le = document.querySelector(gameDataSel("left", ln.left));
+    const re = document.querySelector(gameDataSel("right", ln.right));
     if(!le || !re) continue;
-    const lr = le.getBoundingClientRect(), rr = re.getBoundingClientRect();
-    const x1 = lr.right - br.left, y1 = lr.top + lr.height/2 - br.top;
-    const x2 = rr.left - br.left, y2 = rr.top + rr.height/2 - br.top;
-    const mx = (x1+x2)/2;
-    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-    path.setAttribute("d", `M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
-    path.setAttribute("fill","none");
-    path.setAttribute("stroke","var(--good)");
-    path.setAttribute("stroke-width","4");
-    svg.appendChild(path);
+    const a = jackPoint(le, "left", br), b = jackPoint(re, "right", br);
+    appendCable(svg, a.x, a.y, b.x, b.y, "good");
+  }
+  if(cableDrag){
+    const src = document.querySelector(gameDataSel(cableDrag.side, cableDrag.id));
+    if(src){
+      const a = jackPoint(src, cableDrag.side, br);
+      appendCable(svg, a.x, a.y, cableDrag.x, cableDrag.y, "live");
+    }
+  } else if(game.selected && !game.done){
+    const src = document.querySelector(gameDataSel(game.selected.side, game.selected.id));
+    if(src){
+      const a = jackPoint(src, game.selected.side, br);
+      const stub = game.selected.side==="left" ? a.x + 18 : a.x - 18;
+      appendCable(svg, a.x, a.y, stub, a.y, "live");
+    }
   }
 }
+document.addEventListener("pointermove", gameCableMove, {passive:false});
+document.addEventListener("pointerup", gameCableUp);
+document.addEventListener("pointercancel", gameCableUp);
+window.addEventListener("resize", ()=>{ if(game && game.type==="match") drawGameCables(); });
 function storyProgressPill(){
   let n = 0;
   for(const s of STORY_DATA) if(store.get(scoreKey(gameScoreKey("storychat", s.id)))) n++;
@@ -6152,45 +6347,46 @@ function renderGameCard(g, featured){
   }
   const score = g.type==="story" ? storyProgressPill() : gameScorePill(g.id, "normal");
   const feat = featured ? " featured" : "";
+  const tags = (g.domains||[]).map(d=>{
+    const c = ROSTER[d.core];
+    return `<span class="game-tag">${c?c.name:d.core} ${d.num}</span>`;
+  }).join("");
   return `<button class="game-card clickable${feat}" onclick="go('game',{gameId:'${g.id}'})">
     <div class="icon">${g.icon}</div>
     <h3>${esc(g.name)} ${score}</h3>
-    <div class="meta">${esc(g.desc)}</div></button>`;
+    <div class="meta">${esc(g.desc)}</div>
+    ${tags?`<div class="game-tags">${tags}</div>`:""}</button>`;
 }
 function gamesForDomain(core, num){
   return GAME_CATALOG.filter(g=>g.domains?.some(d=>d.core===core && d.num===num));
 }
-function renderDomainGames(coreKey, c, d){
-  const games = gamesForDomain(coreKey, d.num);
-  if(!games.length) return "";
-  return `<div class="game-domain">
-    <div class="eyebrow">${c.name} · ${c.code} — Domain ${d.num}</div>
-    <p class="sub">${esc(d.name)}</p>
-    <div class="grid">${games.map(renderGameCard).join("")}</div>
-  </div>`;
+function uniqueGamesForCore(coreKey, skipIds){
+  const skip = new Set(skipIds||[]);
+  const seen = new Set();
+  const out = [];
+  for(const g of GAME_CATALOG){
+    if(!g.ready || skip.has(g.id) || !g.domains?.some(d=>d.core===coreKey) || seen.has(g.id)) continue;
+    seen.add(g.id);
+    out.push(g);
+  }
+  return out;
 }
 function renderGamesGrouped(collapsible){
+  const featuredIds = ["storychat","millionaire"];
   let html = "";
   for(const coreKey of ["core1","core2"]){
     const c = ROSTER[coreKey];
-    let coreHtml = "";
-    const seen = new Set();
-    for(const d of c.domains){
-      const block = renderDomainGames(coreKey, c, d);
-      if(!block) continue;
-      gamesForDomain(coreKey, d.num).forEach(g=>seen.add(g.id));
-      coreHtml += block;
-    }
-    if(!coreHtml) continue;
-    const domainCount = c.domains.filter(d=>gamesForDomain(coreKey, d.num).length).length;
-    const meta = `${domainCount} domain${domainCount===1?"":"s"} · ${seen.size} game${seen.size===1?"":"s"}`;
+    const games = uniqueGamesForCore(coreKey, featuredIds);
+    if(!games.length) continue;
+    const meta = `${games.length} game${games.length===1?"":"s"}`;
+    const body = `<div class="grid">${games.map(g=>renderGameCard(g)).join("")}</div>`;
     if(collapsible){
-      html += `<details class="game-core">
+      html += `<details class="game-core" ${coreKey==="core1"?"open":""}>
         <summary><span class="game-core-title">${c.name} · ${c.code}</span><span class="game-core-meta">${meta}</span></summary>
-        <div class="game-core-body">${coreHtml}</div>
+        <div class="game-core-body">${body}</div>
       </details>`;
     } else {
-      html += `<div class="eyebrow" style="margin-top:18px">${c.name} · ${c.code}</div><p class="sub">${meta}</p>${coreHtml}`;
+      html += `<div class="eyebrow" style="margin-top:18px">${c.name} · ${c.code}</div><p class="sub">${meta}</p>${body}`;
     }
   }
   const locked = GAME_CATALOG.filter(g=>!g.ready);
@@ -6216,15 +6412,28 @@ function renderGamesFeatured(){
   const ids = ["storychat","millionaire"];
   return `<div class="game-domain">
     <div class="eyebrow">Featured</div>
-    <p class="sub">Story chat &amp; ladder quiz — great for mixed revision sessions</p>
+    <p class="sub">Story chat and the ladder quiz — mixed revision with flair</p>
     <div class="grid">${ids.map(id=>renderGameCard(gameMeta(id), true)).join("")}</div>
   </div>`;
+}
+function renderGamesMast(){
+  const n = GAME_CATALOG.filter(g=>g.ready).length;
+  return `<section class="games-mast" aria-label="Revision Games">
+    <div class="games-mast-sky">
+      <span class="edition">Quick drills</span>
+      <span class="mark">${n} live</span>
+    </div>
+    <div class="games-mast-body">
+      <h1 class="page">Revision Games</h1>
+      <p class="sub">Match, sequence, story, and ladder drills — drag cables or tap both ends. Grouped by Core 1 and Core 2.</p>
+    </div>
+  </section>`;
 }
 function renderGame(){
   const app = document.getElementById("app");
   const meta = gameMeta(view.gameId);
   if(!meta) return;
-  document.getElementById("crumbs").innerHTML = `<b>🎮 ${esc(meta.name)}</b>`;
+  document.getElementById("crumbs").innerHTML = `<b>${esc(meta.name)}</b>`;
   if(!game || game.id!==view.gameId){
     game = {id:view.gameId, phase:"intro", mode:view.mode||"normal"};
   } else if(game.phase!=="play" && game.phase!=="intro" && game.phase!=="pick"){
@@ -6235,24 +6444,24 @@ function renderGame(){
     : game.type==="sequence" ? (game.total||meta.count) : (game.pairs?.length || gamePairCount(view.gameId, game.mode));
   if(game.phase==="intro"){
     const modes = meta.modes ? `<div class="game-mode">
-      <button class="mode-chip ${game.mode==="normal"?"active":""}" onclick="setGameMode('normal')">😊 Normal — names & numbers</button>
-      <button class="mode-chip hard ${game.mode==="hard"?"active":""}" onclick="setGameMode('hard')">🔥 Hard — secure ports & traps</button>
+      <button class="mode-chip ${game.mode==="normal"?"active":""}" onclick="setGameMode('normal')">Normal — names &amp; numbers</button>
+      <button class="mode-chip hard ${game.mode==="hard"?"active":""}" onclick="setGameMode('hard')">Hard — secure ports &amp; traps</button>
     </div>` : "";
     const hint = meta.id==="ports"
-      ? "Tap a service, then its port number. Each correct link shows a memory hint. Hard mode adds secure mail & directory traps (465, 587, 993, 636…)."
+      ? "Drag a cable from service to port — or tap both ends. Correct links show a memory hint. Hard mode adds secure mail & directory traps (465, 587, 993, 636…)."
       : meta.type==="story"
       ? "Pick a legend — they'll chat you through a tech rescue. Answer from four options at each beat."
       : meta.type==="millionaire"
       ? "15 exam questions, rising stakes, three lifelines. Pick an answer, lock in your final answer, and listen for Agent Chip."
       : meta.type==="sequence"
       ? "Steps are shuffled — tap them in the correct troubleshooting order."
-      : meta.shapes ? "Tap a shape, then tap its match. Cables draw automatically."
-      : "Tap left, then right — connect the match.";
+      : meta.shapes ? "Drag from shape to name — or tap both ends. Cables draw as you connect."
+      : "Drag a cable across — or tap left, then right.";
     app.innerHTML = `<div class="eyebrow">Revision Games</div>
       <h1 class="page">${meta.icon} ${esc(meta.name)}</h1>
       <p class="sub">${esc(meta.desc)}</p>${modes}
       <p class="sub" style="margin-top:0">${hint}</p>
-      <div class="row"><button class="btn primary" onclick="startGame('${view.gameId}','${game.mode}')">Let's play! ⚡</button></div>
+      <div class="row"><button class="btn primary" onclick="startGame('${view.gameId}','${game.mode}')">Play</button></div>
       ${meta.type==="millionaire" ? `<div class="millionaire-host" style="margin-top:18px"><div class="avatar">${MILLIONAIRE_HOST.emoji}</div><div><div class="name">${MILLIONAIRE_HOST.name}</div><div class="line">${esc(hostBanter(MILLIONAIRE_HOST.welcome))}</div></div></div>
       <p class="sub" style="margin-top:14px;font-size:.85rem">Sound effects · Final answer lock-in · Host banter from Agent Chip</p>` : ""}
       ${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode)) ? `<p class="sub" style="margin-top:14px">${gameScorePill(view.gameId, game.mode, gamePairCount(view.gameId, game.mode))}</p>` : ""}`;
@@ -6272,7 +6481,6 @@ function renderGame(){
   }
   if(game.done){
     if(game.type==="millionaire"){
-      const emoji = game.won ? "🏆" : game.walked ? "💼" : "😬";
       const headline = game.won ? "You're an A+ Millionaire!" : game.walked ? "You walked away!" : "Game over";
       const sub = game.won ? "Flawless run to the top of the ladder." : game.walked
         ? `You banked ${formatMillionairePrize(game.finalPrize)} at question ${game.i+1}.`
@@ -6280,7 +6488,7 @@ function renderGame(){
       const review = game.lost ? `<div class="explain" style="text-align:left;margin-top:14px"><b>Explanation:</b> ${esc(game.qs[game.i].ex)}</div>` : "";
       const hostOutro = game.hostMsg ? `<div class="millionaire-host" style="margin-top:16px;text-align:left"><div class="avatar">${MILLIONAIRE_HOST.emoji}</div><div><div class="name">${MILLIONAIRE_HOST.name}</div><div class="line">${esc(game.hostMsg)}</div></div></div>` : "";
       app.innerHTML = `<div class="result">
-        <div class="game-done-emoji">${emoji}</div>
+        <div class="game-done-mark">${game.won?"WIN":game.walked?"BANK":"OUT"}</div>
         <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
         <div class="big" style="color:var(--good)">${formatMillionairePrize(game.finalPrize)}</div>
         <div class="verdict">${headline}</div>
@@ -6308,7 +6516,7 @@ function renderGame(){
     const replayId = game.type==="story" ? "storychat" : game.id;
     const portRecap = game.id==="ports" ? renderPortRecap(game.pairs) : "";
     app.innerHTML = `<div class="result">
-      <div class="game-done-emoji">${game.mistakes===0?"🏆":"🎉"}</div>
+      <div class="game-done-mark">${game.mistakes===0?"CLEAR":"DONE"}</div>
       <div class="eyebrow">${meta.icon} ${esc(meta.name)}</div>
       <div class="big" style="color:var(--good)">${linked}/${total}</div>
       <div class="verdict">${verdict}</div>
@@ -6334,7 +6542,7 @@ function renderGame(){
       picksHtml = `<div class="explain ${ok?"ok":"no"}" style="margin-top:12px">${ok?"✅":"❌"} ${esc(step.e)}</div>
         <div class="row"><button class="btn primary" onclick="storyNext()">${game.step>=game.story.steps.length-1?"Finish story":"Continue story →"}</button></div>`;
     }
-    app.innerHTML = `<div class="game-scorebar"><span>${game.story.emoji} ${esc(game.story.name)}</span><span>Beat ${game.step+1} of ${game.story.steps.length}</span></div>
+    app.innerHTML = `<div class="game-scorebar"><span class="score-left">${game.story.emoji} ${esc(game.story.name)}</span><span class="score-right">Beat ${game.step+1} of ${game.story.steps.length}</span></div>
       <div class="story-chat">
         <div class="story-history" id="storyHistory">${bubbles}</div>
         ${picksHtml}
@@ -6384,7 +6592,7 @@ function renderGame(){
       afterHtml = `<div class="row" style="margin-top:4px"><button class="btn" onclick="millionaireWalk()">Walk away with ${formatMillionairePrize(millionaireOffer(game.i))}</button></div>`;
     }
     const sfxToggle = `<button type="button" class="millionaire-sfx-toggle btn" onclick="toggleGameSfx()">${gameSfx.on?"🔊 Sound on":"🔇 Sound off"}</button>`;
-    app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} Question ${game.i+1} of ${game.qs.length}</span><span>Safe: ${formatMillionairePrize(game.safePrize)} ${sfxToggle}</span></div>
+    app.innerHTML = `<div class="game-scorebar"><span class="score-left">${meta.icon} Question ${game.i+1} of ${game.qs.length}</span><span class="score-right">Safe: ${formatMillionairePrize(game.safePrize)} ${sfxToggle}</span></div>
       <div class="millionaire-prize">Playing for ${formatMillionairePrize(MILLIONAIRE_LADDER[game.i])}</div>
       ${renderMillionaireHost()}
       <div class="millionaire-wrap">
@@ -6411,8 +6619,8 @@ function renderGame(){
       const n = game.matched[item.id] ? `<span class="step-n">#${+item.id+1}</span>` : "";
       return `<button type="button" class="${cls}" onclick="gameSeqTap('${item.id}')" ${game.matched[item.id]?"disabled":""}>${n}${esc(item.text)}</button>`;
     }).join("");
-    app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} ${esc(game.scenario.name)}</span><span>Step ${game.next+1} of ${game.total}</span></div>
-      <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap the FIRST step you would take…")}</div>
+    app.innerHTML = `<div class="game-scorebar"><span class="score-left">${meta.icon} ${esc(game.scenario.name)}</span><span class="score-right">Step ${game.next+1} of ${game.total}</span></div>
+      <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap the first step…")}</div>
       <div class="game-board"><div class="game-seq">${items}</div></div>`;
     return;
   }
@@ -6427,7 +6635,8 @@ function renderGame(){
     else if(game.matchType==="port" && item.cat){
       inner = `<span class="port-svc">${esc(item.text)}</span><span class="port-cat">${esc(PORT_CAT[item.cat]||item.cat)}</span>`;
     } else inner = esc(item.text);
-    return `<button type="button" class="${cls}" data-game-id="L:${item.id}" onclick="gameTap('left','${item.id}')" ${matched["L:"+item.id]?"disabled":""}>${inner}</button>`;
+    const disabled = matched["L:"+item.id];
+    return `<button type="button" class="${cls}" data-game-id="L:${esc(item.id)}" onpointerdown='gameCableDown(event,"left",${JSON.stringify(item.id)})' ${disabled?"disabled":""}><span class="jack jack-out" aria-hidden="true"></span>${inner}</button>`;
   }).join("");
   const rightHtml = game.right.map(item=>{
     const rid = rightKey(item);
@@ -6435,18 +6644,18 @@ function renderGame(){
     if(matched["R:"+rid]) cls += " matched";
     else if(game.selected?.side==="right" && game.selected.id===rid) cls += " selected";
     else if(flash.right===rid) cls += " wrong-shake";
-    return `<button type="button" class="${cls}" data-game-id="R:${rid}" onclick="gameTap('right','${rid}')" ${matched["R:"+rid]?"disabled":""}>${esc(item.text)}</button>`;
+    const disabled = matched["R:"+rid];
+    return `<button type="button" class="${cls}" data-game-id="R:${esc(rid)}" onpointerdown='gameCableDown(event,"right",${JSON.stringify(rid)})' ${disabled?"disabled":""}><span class="jack jack-in" aria-hidden="true"></span>${esc(item.text)}</button>`;
   }).join("");
   const colHeadL = game.matchType==="port" ? `<div class="game-col-head">Service</div>` : "";
   const colHeadR = game.matchType==="port" ? `<div class="game-col-head">Port</div>` : "";
   const done = Object.keys(matched).length/2;
-  app.innerHTML = `<div class="game-scorebar"><span>${meta.icon} ${esc(meta.name)}${game.mode==="hard"?" · Hard":""}</span><span>${done}/${game.pairs.length} linked</span></div>
-    <div class="game-toast ${game.toastKind}">${esc(game.toast||"Tap left, then right — connect the match!")}</div>
+  app.innerHTML = `<div class="game-scorebar"><span class="score-left">${meta.icon} ${esc(meta.name)}${game.mode==="hard"?" · Hard":""}</span><span class="score-right">${done}/${game.pairs.length} linked</span></div>
+    <div class="game-toast ${game.toastKind}">${esc(game.toast||"Grab a jack and drag the cable across — or tap both ends.")}</div>
     <div class="game-board" id="gameBoard">
       <svg class="game-cables" id="gameCables" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="game-cols">
         <div class="game-col">${colHeadL}${leftHtml}</div>
-        <div class="game-hub-icon">${meta.hub||"🔌"}</div>
         <div class="game-col">${colHeadR}${rightHtml}</div>
       </div>
     </div>`;
@@ -6622,10 +6831,8 @@ function render(){
   if(view.name==="quiz"){ renderQuiz(); return; }
 
   if(view.name==="games"){
-    crumbs.innerHTML = "<b>🎮 Revision Games</b>";
-    app.innerHTML = `<div class="eyebrow">Quick drills</div>
-      <h1 class="page">Revision Games</h1>
-      <p class="sub">${GAME_CATALOG.filter(g=>g.ready).length} games grouped by exam domain — expand Core 1 or Core 2 to browse.</p>
+    crumbs.innerHTML = "<b>Revision Games</b>";
+    app.innerHTML = `${renderGamesMast()}
       ${gamesProgressCard()}
       ${renderGamesFeatured()}
       ${renderGamesGrouped(true)}`;

@@ -75,10 +75,10 @@ assert('Continue Core 1 on title', await page.locator('.title-cta-continue').fil
 
 await page.locator('.title-cta-sec').filter({ hasText: 'Revision Games' }).click();
 await page.waitForSelector('h1.page >> text=Revision Games');
-assert('Games progress on games tab', await page.isVisible('.dash-games'));
+assert('Games progress on games tab', await page.isVisible('.games-progress'));
 assert('Games progress text on games tab', await page.evaluate(() =>
-  document.querySelector('.dash-games')?.textContent.includes('game types') ||
-  document.querySelector('.dash-games')?.textContent.includes('games ready')
+  document.querySelector('.games-progress')?.textContent.includes('game types') ||
+  document.querySelector('.games-progress')?.textContent.includes('games ready')
 ));
 await page.click('.brand');
 await page.waitForSelector('.title-screen');
