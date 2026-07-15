@@ -99,7 +99,7 @@ for (let i = 0; i < 5; i++) {
 }
 assert('Fix-It Fables completes', await page.isVisible('text=Play again'));
 
-await openGame('A+ Millionaire');
+await openGame('A+ Ladder');
 for (let i = 0; i < 15; i++) {
   const idx = await page.evaluate(() => game.qs[game.i].opts.findIndex(o => o.correct));
   await page.locator('.opt').nth(idx).click();
@@ -112,7 +112,7 @@ for (let i = 0; i < 15; i++) {
     await page.waitForTimeout(100);
   }
 }
-assert('A+ Millionaire completes', await page.isVisible("text=You're an A+ Millionaire"));
+assert('A+ Ladder completes', await page.isVisible("text=You're exam-ready"));
 
 await browser.close();
 server.close();

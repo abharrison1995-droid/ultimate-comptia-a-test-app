@@ -43,6 +43,15 @@ assert('Cover A+ brand mark', await page.isVisible('.cover-aplus'));
 assert('Cover exam bar', await page.evaluate(() => document.querySelector('.cover-exam-bar')?.textContent.includes('220-1201')));
 assert('Title screen Core picks', await page.evaluate(() => document.querySelectorAll('.title-cta').length === 2));
 assert('Title screen Games link', await page.locator('.title-cta-sec').filter({ hasText: 'Revision Games' }).count() >= 1);
+assert('Legal disclaimer on title', await page.isVisible('.legal-footer'));
+assert('No CompTIA brand header', await page.evaluate(() => !document.querySelector('.cover-mast')?.textContent.includes('CompTIA®')));
+assert('Privacy settings link', await page.locator('.title-cta-sec').filter({ hasText: 'Privacy' }).count() >= 1);
+await page.locator('.title-cta-sec').filter({ hasText: 'Privacy' }).click();
+await page.waitForSelector('h1.page >> text=Your data');
+assert('Account deletion control', await page.isVisible('button.settings-danger'));
+assert('SIWA not-required notice', await page.evaluate(() => document.body.textContent.includes('Sign in with Apple is not required')));
+await page.click('.brand');
+await page.waitForSelector('.title-screen');
 assert('No domain cards on title', (await page.locator('.domain-card-core1').count()) === 0);
 assert('Charcoal app chrome', await page.evaluate(() => {
   const bg = getComputedStyle(document.querySelector('header.app')).backgroundColor;
